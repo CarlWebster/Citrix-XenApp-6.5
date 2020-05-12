@@ -8,6 +8,20 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.33 13-Jun-2017
+#	Add four new Cover Page properties
+#		Company Address
+#		Company Email
+#		Company Fax
+#		Company Phone
+#	Fix bug when retrieving Filters for a Policy that "applies to all objects in the Farm"
+#	Fix Function Check-LoadedModule
+#	Remove code (120 lines) that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
+#	Replace _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
+#	Update Function ShowScriptOptions for the new Cover Page properties
+#	Update Function UpdateDocumentProperties for the new Cover Page properties
+#	Update help text
+
 #Version 4.32 6-Mar-2017
 #	Added the following policy settings:
 #		Connector for Configuration Manager 2012\Advance warning frequency interval

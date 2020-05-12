@@ -28,6 +28,40 @@
 	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated on the 
 	computer running the script.
 	This parameter has an alias of CN.
+.PARAMETER CompanyAddress
+	Company Address to use for the Cover Page, if the Cover Page has the Address field.  
+		The following Cover Pages have an Address field:
+			Banded (Word 2013/2016)
+			Contrast (Word 2010)
+			Exposure (Word 2010)
+			Filigree (Word 2013/2016)
+			Ion (Dark) (Word 2013/2016)
+			Retrospect (Word 2013/2016)
+			Semaphore (Word 2013/2016)
+			Tiles (Word 2010)
+			ViewMaster (Word 2013/2016)
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CA.
+.PARAMETER CompanyEmail
+	Company Email to use for the Cover Page, if the Cover Page has the Email field.  
+		The following Cover Pages have an Email field:
+			Facet (Word 2013/2016)
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CE.
+.PARAMETER CompanyFax
+	Company Fax to use for the Cover Page, if the Cover Page has the Fax field.  
+		The following Cover Pages have a Fax field:
+			Contrast (Word 2010)
+			Exposure (Word 2010)
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CF.
+.PARAMETER CompanyPhone
+	Company Phone to use for the Cover Page, if the Cover Page has the Phone field.  
+		The following Cover Pages have a Phone field:
+			Contrast (Word 2010)
+			Exposure (Word 2010)
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CPh.
 .PARAMETER CoverPage
 	What Microsoft Word Cover Page to use.
 	Only Word 2010, 2013 and 2016 are supported.
@@ -262,6 +296,30 @@
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
 .EXAMPLE
+	PS C:\PSScript .\XA65_Inventory_V43.ps1 -CompanyName "Sherlock Holmes Consulting" `
+	-CoverPage Exposure -UserName "Dr. Watson" `
+	-CompanyAddress "221B Baker Street, London, England" `
+	-CompanyFax "+44 1753 276600" `
+	-CompanyPhone "+44 1753 276200"
+
+	Will use:
+		Sherlock Holmes Consulting for the Company Name.
+		Exposure for the Cover Page format.
+		Dr. Watson for the User Name.
+		221B Baker Street, London, England for the Company Address.
+		+44 1753 276600 for the Company Fax.
+		+44 1753 276200 for the Compnay Phone.
+.EXAMPLE
+	PS C:\PSScript .\XA65_Inventory_V43.ps1 -CompanyName "Sherlock Holmes Consulting" `
+	-CoverPage Facet -UserName "Dr. Watson" `
+	-CompanyEmail SuperSleuth@SherlockHolmes.com
+
+	Will use:
+		Sherlock Holmes Consulting for the Company Name.
+		Facet for the Cover Page format.
+		Dr. Watson for the User Name.
+		SuperSleuth@SherlockHolmes.com for the Compnay Email.
+.EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V43.ps1 -Section Policies
 	
 	Will use all Default values.
@@ -354,9 +412,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V43.ps1
-	VERSION: 4.32
+	VERSION: 4.33
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: March 6, 2017
+	LASTEDIT: June 13, 2017
 #>
 
 
@@ -406,6 +464,34 @@ Param(
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("CA")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyAddress="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("CE")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyEmail="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("CF")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyFax="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("CPh")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyPhone="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CP")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
@@ -442,6 +528,20 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
+
+#Version 4.33 13-Jun-2017
+#	Add four new Cover Page properties
+#		Company Address
+#		Company Email
+#		Company Fax
+#		Company Phone
+#	Fix bug when retrieving Filters for a Policy that "applies to all objects in the Farm"
+#	Fix Function Check-LoadedModule
+#	Remove code (120 lines) that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
+#	Replace _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
+#	Update Function ShowScriptOptions for the new Cover Page properties
+#	Update Function UpdateDocumentProperties for the new Cover Page properties
+#	Update help text
 
 #Version 4.32 6-Mar-2017
 #	Added the following policy settings:
@@ -535,128 +635,6 @@ Set-StrictMode -Version 2
 $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
-
-If($MSWord -eq $Null)
-{
-	$MSWord = $False
-}
-If($PDF -eq $Null)
-{
-	$PDF = $False
-}
-If($Hardware -eq $Null)
-{
-	$Hardware = $False
-}
-If($Software -eq $Null)
-{
-	$Software = $False
-}
-If($StartDate -eq $Null)
-{
-	$StartDate = ((Get-Date -displayhint date).AddDays(-7))
-}
-If($EndDate -eq $Null)
-{
-	$EndDate = (Get-Date -displayhint date)
-}
-If($Summary -eq $Null)
-{
-	$Summary = $False
-}
-If($AddDateTime -eq $Null)
-{
-	$AddDateTime = $False
-}
-If($Section -eq $Null)
-{
-	$Section = "All"
-}
-If($Folder -eq $Null)
-{
-	$Folder = ""
-}
-If($SmtpServer -eq $Null)
-{
-	$SmtpServer = ""
-}
-If($SmtpPort -eq $Null)
-{
-	$SmtpPort = 25
-}
-If($UseSSL -eq $Null)
-{
-	$UseSSL = $False
-}
-If($From -eq $Null)
-{
-	$From = ""
-}
-If($To -eq $Null)
-{
-	$To = ""
-}
-
-If(!(Test-Path Variable:MSWord))
-{
-	$MSWord = $False
-}
-If(!(Test-Path Variable:PDF))
-{
-	$PDF = $False
-}
-If(!(Test-Path Variable:Hardware))
-{
-	$Hardware = $False
-}
-If(!(Test-Path Variable:Software))
-{
-	$Software = $False
-}
-If(!(Test-Path Variable:StartDate))
-{
-	$StartDate = ((Get-Date -displayhint date).AddDays(-7))
-}
-If(!(Test-Path Variable:EndDate))
-{
-	$EndDate = ((Get-Date -displayhint date))
-}
-If(!(Test-Path Variable:Summary))
-{
-	$Summary = $False
-}
-If(!(Test-Path Variable:AddDateTime))
-{
-	$AddDateTime = $False
-}
-If(!(Test-Path Variable:Section))
-{
-	$Section = "All"
-}
-If(!(Test-Path Variable:Folder))
-{
-	$Folder = ""
-}
-If(!(Test-Path Variable:SmtpServer))
-{
-	$SmtpServer = ""
-}
-If(!(Test-Path Variable:SmtpPort))
-{
-	$SmtpPort = 25
-}
-If(!(Test-Path Variable:UseSSL))
-{
-	$UseSSL = $False
-}
-If(!(Test-Path Variable:From))
-{
-	$From = ""
-}
-If(!(Test-Path Variable:To))
-{
-	$To = ""
-}
 
 If($MSWord -eq $Null)
 {
@@ -2147,8 +2125,8 @@ Function Check-LoadedModule
 	#was manually loaded from a non Default folder
 	#$ModuleFound = (!$LoadedModules -like "*$ModuleName*")
 	
-	[bool]$ModuleFound = ($LoadedModules -like "*$ModuleName*")
-	If(!$ModuleFound) 
+	[string]$ModuleFound = ($LoadedModules -like "*$ModuleName*")
+	If($ModuleFound -ne $ModuleName) 
 	{
 		$module = Import-Module -Name $ModuleName -PassThru -EA 0 4>$Null
 		If($module -and $?)
@@ -2289,21 +2267,44 @@ Function WriteWordLine
 	}
 }
 
-Function _SetDocumentProperty 
-{
-	#jeff hicks
-	Param([object]$Properties,[string]$Name,[string]$Value)
-	#get the property object
-	$prop = $properties | ForEach { 
-		$propname=$_.GetType().InvokeMember("Name","GetProperty",$Null,$_,$Null)
-		If($propname -eq $Name) 
-		{
-			Return $_
-		}
-	} #ForEach
-
-	#set the value
-	$Prop.GetType().InvokeMember("Value","SetProperty",$Null,$prop,$Value)
+Function Set-DocumentProperty {
+    <#
+	.SYNOPSIS
+	Function to set the Title Page document properties in MS Word
+	.DESCRIPTION
+	Long description
+	.PARAMETER Document
+	Current Document Object
+	.PARAMETER DocProperty
+	Parameter description
+	.PARAMETER Value
+	Parameter description
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Title -Value 'MyTitle'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value 'MyCompany'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value 'Jim Moyle'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Subject -Value 'MySubjectTitle'
+	.NOTES
+	Function Created by Jim Moyle June 2017
+	Twitter : @JimMoyle
+	#>
+    param (
+        [object]$Document,
+        [String]$DocProperty,
+        [string]$Value
+    )
+    try {
+        $binding = "System.Reflection.BindingFlags" -as [type]
+        $builtInProperties = $Document.BuiltInDocumentProperties
+        $property = [System.__ComObject].invokemember("item", $binding::GetProperty, $null, $BuiltinProperties, $DocProperty)
+        [System.__ComObject].invokemember("value", $binding::SetProperty, $null, $property, $Value)
+    }
+    catch {
+        Write-Warning "Failed to set $DocProperty to $Value"
+    }
 }
 
 Function FindWordDocumentEnd
@@ -2832,7 +2833,7 @@ Function ProcessCitrixPolicies
 					$filters = Get-CtxGroupPolicyFilter -PolicyName $Policy.PolicyName -DriveName $xDriveName -EA 0
 				}
 
-				If($? -and $Filters -ne $Null)
+				If($? -and $null -ne $Filters)
 				{
 					If(![String]::IsNullOrEmpty($filters))
 					{
@@ -2866,10 +2867,30 @@ Function ProcessCitrixPolicies
 						WriteWordLine 0 1 "Filter(s)`t`t: None"
 					}
 				}
+				ElseIf($? -and $Null -eq $Filters)
+				{
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 3 0 "Assigned to"
+						WriteWordLine 0 1 "$($Policy.PolicyName) policy applies to all objects in the Farm"
+					}
+				}
+				ElseIf($? -and $Policy.PolicyName -eq "Unfiltered")
+				{
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 3 0 "Assigned to"
+						WriteWordLine 0 1 "Unfiltered policy applies to all objects in the Farm"
+					}
+				}
 				Else
 				{
-					WriteWordLine 0 1 "Unable to retrieve Filter settings"
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 0 1 "Unable to retrieve Filter settings"
+					}
 				}
+
 				If($xDriveName -eq "")
 				{
 					$Settings = Get-CtxGroupPolicyConfiguration -PolicyName $Policy.PolicyName -EA 0
@@ -5152,34 +5173,38 @@ Function ShowScriptOptions
 {
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Company Name : $($Script:CoName)"
-	Write-Verbose "$(Get-Date): Cover Page   : $($CoverPage)"
-	Write-Verbose "$(Get-Date): User Name    : $($UserName)"
-	Write-Verbose "$(Get-Date): Save As PDF  : $($PDF)"
-	Write-Verbose "$(Get-Date): Save As WORD : $($MSWORD)"
-	Write-Verbose "$(Get-Date): Add DateTime : $($AddDateTime)"
-	Write-Verbose "$(Get-Date): HW Inventory : $($Hardware)"
-	Write-Verbose "$(Get-Date): SW Inventory : $($Software)"
+	Write-Verbose "$(Get-Date): Company Name    : $($Script:CoName)"
+	Write-Verbose "$(Get-Date): Company Address : $($CompanyAddress)"
+	Write-Verbose "$(Get-Date): Company Email   : $($CompanyEmail)"
+	Write-Verbose "$(Get-Date): Company Fax     : $($CompanyFax)"
+	Write-Verbose "$(Get-Date): Company Phone   : $($CompanyPhone)"
+	Write-Verbose "$(Get-Date): Cover Page      : $($CoverPage)"
+	Write-Verbose "$(Get-Date): User Name       : $($UserName)"
+	Write-Verbose "$(Get-Date): Save As PDF     : $($PDF)"
+	Write-Verbose "$(Get-Date): Save As WORD    : $($MSWORD)"
+	Write-Verbose "$(Get-Date): Add DateTime    : $($AddDateTime)"
+	Write-Verbose "$(Get-Date): HW Inventory    : $($Hardware)"
+	Write-Verbose "$(Get-Date): SW Inventory    : $($Software)"
 	If(!$Summary)
 	{
-		Write-Verbose "$(Get-Date): Start Date   : $($StartDate)"
-		Write-Verbose "$(Get-Date): End Date     : $($EndDate)"
+		Write-Verbose "$(Get-Date): Start Date      : $($StartDate)"
+		Write-Verbose "$(Get-Date): End Date        : $($EndDate)"
 	}
-	Write-Verbose "$(Get-Date): Section      : $($Section)"
-	Write-Verbose "$(Get-Date): Summary      : $($Summary)"
-	Write-Verbose "$(Get-Date): Filename1    : $($Script:FileName1)"
+	Write-Verbose "$(Get-Date): Section         : $($Section)"
+	Write-Verbose "$(Get-Date): Summary         : $($Summary)"
+	Write-Verbose "$(Get-Date): Filename1       : $($Script:FileName1)"
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date): Filename2    : $($Script:FileName2)"
+		Write-Verbose "$(Get-Date): Filename2       : $($Script:FileName2)"
 	}
-	Write-Verbose "$(Get-Date): OS Detected  : $($Script:RunningOS)"
-	Write-Verbose "$(Get-Date): PSUICulture  : $($PSUICulture)"
-	Write-Verbose "$(Get-Date): PSCulture    : $($PSCulture)"
-	Write-Verbose "$(Get-Date): Word version : $($Script:WordProduct)"
-	Write-Verbose "$(Get-Date): Word language: $($Script:WordLanguageValue)"
-	Write-Verbose "$(Get-Date): PoSH version : $($Host.Version)"
+	Write-Verbose "$(Get-Date): OS Detected     : $($Script:RunningOS)"
+	Write-Verbose "$(Get-Date): PSUICulture     : $($PSUICulture)"
+	Write-Verbose "$(Get-Date): PSCulture       : $($PSCulture)"
+	Write-Verbose "$(Get-Date): Word version    : $($Script:WordProduct)"
+	Write-Verbose "$(Get-Date): Word language   : $($Script:WordLanguageValue)"
+	Write-Verbose "$(Get-Date): PoSH version    : $($Host.Version)"
 	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Script start : $($Script:StartTime)"
+	Write-Verbose "$(Get-Date): Script start    : $($Script:StartTime)"
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): "
 }
@@ -5544,24 +5569,24 @@ Function SetupWord
 Function UpdateDocumentProperties
 {
 	Param([string]$AbstractTitle, [string]$SubjectTitle)
+	#updated 8-Jun-2017 with additional cover page fields
 	#Update document properties
 	If($MSWORD -or $PDF)
 	{
 		If($Script:CoverPagesExist)
 		{
 			Write-Verbose "$(Get-Date): Set Cover Page Properties"
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Company" $Script:CoName
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Title" $Script:title
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Author" $username
-
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Subject" $SubjectTitle
+			#8-Jun-2017 put these 4 items in alpha order
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value $UserName
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value $Script:CoName
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Subject -Value $SubjectTitle
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Title -Value $Script:title
 
 			#Get the Coverpage XML part
 			$cp = $Script:Doc.CustomXMLParts | Where {$_.NamespaceURI -match "coverPageProps$"}
 
 			#get the abstract XML part
 			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "Abstract"}
-
 			#set the text
 			If([String]::IsNullOrEmpty($Script:CoName))
 			{
@@ -5569,9 +5594,32 @@ Function UpdateDocumentProperties
 			}
 			Else
 			{
-				[string]$abstract = "$($AbstractTitle) for $Script:CoName"
+				[string]$abstract = "$($AbstractTitle) for $($Script:CoName)"
 			}
+			$ab.Text = $abstract
 
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyAddress"}
+			#set the text
+			[string]$abstract = $CompanyAddress
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyEmail"}
+			#set the text
+			[string]$abstract = $CompanyEmail
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyFax"}
+			#set the text
+			[string]$abstract = $CompanyFax
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyPhone"}
+			#set the text
+			[string]$abstract = $CompanyPhone
 			$ab.Text = $abstract
 
 			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "PublishDate"}
