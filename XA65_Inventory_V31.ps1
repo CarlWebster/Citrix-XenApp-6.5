@@ -97,9 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.16
+	VERSION: 3.17
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: September 9, 2013
+	LASTEDIT: October 6, 2013
 #>
 
 
@@ -1407,7 +1407,7 @@ If( $? -and $LoadBalancingPolicies)
 					{
 						ForEach($AccessSessionCondition in $LoadBalancingPolicyFilter.AccessSessionConditions)
 						{
-							WriteWordLine 4 $AccessSessionCondition
+							WriteWordLine 0 4 $AccessSessionCondition
 						}
 					}
 				}
@@ -2341,29 +2341,34 @@ Else
 							If($Setting.MultiPortPolicy.State -ne "NotConfigured")
 							{
 								WriteWordLine 0 2 "ICA\MultiStream Connections\Multi-Port Policy: " 
-								$Tmp = $Setting.MultiPortPolicy.Value
-								$cgpport1 = $Tmp.substring(0, $Tmp.indexof(";"))
-								$cgpport2 = $Tmp.substring($cgpport1.length + 1 , $Tmp.indexof(";"))
-								$cgpport3 = $Tmp.substring((($cgpport1.length + 1)+($cgpport2.length + 1)) , $Tmp.indexof(";"))
-								$cgpport1priority = multiportpolicypriority $cgpport1.substring($cgpport1.length -1, 1)
-								$cgpport2priority = multiportpolicypriority $cgpport2.substring($cgpport2.length -1, 1)
-								$cgpport3priority = multiportpolicypriority $cgpport3.substring($cgpport3.length -1, 1)
-								$cgpport1 = $cgpport1.substring(0, $cgpport1.indexof(","))
-								$cgpport2 = $cgpport2.substring(0, $cgpport2.indexof(","))
-								$cgpport3 = $cgpport3.substring(0, $cgpport3.indexof(","))
-								WriteWordLine 0 3 "CGP port1: " $cgpport1 -nonewline 
-								WriteWordLine 0 1 "priority: " $cgpport1priority[0]
-								WriteWordLine 0 3 "CGP port2: " $cgpport2 -nonewline
-								WriteWordLine 0 1 "priority: " $cgpport2priority[0]
-								WriteWordLine 0 3 "CGP port3: " $cgpport3 -nonewline
-								WriteWordLine 0 1 "priority: " $cgpport3priority[0]
-								$Tmp = $null
-								$cgpport1 = $null
-								$cgpport2 = $null
-								$cgpport3 = $null
-								$cgpport1priority = $null
-								$cgpport2priority = $null
-								$cgpport3priority = $null
+								WriteWordLine 0 3 "CGP default port: Default Port" -nonewline 
+								WriteWordLine 0 1 "priority: High"
+								[string]$Tmp = $Setting.MultiPortPolicy.Value
+								If($Tmp.Length -gt 0)
+								{
+									[string]$cgpport1 = $Tmp.substring(0, $Tmp.indexof(";"))
+									[string]$cgpport2 = $Tmp.substring($cgpport1.length + 1 , $Tmp.indexof(";"))
+									[string]$cgpport3 = $Tmp.substring((($cgpport1.length + 1)+($cgpport2.length + 1)) , $Tmp.indexof(";"))
+									[string]$cgpport1priority = multiportpolicypriority $cgpport1.substring($cgpport1.length -1, 1)
+									[string]$cgpport2priority = multiportpolicypriority $cgpport2.substring($cgpport2.length -1, 1)
+									[string]$cgpport3priority = multiportpolicypriority $cgpport3.substring($cgpport3.length -1, 1)
+									$cgpport1 = $cgpport1.substring(0, $cgpport1.indexof(","))
+									$cgpport2 = $cgpport2.substring(0, $cgpport2.indexof(","))
+									$cgpport3 = $cgpport3.substring(0, $cgpport3.indexof(","))
+									WriteWordLine 0 3 "CGP port1: " $cgpport1 -nonewline 
+									WriteWordLine 0 1 "priority: " $cgpport1priority[0]
+									WriteWordLine 0 3 "CGP port2: " $cgpport2 -nonewline
+									WriteWordLine 0 1 "priority: " $cgpport2priority[0]
+									WriteWordLine 0 3 "CGP port3: " $cgpport3 -nonewline
+									WriteWordLine 0 1 "priority: " $cgpport3priority[0]
+									$cgpport1 = $Null
+									$cgpport2 = $Null
+									$cgpport3 = $Null
+									$cgpport1priority = $Null
+									$cgpport2priority = $Null
+									$cgpport3priority = $Null
+								}
+								$Tmp = $Null
 							}
 							If($Setting.MultiStreamPolicy.State -ne "NotConfigured")
 							{
@@ -2471,7 +2476,7 @@ Else
 								{
 									WriteWordLine 0 3 "Name: " $test.name
 									WriteWordLine 0 3 "File Location: " $test.file
-									If($test.arguments)
+									If($test.HasAttribute("arguments"))
 									{
 										WriteWordLine 0 3 "Arguments: " $test.arguments
 									}
