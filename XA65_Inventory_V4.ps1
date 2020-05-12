@@ -149,9 +149,9 @@
 	No objects are output from this script.  This script creates a Word document.
 .NOTES
 	NAME: XA65_Inventory_V4.ps1
-	VERSION: 4.03
+	VERSION: 4.04
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: December 30, 2013
+	LASTEDIT: January 1, 2014
 #>
 
 
@@ -278,6 +278,9 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 #	Do not sort the array of Citrix AD policies before returning the array from the function.  Causes the array to not work when there is only one AD policy.
 #	The XenApp 6.5 Mobility Pack added a new User policy node with three settings
 #	Added four policy settings that are only for AD based Citrix policies
+#Updated 1-Jan-2014
+#	Updated for CTX129229 from 31-Dec-2013
+#	Add check for HRP03
 
 Set-StrictMode -Version 2
 
@@ -5448,6 +5451,7 @@ If($?)
 				Write-Verbose "$(Get-Date): `t`tNumber of hotfixes is $($Rows-1)"
 				$HotfixArray = @()
 				[bool]$HRP2Installed = $False
+				[bool]$HRP3Installed = $False
 				WriteWordLine 0 0 ""
 				WriteWordLine 0 1 "Citrix Installed Hotfixes:"
 				Write-Verbose "$(Get-Date): `t`tCreate Word Table for Citrix Hotfixes"
@@ -5489,6 +5493,10 @@ If($?)
 					{
 						$HRP2Installed = $True
 					}
+					If($hotfix.HotfixName -eq "XA650W2K8R2X64R03")
+					{
+						$HRP3Installed = $True
+					}
 					$InstallDate = $hotfix.InstalledOn.ToString()
 					
 					$Table.Cell($xRow,1).Range.Font.Size = "10"
@@ -5516,11 +5524,15 @@ If($?)
 				WriteWordLine 0 0 ""
 
 				#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
-				#hotfix lists are from CTX129229 dated 16-JUL-2013
+				#hotfix lists are from CTX129229 dated 31-DEC-2013
 				Write-Verbose "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
 				# as of the 16-JUL-2013 update, there are recommended hotfixes for pre R02 and none for post R02
 				Write-Verbose "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)"
-				If($HRP2Installed)
+				If($HRP3Installed)
+				{
+					$RecommendedList = @()
+				}
+				ElseIf($HRP2Installed)
 				{
 					$RecommendedList = @()
 				}
@@ -5604,19 +5616,18 @@ If($?)
 					If($server.OSServicePack.IndexOf('1') -gt 0)
 					{
 						#Server 2008 R2 SP1 installed
-						$RecommendedList = @("KB2444328", "KB2465772", "KB2551503", "KB2571388", 
-										"KB2578159", "KB2617858", "KB2620656", "KB2647753",
-										"KB2661001", "KB2661332", "KB2731847", "KB2748302",
-										"KB2775511", "KB2778831", "KB917607")
+						$RecommendedList = @("KB2465772", "KB2620656", "KB2647753", "KB2661332", 
+										"KB2728738", "KB2731847", "KB2748302", "KB2775511", 
+										"KB2778831", "KB2896256", "KB917607")
 					}
 					Else
 					{
 						#Server 2008 R2 without SP1 installed
-						$RecommendedList = @("KB2265716", "KB2388142", "KB2383928", "KB2444328", 
-										"KB2465772", "KB2551503", "KB2571388", "KB2578159", 
-										"KB2617858", "KB2620656", "KB2647753", "KB2661001",
-										"KB2661332", "KB2731847", "KB2748302", "KB2778831", 
-										"KB917607", "KB975777", "KB979530", "KB980663", "KB983460")
+						$RecommendedList = @("KB2265716", "KB2388142", "KB2383928", "KB2465772", 
+										"KB2620656", "KB2647753", "KB2661332", "KB2728738", 
+										"KB2731847", "KB2748302", "KB2775511", "KB2778831", 
+										"KB2896256", "KB917607", "KB975777", "KB979530", 
+										"KB980663", "KB983460")
 					}
 					
 					WriteWordLine 0 1 "Microsoft Recommended Hotfixes:"

@@ -8,6 +8,10 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Updated 1-Jan-2014
+#	Updated for CTX129229 from 31-Dec-2013
+#	Add check for HRP03
+
 #Updated 30-Dec-2013
 #	Do not sort the array of Citrix AD policies before returning the array from the function.  Causes the array to not work when there is only one AD policy.
 #	The XenApp 6.5 Mobility Pack added a new User policy node with three settings
