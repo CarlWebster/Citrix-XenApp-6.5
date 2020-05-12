@@ -9,6 +9,14 @@
 #modified from the original script for XenApp 6.5
 
 #Version 5.00 created on June 1, 2015
+
+#V5.01 21-Apr-2019
+#	If Policies parameter is used, check to see if PowerShell session is elevated. If it is,
+#		abort the script. This is the #2 support email.
+#		Added a Note to the Help Text and ReadMe file about the Citrix.GroupPolicy.Commands module:
+#		Note: The Citrix Group Policy PowerShell module will not load from an elevated PowerShell session. 
+#		If the module is manually imported, the module is not detected from an elevated PowerShell session.
+
 #V5.00 released to the community 14-Dec-2018
 #	Removed minimum requirement for PowerShell V3
 #	Fixed all code to make it work in PowerShell V2
