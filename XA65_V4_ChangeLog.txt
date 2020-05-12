@@ -8,6 +8,9 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.14 2-Jun-2014
+#	Added an AddDateTime parameter
+
 #Version 4.13 20-May-2014
 #	Bring up-to-date with the changes made to the Active Directory and DHCP documentation scripts
 #		Remove all hard-coded values for Word and Table functions
