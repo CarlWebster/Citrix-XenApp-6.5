@@ -147,13 +147,11 @@
 	None.  You cannot pipe objects to this script.
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word document.
-.LINK
-	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V4.ps1
 	VERSION: 4.01
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: November 7, 2013
+	LASTEDIT: November 12, 2013
 #>
 
 
@@ -270,6 +268,8 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 #	Changed the GetCtxGPOsInAD function to work in a Windows Workgroup environment
 #	The Hotfix array for Citrix hotfixes was not initialized correctly causing all installed Citrix hotfixes to show as not installed.
 #	Removed the .LINK section from the help text
+#Updated 12-Nov-2013
+#	Added back in the French sections that somehow got removed
 
 Set-StrictMode -Version 2
 
@@ -348,6 +348,12 @@ Switch ($PSUICulture.Substring(0,3))
 	'fi-'	{
 			$hash.($($PSUICulture)) = @{
 				'Word_TableOfContents' = 'Automaattinen taulukko 2';
+			}
+		}
+
+	'fr-'	{
+			$hash.($($PSUICulture)) = @{
+				'Word_TableOfContents' = 'Sommaire Automatique 2';
 			}
 		}
 
