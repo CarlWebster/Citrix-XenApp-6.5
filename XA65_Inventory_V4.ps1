@@ -149,9 +149,9 @@
 	No objects are output from this script.  This script creates a Word document.
 .NOTES
 	NAME: XA65_Inventory_V4.ps1
-	VERSION: 4.02
+	VERSION: 4.03
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: December 5, 2013
+	LASTEDIT: December 30, 2013
 #>
 
 
@@ -274,6 +274,10 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 #	Fixed bug where XA65ConfigLog.udl was not found even if it existed
 #	Fixed bug where the functions in Citrix.GroupPolicy.Command.psm1 were not found
 #	Initialize switch parameters as $False
+#Updated 30-Dec-2013
+#	Do not sort the array of Citrix AD policies before returning the array from the function.  Causes the array to not work when there is only one AD policy.
+#	The XenApp 6.5 Mobility Pack added a new User policy node with three settings
+#	Added four policy settings that are only for AD based Citrix policies
 
 Set-StrictMode -Version 2
 
@@ -2140,6 +2144,11 @@ Function ProcessCitrixPolicies
 						{
 							WriteWordLine 0 2 "Server Settings\Full icon caching: " $Setting.FullIconCaching.State
 						}
+						#the next setting is only available for AD based policies
+						If($Setting.InitialZone.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "Server Settings\Initial Zone Name: " $Setting.InitialZone.Value
+						}
 						If($Setting.LoadEvaluator.State -ne "NotConfigured")
 						{
 							WriteWordLine 0 2 "Server Settings\Load Evaluator Name - Load evaluator: " $Setting.LoadEvaluator.Value
@@ -2171,6 +2180,20 @@ Function ProcessCitrixPolicies
 						{
 							WriteWordLine 0 2 "Server Settings\Connection Limits\Logging of logon limit events: " $Setting.UserSessionLimitLogging.State
 						}
+						#the next 3 settings are available only for AD based policies
+						If($Setting.InitialDatabaseName.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "Server Settings\Database Settings\Initial Database Name: " $Setting.InitialDatabaseName.Value
+						}
+						If($Setting.InitialDatabaseServerName.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "Server Settings\Database Settings\Initial Database Server Name: " $Setting.InitialDatabaseServerName.Value
+						}
+						If($Setting.InitialFailoverPartner.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "Server Settings\Database Settings\Initial Failover Partner: " $Setting.InitialFailoverPartner.Value
+						}
+						#the previous 3 settings are available only for AD based policies
 						If($Setting.HealthMonitoring.State -ne "NotConfigured")
 						{
 							WriteWordLine 0 2 "Server Settings\Health Monitoring and Recovery\Health monitoring: " $Setting.HealthMonitoring.State
@@ -2773,6 +2796,20 @@ Function ProcessCitrixPolicies
 						If($Setting.AsynchronousWrites.State -ne "NotConfigured")
 						{
 							WriteWordLine 0 2 "ICA\File Redirection\Use asynchronous writes: " $Setting.AsynchronousWrites.State
+						}
+						# added for the XenApp 6.5 Mobility Pack
+						Write-Verbose "$(Get-Date): `t`t`tICA\Mobile Experience"
+						If($Setting.AutoKeyboardPopUp.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "ICA\Mobile Experience\Automatic keyboard display: " $Setting.AutoKeyboardPopUp.State
+						}
+						If($Setting.MobileDesktop.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "ICA\Mobile Experience\Launch touch-optimized desktop: " $Setting.MobileDesktop.State
+						}
+						If($Setting.ComboboxRemoting.State -ne "NotConfigured")
+						{
+							WriteWordLine 0 2 "ICA\Mobile Experience\Remote the combo box: " $Setting.ComboboxRemoting.State
 						}
 						Write-Verbose "$(Get-Date): `t`t`tICA Multi-Stream Connections"
 						If($Setting.MultiStream.State -ne "NotConfigured")
@@ -3454,7 +3491,7 @@ Function GetCtxGPOsInAD
 			}
 		}
 	}
-	Return ,$xArray | Sort
+	Return ,$xArray
 }
 
 #Script begins
@@ -5830,7 +5867,9 @@ Else
 		If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 		{
 			Write-Verbose "$(Get-Date): There are $($CtxGPOArray.Count) Citrix AD based policies to process"
-			
+
+			$CtxGPOArray = $CtxGPOArray | Sort
+
 			ForEach($CtxGPO in $CtxGPOArray)
 			{
 				Write-Verbose "$(Get-Date): Creating ADGpoDrv PSDrive"
