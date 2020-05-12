@@ -8,6 +8,10 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.11 1-Apr-2014
+#	Save current settings for Spell Check and Grammar Check before disabling them
+#	Before closing Word, put Spelling and Grammar settings back to original
+
 #Version 4.1 19-Jan-2014
 #	Added additional error checking when retrieving Network Interface WMI data
 #	Added additional Write-Verbose statements for the AD policy function
