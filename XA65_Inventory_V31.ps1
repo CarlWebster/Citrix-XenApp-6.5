@@ -7,7 +7,9 @@
 	Document includes a Cover Page, Table of Contents and Footer.
 .PARAMETER CompanyName
 	Company Name to use for the Cover Page.  
-	Default value is contained in HKCU:\Software\Microsoft\Office\Common\UserInfo\Company
+	Default value is contained in HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated on the 
+	computer running the script.
 	This parameter has an alias of CN.
 .PARAMETER CoverPage
 	What Microsoft Word Cover Page to use.
@@ -51,9 +53,10 @@
 	Default value is contained in $env:username
 	This parameter has an alias of UN.
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_v3.ps1
+	PS C:\PSScript > .\XA65_Inventory_V31.ps1
 	
 	Will use all default values.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -61,25 +64,26 @@
 	Motion for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_v3.ps1 -verbose
+	PS C:\PSScript > .\XA65_Inventory_V31.ps1 -verbose
 	
 	Will use all default values.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
 	Carl Webster for the Company Name.
 	Motion for the Cover Page format.
 	Administrator for the User Name.
-	Will display verbose messages as the script is runnin.
+	Will display verbose messages as the script is running.
 .EXAMPLE
-	PS C:\PSScript .\XA65_Inventory_v3.ps1 -CompanyName "Carl Webster Consulting" -CoverPage "Mod" -UserName "Carl Webster"
+	PS C:\PSScript .\XA65_Inventory_V31.ps1 -CompanyName "Carl Webster Consulting" -CoverPage "Mod" -UserName "Carl Webster"
 
 	Will use:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\XA65_Inventory_v3.ps1 -CN "Carl Webster Consulting" -CP "Mod" -UN "Carl Webster"
+	PS C:\PSScript .\XA65_Inventory_V31.ps1 -CN "Carl Webster Consulting" -CP "Mod" -UN "Carl Webster"
 
 	Will use:
 		Carl Webster Consulting for the Company Name (alias CN).
@@ -90,12 +94,15 @@
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word document.
 .LINK
-	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3
+	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
-	NAME: XA65_Inventory_V3.ps1
-	VERSION: 3
+	NAME: XA65_Inventory_V31.ps1
+	VERSION: 3.1
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: January 27, 2013
+	LASTEDIT: March 15, 2013
+.REMARKS
+	To see the examples, type: "Get-Help .\XA65_Inventory_V31.ps1 -examples".
+	For more information, type: "Get-Help .\XA65_Inventory_V31.ps1 -detailed".
 #>
 
 
@@ -108,7 +115,7 @@ Param(	[parameter(
 	] 
 	[Alias("CN")]
 	[ValidateNotNullOrEmpty()]
-	[string]$CompanyName=(Get-ItemProperty -Path "HKCU:\Software\Microsoft\Office\Common\UserInfo" | select -ExpandProperty Company),
+	[string]$CompanyName="",
     
 	[parameter(
 	Position = 1, 
@@ -126,10 +133,6 @@ Param(	[parameter(
 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username )
 
-	Write-Verbose "Company Name: $CompanyName"
-	Write-Verbose "Cover Page  : $CoverPage"
-	Write-Verbose "User Name   : $UserName"
-
 	
 #Original Script created 8/17/2010 by Michael Bogobowicz, Citrix Systems.
 #To contact, please message @mikebogo on Twitter
@@ -141,6 +144,80 @@ Param(	[parameter(
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 #Word version of script based on version 2 of XA65 script
+#updated February 18, 2013:
+#	Fixed typos
+#	Add more write-verbose statements
+#	Fixed issues found by running in set-strictmode -version 2.0
+#	Test for CompanyName in two different registry locations
+#	Test if template DOTX file loads properly.  If not, skip Cover Page and Table of Contents
+#	Disable Spell and Grammer Check to resolve issue and improve performance (from Pat Coughlin)
+#	Added in the missing Load evaluator settings for Load Throttling and Server User Load 
+#	Test XenApp server for availability before getting services and hotfixes
+#	Move table of Citrix services to align with text above table
+#	Created a table for Citrix installed hotfixes
+#	Created a table for Microsoft hotfixes
+#Updated March 14, 2013
+#	?{?_.SessionId -eq $SessionID} should have been ?{$_.SessionId -eq $SessionID} in the CheckWordPrereq function
+#Updated March 15, 2013
+#	Include updated hotfix lists from CTX129229
+
+Function CheckWordPrereq
+{
+	if ((Test-Path  REGISTRY::HKEY_CLASSES_ROOT\Word.Application) -eq $False)
+	{
+		Write-Host "This script directly outputs to Microsoft Word, please install Microsoft Word"
+		exit
+	}
+
+	#find out our session (usually "1" except on TS/RDC or Citrix)
+	$SessionID = (Get-Process -PID $PID).SessionId
+	
+	#Find out if winword is running in our session
+	[bool]$wordrunning = ((Get-Process 'WinWord' -ea 0)|?{$_.SessionId -eq $SessionID}) -ne $null
+	if ($wordrunning)
+	{
+		Write-Host "Please close all instances of Microsoft Word before running this report."
+		exit
+	}
+}
+
+Function ValidateCompanyName
+{
+	$xResult = Test-RegistryValue "HKCU:\Software\Microsoft\Office\Common\UserInfo" "CompanyName"
+	If($xResult)
+	{
+		Return Get-RegistryValue "HKCU:\Software\Microsoft\Office\Common\UserInfo" "CompanyName"
+	}
+	Else
+	{
+		$xResult = Test-RegistryValue "HKCU:\Software\Microsoft\Office\Common\UserInfo" "Company"
+		If($xResult)
+		{
+			Return Get-RegistryValue "HKCU:\Software\Microsoft\Office\Common\UserInfo" "Company"
+		}
+		Else
+		{
+			Return ""
+		}
+	}
+}
+
+#http://stackoverflow.com/questions/5648931/test-if-registry-value-exists
+# This function just gets $true or $false
+function Test-RegistryValue($path, $name)
+{
+    $key = Get-Item -LiteralPath $path -EA 0
+    $key -and $null -ne $key.GetValue($name, $null)
+}
+
+# Gets the specified registry value or $null if it is missing
+function Get-RegistryValue($path, $name)
+{
+    $key = Get-Item -LiteralPath $path -EA 0
+    if ($key) {
+        $key.GetValue($name, $null)
+    }
+}
 	
 Function ValidateCoverPage
 {
@@ -295,51 +372,56 @@ Function Check-NeededPSSnapins
 {
 	Param( [parameter(Mandatory = $true)][alias("Snapin")][string[]]$Snapins)
 	
-    #function specifics
-    $MissingSnapins=@()
-    $FoundMissingSnapin=$false
+	#function specifics
+	$MissingSnapins=@()
+	$FoundMissingSnapin=$false
+	$LoadedSnapins = @()
+	$RegisteredSnapins = @()
     
-    #Creates arrays of strings, rather than objects, we're passing strings so this will be more robust.
-    $loadedSnapins += get-pssnapin | % {$_.name}
-    $registeredSnapins += get-pssnapin -Registered | % {$_.name}
+	#Creates arrays of strings, rather than objects, we're passing strings so this will be more robust.
+	$loadedSnapins += get-pssnapin | % {$_.name}
+	$registeredSnapins += get-pssnapin -Registered | % {$_.name}
     
+	foreach ($Snapin in $Snapins)
+	{
+		#check if the snapin is loaded
+		if (!($LoadedSnapins -like $snapin))
+		{
+			#Check if the snapin is missing
+			if (!($RegisteredSnapins -like $Snapin))
+			{
+				#set the flag if it's not already
+				if (!($FoundMissingSnapin))
+				{
+					$FoundMissingSnapin = $True
+				}
+				#add the entry to the list
+				$MissingSnapins += $Snapin
+			}#End Registered If 
+			Else
+			{
+				#Snapin is registered, but not loaded, loading it now:
+				Write-Host "Loading Windows PowerShell snap-in: $snapin"
+				Add-PSSnapin -Name $snapin
+			}
+		}#End Loaded If
+		#Snapin is registered and loaded
+		else
+		{
+			write-debug "Windows PowerShell snap-in: $snapin - Already Loaded"
+		}
+	}#End For
     
-    foreach ($Snapin in $Snapins){
-        #check if the snapin is loaded
-        if (!($LoadedSnapins -like $snapin)){
-
-            #Check if the snapin is missing
-            if (!($RegisteredSnapins -like $Snapin)){
-
-                #set the flag if it's not already
-                if (!($FoundMissingSnapin)){
-                    $FoundMissingSnapin = $True
-                }
-                
-                #add the entry to the list
-                $MissingSnapins += $Snapin
-            }#End Registered If 
-            
-            Else{
-                #Snapin is registered, but not loaded, loading it now:
-                Write-Host "Loading Windows PowerShell snap-in: $snapin"
-                Add-PSSnapin -Name $snapin
-            }
-            
-        }#End Loaded If
-        #Snapin is registered and loaded
-        else{write-debug "Windows PowerShell snap-in: $snapin - Already Loaded"}
-    }#End For
-    
-    if ($FoundMissingSnapin){
-        write-warning "Missing Windows PowerShell snap-ins Detected:"
-        $missingSnapins | % {write-warning "($_)"}
-        return $False
-    }#End If
-    
-    Else{
-        Return $true
-    }#End Else
+	if ($FoundMissingSnapin)
+	{
+		write-warning "Missing Windows PowerShell snap-ins Detected:"
+		$missingSnapins | % {write-warning "($_)"}
+		return $False
+	}#End If
+	Else
+	{
+		Return $true
+	}#End Else
     
 }#End Function
 
@@ -401,6 +483,8 @@ if (!(Check-NeededPSSnapins "Citrix.Common.Commands","Citrix.Common.GroupPolicy"
     break
 }
 
+CheckWordPreReq
+
 $Remoting = $False
 $tmp = Get-XADefaultComputerName
 If(![String]::IsNullOrEmpty( $tmp ))
@@ -415,6 +499,17 @@ If($Remoting)
 Else
 {
 	write-verbose "Remoting is not being used"
+	
+	#now need to make sure the script is not being run on a session-only host
+	$ServerName = (Get-Childitem env:computername).value
+	$Server = Get-XAServer -ServerName $ServerName
+	If($Server.ElectionPreference -eq "WorkerMode")
+	{
+		Write-Warning "This script cannot be run on a Session-only Host Server if Remoting is not enabled."
+		Write-Warning "Use Set-XADefaultComputerName XA65ControllerServerName or run the script on a controller."
+		Write-Error "Script cannot continue.  See messages above."
+		Exit
+	}
 }
 
 # Get farm information
@@ -451,17 +546,17 @@ write-verbose "Setting up Word"
 #these values were attained from 
 #http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/
 #http://msdn.microsoft.com/en-us/library/office/aa211923(v=office.11).aspx
-$wdSeekPrimaryFooter = 4
 $wdAlignPageNumberRight = 2
-$wdStory = 6
+$wdColorGray15 = 14277081
+$wdFormatDocument = 0
 $wdMove = 0
 $wdSeekMainDocument = 0
-$wdColorGray15 = 14277081
+$wdSeekPrimaryFooter = 4
+$wdStory = 6
 
 # Setup word for output
 write-verbose "Create Word comObject.  If you are not running Word 2007, ignore the next message."
 $Word = New-Object -comobject "Word.Application"
-[ref]$SaveFormat = "microsoft.office.interop.word.WdSaveFormat" -as [type] 
 $WordVersion = [int] $Word.Version
 If( $WordVersion -eq 15)
 {
@@ -492,6 +587,19 @@ Else
 	exit
 }
 
+write-verbose "Validate company name"
+#only validate CompanyName if the field is blank
+If([String]::IsNullOrEmpty($CompanyName))
+{
+	$CompanyName = ValidateCompanyName
+	If([String]::IsNullOrEmpty($CompanyName))
+	{
+		write-error "Company Name cannot be blank.  Check HKCU:\Software\Microsoft\Office\Common\UserInfo for Company or CompanyName value.  Script cannot continue."
+		$Word.Quit()
+		exit
+	}
+}
+
 write-verbose "Validate cover page"
 $ValidCP = ValidateCoverPage $WordVersion $CoverPage
 If(!$ValidCP)
@@ -501,37 +609,70 @@ If(!$ValidCP)
 	exit
 }
 
+Write-Verbose "Company Name: $CompanyName"
+Write-Verbose "Cover Page  : $CoverPage"
+Write-Verbose "User Name   : $UserName"
+Write-Verbose "Farm Name   : $FarmName"
+Write-Verbose "Title       : $Title"
+Write-Verbose "Filename    : $filename"
+
 $Word.Visible = $False
 
 #http://jdhitsolutions.com/blog/2012/05/san-diego-2012-powershell-deep-dive-slides-and-demos/
 #using Jeff's Demo-WordReport.ps1 file for examples
 #down to $global:configlog = $false is from Jeff Hicks
 write-verbose "Load Word Templates"
+$CoverPagesExist = $False
 $word.Templates.LoadBuildingBlocks()
 If ( $WordVersion -eq 12)
 {
+	#word 2007
 	$BuildingBlocks=$word.Templates | Where {$_.name -eq "Building Blocks.dotx"}
+}
+Else
+{
+	#word 2010/2013
+	$BuildingBlocks=$word.Templates | Where {$_.name -eq "Built-In Building Blocks.dotx"}
+}
+
+If($BuildingBlocks -ne $Null)
+{
+	$CoverPagesExist = $True
 	$part=$BuildingBlocks.BuildingBlockEntries.Item($CoverPage)
 }
 Else
 {
-	$BuildingBlocks=$word.Templates | Where {$_.name -eq "Built-In Building Blocks.dotx"}
-	$part=$BuildingBlocks.BuildingBlockEntries.Item($CoverPage)
+	$CoverPagesExist = $False
 }
 
 write-verbose "Create empty word doc"
 $Doc = $Word.Documents.Add()
 $global:Selection = $Word.Selection
 
-#insert new page, getting ready for table of contents
-write-verbose "insert new page, getting ready for table of contents"
-$part.Insert($selection.Range,$True) | out-null
-$selection.InsertNewPage()
+#Disable Spell and Grammer Check to resolve issue and improve performance (from Pat Coughlin)
+write-verbose "disable spell checking"
+$Word.Options.CheckGrammarAsYouType=$false
+$Word.Options.CheckSpellingAsYouType=$false
 
-#table of contents
-write-verbose "table of contents"
-$toc=$BuildingBlocks.BuildingBlockEntries.Item("Automatic Table 2")
-$toc.insert($selection.Range,$True) | out-null
+If($CoverPagesExist)
+{
+	#insert new page, getting ready for table of contents
+	write-verbose "insert new page, getting ready for table of contents"
+	$part.Insert($selection.Range,$True) | out-null
+	$selection.InsertNewPage()
+
+	#table of contents
+	write-verbose "table of contents"
+	$toc=$BuildingBlocks.BuildingBlockEntries.Item("Automatic Table 2")
+	$toc.insert($selection.Range,$True) | out-null
+}
+Else
+{
+	write-verbose "Cover Pages are not installed."
+	write-warning "Cover Pages are not installed so this report will not have a cover page."
+	write-verbose "Table of Contents are not installed."
+	write-warning "Table of Contents are not installed so this report will not have a Table of Contents."
+}
 
 #set the footer
 write-verbose "set the footer"
@@ -822,7 +963,7 @@ If( $? -and $Applications)
 				}
 				Else
 				{
-					WriteWordLine 0 2 "Command Line`t`t`t: " 
+					WriteWordLine 0 2 "Command Line: " 
 					WriteWordLine 0 3 $Application.CommandLineExecutable
 				}
 			}
@@ -834,7 +975,7 @@ If( $? -and $Applications)
 				}
 				Else
 				{
-					WriteWordLine 0 2 "Working directory`t`t`t: " 
+					WriteWordLine 0 2 "Working directory: " 
 					WriteWordLine 0 3 $Application.WorkingDirectory
 				}
 			}
@@ -852,7 +993,7 @@ If( $? -and $Applications)
 				}
 				If(![String]::IsNullOrEmpty($AppServerInfo.WorkerGroupNames))
 				{
-					WriteWordLine 0 2 "Workergroups:"
+					WriteWordLine 0 2 "Worker Groups:"
 					ForEach($workergroup in $AppServerInfo.WorkerGroupNames)
 					{
 						WriteWordLine 0 3 $workergroup
@@ -1040,7 +1181,7 @@ If( $? -and $Applications)
 		{
 			WriteWordLine 0 0 "Disabled"
 		}
-		If($Application.SslConnectionEnable)
+		If($Application.SslConnectionEnabled)
 		{
 			WriteWordLine 0 2 "Enable SSL and TLS protocols`t`t`t: " -nonewline
 			If($Application.SslConnectionEnabled)
@@ -1379,7 +1520,6 @@ Else
 }
 $LoadBalancingPolicies = $null
 
-
 #load evaluators
 write-verbose "Processing Load Evaluators"
 $LoadEvaluators = Get-XALoadEvaluator -EA 0 | sort-object LoadEvaluatorName
@@ -1519,7 +1659,6 @@ Else
 }
 $LoadEvaluators = $null
 
-
 #servers
 write-verbose "Processing Servers"
 $servers = Get-XAServer -EA 0 | sort-object FolderPath, ServerName
@@ -1583,6 +1722,8 @@ If( $? )
 			WriteWordLine 0 2 "ICA Port Number`t`t: " $server.ICAPortNumber
 		}
 		
+		WriteWordLine 0 0 ""
+		
 		#applications published to server
 		$Applications = Get-XAApplication -ServerName $server.ServerName -EA 0 | sort-object FolderPath, DisplayName
 		If( $? -and $Applications )
@@ -1590,106 +1731,263 @@ If( $? )
 			WriteWordLine 0 2 "Published applications:"
 			ForEach($app in $Applications)
 			{
-				WriteWordLine 0 3 "Display name: " $app.DisplayName
-				WriteWordLine 0 3 "Folder path: " $app.FolderPath
+				WriteWordLine 0 3 "Display name`t: " $app.DisplayName
+				WriteWordLine 0 3 "Folder path`t: " $app.FolderPath
 				WriteWordLine 0 0 ""
 			}
 		}
 		#list citrix services
-		write-verbose "Processing Citrix services for server $($server.ServerName)"
-		$services = get-service -ComputerName $server.ServerName | where-object {$_.DisplayName -like "*Citrix*"} | sort-object DisplayName
-		WriteWordLine 0 2 "Citrix Services"
-		write-verbose "Create Word Table for Citrix services"
-		$TableRange = $doc.Application.Selection.Range
-		$Columns = 2
-		$Rows = $services.count + 1
-		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
-		$table.AutoFitBehavior(1)
-		$table.Style = "Table Grid"
-		$table.Borders.InsideLineStyle = 1
-		$table.Borders.OutsideLineStyle = 1
-		$xRow = 1
-		$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
-		$Table.Cell($xRow,1).Range.Font.Bold = $True
-		$Table.Cell($xRow,1).Range.Text = "Display Name"
-		$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
-		$Table.Cell($xRow,2).Range.Font.Bold = $True
-		$Table.Cell($xRow,2).Range.Text = "Status"
-		ForEach($Service in $Services)
+		write-verbose "Testing to see if $($server.ServerName) is online and reachable"
+		If(Test-Connection -ComputerName $server.servername -quiet -EA 0)
 		{
-			$xRow++
-			$Table.Cell($xRow,1).Range.Text = $Service.DisplayName
-			$Table.Cell($xRow,2).Range.Text = $Service.Status
-		}
-		#return focus back to document
-		$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
-
-		#move to the end of the current document
-		$selection.EndKey($wdStory,$wdMove) | Out-Null
-
-		#Citrix hotfixes installed
-		$hotfixes = Get-XAServerHotfix -ServerName $server.ServerName -EA 0 | sort-object HotfixName
-		If( $? -and $hotfixes )
-		{
-			$HotfixArray = ""
-			$HRP1Installed = $False
-			WriteWordLine 0 2 "Citrix Hotfixes:"
-			ForEach($hotfix in $hotfixes)
+			write-verbose "$($server.ServerName) is online.  Citrix Services and Hotfix areas processed."
+			write-verbose "Processing Citrix services for server $($server.ServerName)"
+			$services = get-service -ComputerName $server.ServerName -EA 0 | where-object {$_.DisplayName -like "*Citrix*"} | sort-object DisplayName
+			WriteWordLine 0 2 "Citrix Services"
+			write-verbose "Create Word Table for Citrix services"
+			$TableRange = $doc.Application.Selection.Range
+			[int]$Columns = 2
+			[int]$Rows = $services.count + 1
+			write-verbose "add Citrix services table to doc"
+			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+			$table.Style = "Table Grid"
+			$table.Borders.InsideLineStyle = 1
+			$table.Borders.OutsideLineStyle = 1
+			[int]$xRow = 1
+			write-verbose "format first row with column headings"
+			$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+			$Table.Cell($xRow,1).Range.Font.Bold = $True
+			$Table.Cell($xRow,1).Range.Text = "Display Name"
+			$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+			$Table.Cell($xRow,2).Range.Font.Bold = $True
+			$Table.Cell($xRow,2).Range.Text = "Status"
+			ForEach($Service in $Services)
 			{
-				$HotfixArray += $hotfix.HotfixName
-				If( $hotfix.HotfixName -eq "XA650W2K8R2X64R01")
+				$xRow++
+				$Table.Cell($xRow,1).Range.Text = $Service.DisplayName
+				$Table.Cell($xRow,2).Range.Text = $Service.Status
+			}
+
+			write-verbose "Move table of Citrix services to the right"
+			$Table.Rows.SetLeftIndent(75,1)
+			$table.AutoFitBehavior(1)
+
+			#return focus back to document
+			write-verbose "return focus back to document"
+			$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+			#move to the end of the current document
+			write-verbose "move to the end of the current document"
+			$selection.EndKey($wdStory,$wdMove) | Out-Null
+
+			#Citrix hotfixes installed
+			write-verbose "Get list of Citrix hotfixes installed"
+			$hotfixes = Get-XAServerHotfix -ServerName $server.ServerName -EA 0 | sort-object HotfixName
+			If( $? -and $hotfixes )
+			{
+				$Rows = 1
+				$Single_Row = (Get-Member -Type Property -Name Length -InputObject $hotfixes -EA 0) -eq $null
+				If(-not $Single_Row)
 				{
-					$HRP1Installed = $True
+					$Rows = $Hotfixes.length
 				}
-				WriteWordLine 0 3 "Hotfix`t`t`t: " $hotfix.HotfixName
-				WriteWordLine 0 3 "Installed by`t`t: " $hotfix.InstalledBy
-				WriteWordLine 0 3 "Installed date`t`t: " $hotfix.InstalledOn
-				WriteWordLine 0 3 "Hotfix type`t`t: " $hotfix.HotfixType
-				WriteWordLine 0 3 "Valid`t`t`t: " $hotfix.Valid
+				$Rows++
+				
+				write-verbose "number of hotfixes is $($Rows-1)"
+				$HotfixArray = ""
+				$HRP1Installed = $False
 				WriteWordLine 0 0 ""
-			}
-			#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
-			If( !$HRP1Installed )
-			{
-				write-verbose "Processing pre HRP01 hotfix list for server $($server.ServerName)"
-				#list is from CTX129229 dated 18-DEC-2012
-				$RecommendedList = @("XA650W2K8R2X64001","XA650W2K8R2X64011","XA650W2K8R2X64019","XA650W2K8R2X64025")
-				ForEach($element in $RecommendedList)
+				WriteWordLine 0 2 "Citrix Installed Hotfixes:"
+				write-verbose "Create Word Table for Citrix Hotfixes"
+				$TableRange = $doc.Application.Selection.Range
+				$Columns = 5
+				write-verbose "add Citrix installed hotfix table to doc"
+				$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+				$table.Style = "Table Grid"
+				$table.Borders.InsideLineStyle = 1
+				$table.Borders.OutsideLineStyle = 1
+				$xRow = 1
+				write-verbose "format first row with column headings"
+				$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,1).Range.Font.Bold = $True
+				$Table.Cell($xRow,1).Range.Font.Size = "10"
+				$Table.Cell($xRow,1).Range.Text = "Hotfix"
+				$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,2).Range.Font.Bold = $True
+				$Table.Cell($xRow,2).Range.Font.Size = "10"
+				$Table.Cell($xRow,2).Range.Text = "Installed By"
+				$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,3).Range.Font.Bold = $True
+				$Table.Cell($xRow,3).Range.Font.Size = "10"
+				$Table.Cell($xRow,3).Range.Text = "Install Date"
+				$Table.Cell($xRow,4).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,4).Range.Font.Bold = $True
+				$Table.Cell($xRow,4).Range.Font.Size = "10"
+				$Table.Cell($xRow,4).Range.Text = "Type"
+				$Table.Cell($xRow,5).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,5).Range.Font.Bold = $True
+				$Table.Cell($xRow,5).Range.Font.Size = "10"
+				$Table.Cell($xRow,5).Range.Text = "Valid"
+				ForEach($hotfix in $hotfixes)
 				{
-					If(!$HotfixArray -contains $element)
+					$xRow++
+					$HotfixArray += $hotfix.HotfixName
+					If( $hotfix.HotfixName -eq "XA650W2K8R2X64R01")
 					{
-						#missing a recommended Citrix hotfix
-						WriteWordLine 0 3 "Recommended Citrix Hotfix $element is not installed"
+						$HRP1Installed = $True
+					}
+					$InstallDate = $hotfix.InstalledOn.ToString()
+					
+					$Table.Cell($xRow,1).Range.Font.Size = "10"
+					$Table.Cell($xRow,1).Range.Text = $hotfix.HotfixName
+					$Table.Cell($xRow,2).Range.Font.Size = "10"
+					$Table.Cell($xRow,2).Range.Text = $hotfix.InstalledBy
+					$Table.Cell($xRow,3).Range.Font.Size = "10"
+					$Table.Cell($xRow,3).Range.Text = $InstallDate.SubString(0,$InstallDate.IndexOf(" "))
+					$Table.Cell($xRow,4).Range.Font.Size = "10"
+					$Table.Cell($xRow,4).Range.Text = $hotfix.HotfixType
+					$Table.Cell($xRow,5).Range.Font.Size = "10"
+					$Table.Cell($xRow,5).Range.Text = $hotfix.Valid
+				}
+				write-verbose "Move table of Citrix installed hotfixes to the right"
+				$Table.Rows.SetLeftIndent(75,1)
+				$table.AutoFitBehavior(1)
+
+				#return focus back to document
+				write-verbose "return focus back to document"
+				$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+				#move to the end of the current document
+				write-verbose "move to the end of the current document"
+				$selection.EndKey($wdStory,$wdMove) | Out-Null
+				WriteWordLine 0 0 ""
+
+				#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
+				#hotfix lists are from CTX129229 dated 4-MAR-2013
+				write-verbose "compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
+				If( !$HRP1Installed )
+				{
+					write-verbose "Processing pre HRP01 hotfix list for server $($server.ServerName)"
+					WriteWordLine 0 2 "Citrix Recommended Hotfixes:"
+					$RecommendedList = @("XA650W2K8R2X64001","XA650W2K8R2X64011","XA650W2K8R2X64019","XA650W2K8R2X64025")
+					write-verbose "Create Word Table for Citrix Hotfixes"
+					$TableRange = $doc.Application.Selection.Range
+					$Columns = 2
+					$Rows = $RecommendedList.count + 1
+					write-verbose "add Citrix recommended hotfix table to doc"
+					$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+					$table.Style = "Table Grid"
+					$table.Borders.InsideLineStyle = 1
+					$table.Borders.OutsideLineStyle = 1
+					$xRow = 1
+					write-verbose "format first row with column headings"
+					$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+					$Table.Cell($xRow,1).Range.Font.Bold = $True
+					$Table.Cell($xRow,1).Range.Text = "Citrix Hotfix"
+					$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+					$Table.Cell($xRow,2).Range.Font.Bold = $True
+					$Table.Cell($xRow,2).Range.Text = "Status"
+					ForEach($element in $RecommendedList)
+					{
+						$xRow++
+						$Table.Cell($xRow,1).Range.Text = $element
+						If(!$HotfixArray -contains $element)
+						{
+							#missing a recommended Citrix hotfix
+							#WriteWordLine 0 3 "Recommended Citrix Hotfix $element is not installed"
+							$Table.Cell($xRow,2).Range.Text = "Not Installed"
+						}
+						Else
+						{
+							$Table.Cell($xRow,2).Range.Text = "Installed"
+						}
+					}
+					write-verbose "Move table of Citrix hotfixes to the right"
+					$Table.Rows.SetLeftIndent(75,1)
+					$table.AutoFitBehavior(1)
+
+					#return focus back to document
+					write-verbose "return focus back to document"
+					$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+					#move to the end of the current document
+					write-verbose "move to the end of the current document"
+					$selection.EndKey($wdStory,$wdMove) | Out-Null
+					WriteWordLine 0 0 ""
+				}
+				#build list of installed Microsoft hotfixes
+				write-verbose "Processing Microsoft hotfixes for server $($server.ServerName)"
+				$MSInstalledHotfixes = Get-HotFix -computername $Server.ServerName -EA 0 | select-object -Expand HotFixID | sort-object HotFixID
+				If($server.OSServicePack.IndexOf('1') -gt 0)
+				{
+					#Server 2008 R2 SP1 installed
+					$RecommendedList = @("KB2444328", "KB2465772", "KB2551503", "KB2571388", 
+										"KB2578159", "KB2617858", "KB2620656", "KB2647753",
+										"KB2661001", "KB2661332", "KB2731847", "KB2748302",
+										"KB917607")
+				}
+				Else
+				{
+					#Server 2008 R2 without SP1 installed
+					$RecommendedList = @("KB2265716", "KB2388142", "KB238928", "KB2444328", 
+										"KB2465772", "KB2551503", "KB2571388", "KB2578159", 
+										"KB2617858", "KB2620656", "KB2647753", "KB2661001",
+										"KB2661332", "KB2731847", "KB2748302", "KB917607", 
+										"KB975777", "KB979530", "KB980663", "KB983460")
+				}
+				
+				WriteWordLine 0 2 "Microsoft Recommended Hotfixes:"
+				write-verbose "Create Word Table for Microsoft Hotfixes"
+				$TableRange = $doc.Application.Selection.Range
+				$Columns = 2
+				$Rows = $RecommendedList.count + 1
+				write-verbose "add Microsoft hotfix table to doc"
+				$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+				$table.Style = "Table Grid"
+				$table.Borders.InsideLineStyle = 1
+				$table.Borders.OutsideLineStyle = 1
+				$xRow = 1
+				write-verbose "format first row with column headings"
+				$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,1).Range.Font.Bold = $True
+				$Table.Cell($xRow,1).Range.Text = "Microsoft Hotfix"
+				$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,2).Range.Font.Bold = $True
+				$Table.Cell($xRow,2).Range.Text = "Status"
+
+				$results = @{}
+				foreach( $hotfix in $RecommendedList )
+				{
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = $hotfix
+					If(!($MSInstalledHotfixes -contains $hotfix))
+					{
+						$Table.Cell($xRow,2).Range.Text = "Not Installed"
+					}
+					Else
+					{
+						$Table.Cell($xRow,2).Range.Text = "Installed"
 					}
 				}
+				write-verbose "Move table of Microsoft hotfixes to the right"
+				$Table.Rows.SetLeftIndent(75,1)
+				$table.AutoFitBehavior(1)
+
+				#return focus back to document
+				write-verbose "return focus back to document"
+				$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+				#move to the end of the current document
+				write-verbose "move to the end of the current document"
+				$selection.EndKey($wdStory,$wdMove) | Out-Null
+				WriteWordLine 0 2 "Not all missing Microsoft hotfixes may be needed for this server"
 			}
-			#build list of installed Microsoft hotfixes
-			write-verbose "Processing Microsoft hotfixes for server $($server.ServerName)"
-			$MSInstalledHotfixes = Get-HotFix -computername $Server.ServerName | select-object -Expand HotFixID | sort-object HotFixID
-			If($server.OSServicePack.IndexOf('1') -gt 0)
-			{
-				#Server 2008 R2 SP1 installed
-				$RecommendedList = @("KB2731847","KB2571388","KB2465772", "KB917607", "KB2444328", "KB2551503", "KB2578159", "KB2620656", "KB2617858")			}
-			Else
-			{
-				#Server 2008 R2 without SP1 installed
-				$RecommendedList = @("KB2731847","KB2571388","KB2465772", "KB917607", "KB2444328", "KB2551503", "KB2578159", "KB2620656", "KB2617858", "KB979530", "KB975777", "KB980663", "KB2265716", "KB238928", "KB983460", "KB2388142")
-			}
-			$results = @{}
-			$PrintNotice = $False
-			foreach( $hotfix in $RecommendedList )
-			{
-				If(!($MSInstalledHotfixes -contains $hotfix))
-				{
-					If(!$PrintNotice)
-					{
-						$PrintNotice = $True
-						WriteWordLine 0 3 "Not all missing Microsoft hotfixes may be needed for this server"
-					}
-					#missing a recommended Citrix hotfix
-					WriteWordLine 0 3 "Recommended Microsoft Hotfix $hotfix is not installed"
-				}
-			}
+		}
+		Else
+		{
+			write-verbose "$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped."
+			WriteWordLine 0 0 "Server $($server.ServerName) was offline or unreachable at "(get-date).ToString()
+			WriteWordLine 0 0 "The Citrix Services and Hotfix areas were skipped."
 		}
 		WriteWordLine 0 0 "" 
 	}
@@ -1699,7 +1997,6 @@ Else
 	Write-warning "Server information could not be retrieved"
 }
 $servers = $null
-
 
 #worker groups
 write-verbose "Processing Worker Groups"
@@ -3365,34 +3662,40 @@ Else
 		$Policies = $null
 	}
 }
+
 write-verbose "Finishing up Word document"
 #end of document processing
 #Update document properties
-write-verbose "Set Cover Page Properties"
-_SetDocumentProperty $doc.BuiltInDocumentProperties "Company" $CompanyName
-_SetDocumentProperty $doc.BuiltInDocumentProperties "Title" $title
-_SetDocumentProperty $doc.BuiltInDocumentProperties "Subject" "XenApp 6.5 Farm Inventory"
-_SetDocumentProperty $doc.BuiltInDocumentProperties "Author" $username
 
-#Get the Coverpage XML part
-$cp=$doc.CustomXMLParts | where {$_.NamespaceURI -match "coverPageProps$"}
+If($CoverPagesExist)
+{
+	write-verbose "Set Cover Page Properties"
+	_SetDocumentProperty $doc.BuiltInDocumentProperties "Company" $CompanyName
+	_SetDocumentProperty $doc.BuiltInDocumentProperties "Title" $title
+	_SetDocumentProperty $doc.BuiltInDocumentProperties "Subject" "XenApp 6.5 Farm Inventory"
+	_SetDocumentProperty $doc.BuiltInDocumentProperties "Author" $username
 
-#get the abstract XML part
-$ab=$cp.documentelement.ChildNodes | Where {$_.basename -eq "Abstract"}
-#set the text
-[string]$abstract="Citrix XenApp 6.5 Inventory for $CompanyName"
-$ab.Text=$abstract
+	#Get the Coverpage XML part
+	$cp=$doc.CustomXMLParts | where {$_.NamespaceURI -match "coverPageProps$"}
 
-$ab=$cp.documentelement.ChildNodes | Where {$_.basename -eq "PublishDate"}
-#set the text
-[string]$abstract=( Get-Date -Format d ).ToString()
-$ab.Text=$abstract
+	#get the abstract XML part
+	$ab=$cp.documentelement.ChildNodes | Where {$_.basename -eq "Abstract"}
+	#set the text
+	[string]$abstract="Citrix XenApp 6.5 Inventory for $CompanyName"
+	$ab.Text=$abstract
 
-write-verbose "Update the Table of Contents"
-#update the Table of Contents
-$doc.TablesOfContents.item(1).Update()
+	$ab=$cp.documentelement.ChildNodes | Where {$_.basename -eq "PublishDate"}
+	#set the text
+	[string]$abstract=( Get-Date -Format d ).ToString()
+	$ab.Text=$abstract
+
+	write-verbose "Update the Table of Contents"
+	#update the Table of Contents
+	$doc.TablesOfContents.item(1).Update()
+}
 
 write-verbose "Save and Close document and Shutdown Word"
+[ref]$SaveFormat = "microsoft.office.interop.word.WdSaveFormat" -as [type] 
 If ($WordVersion -eq 12)
 {
 	#Word 2007
