@@ -86,9 +86,9 @@
 		Alphabet (Word 2010. Works)
 		Annual (Word 2010. Doesn't work well for this report)
 		Austere (Word 2010. Works)
-		Austin (Word 2010/2013/2016. Doesn't work in 2013 or 2016, mostly works in 2010 but 
-						Subtitle/Subject & Author fields need to be moved 
-						after title box is moved up)
+		Austin (Word 2010/2013/2016. Doesn't work in 2013 or 2016, mostly 
+		works in 2010 but Subtitle/Subject & Author fields need to be moved 
+		after title box is moved up)
 		Banded (Word 2013/2016. Works)
 		Conservative (Word 2010. Works)
 		Contrast (Word 2010. Works)
@@ -98,20 +98,22 @@
 		Filigree (Word 2013/2016. Works)
 		Grid (Word 2010/2013/2016. Works in 2010)
 		Integral (Word 2013/2016. Works)
-		Ion (Dark) (Word 2013/2016. Top date doesn't fit, box needs to be manually resized or font 
-						changed to 8 point)
-		Ion (Light) (Word 2013/2016. Top date doesn't fit, box needs to be manually resized or font 
-						changed to 8 point)
+		Ion (Dark) (Word 2013/2016. Top date doesn't fit; box needs to be 
+		manually resized or font changed to 8 point)
+		Ion (Light) (Word 2013/2016. Top date doesn't fit; box needs to be 
+		manually resized or font changed to 8 point)
 		Mod (Word 2010. Works)
-		Motion (Word 2010/2013/2016. Works if top date is manually changed to 36 point)
+		Motion (Word 2010/2013/2016. Works if top date is manually changed to 
+		36 point)
 		Newsprint (Word 2010. Works but date is not populated)
 		Perspective (Word 2010. Works)
 		Pinstripes (Word 2010. Works)
-		Puzzle (Word 2010. Top date doesn't fit, box needs to be manually resized or font 
-					changed to 14 point)
+		Puzzle (Word 2010. Top date doesn't fit; box needs to be manually 
+		resized or font changed to 14 point)
 		Retrospect (Word 2013/2016. Works)
 		Semaphore (Word 2013/2016. Works)
-		Sideline (Word 2010/2013/2016. Doesn't work in 2013 or 2016, works in 2010)
+		Sideline (Word 2010/2013/2016. Doesn't work in 2013 or 2016, works in 
+		2010)
 		Slice (Dark) (Word 2013/2016. Doesn't work)
 		Slice (Light) (Word 2013/2016. Doesn't work)
 		Stacks (Word 2010. Works)
@@ -566,9 +568,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.02
+	VERSION: 5.03
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: December 17, 2019
+	LASTEDIT: May 9, 2020
 #>
 
 #endregion
@@ -582,13 +584,13 @@ Param(
 	[Switch]$HTML=$False,
 
 	[parameter(ParameterSetName='PDF',Mandatory=$False)] 
+	[parameter(ParameterSetName='Word',Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
 	[Switch]$PDF=$False,
 
 	[parameter(ParameterSetName='Text',Mandatory=$False)] 
 	[Switch]$Text=$False,
-
-	[parameter(ParameterSetName='Word',Mandatory=$False)] 
-	[Switch]$MSWord=$False,
 
 	[parameter(ParameterSetName='HTML',Mandatory=$False)] 
 	[parameter(ParameterSetName='PDF',Mandatory=$False)] 
@@ -774,6 +776,19 @@ Param(
 #http://www.CarlWebster.com
 #Version 5.00 created on June 1, 2015
 
+#V5.03 9-May-2020
+#	Add checking for a Word version of 0, which indicates the Office installation needs repairing
+#	Add Receive Side Scaling setting to Function OutputNICItem
+#	Change color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
+#	Change location of the -Dev, -Log, and -ScriptInfo output files from the script folder to the -Folder location (Thanks to Guy Leech for the "suggestion")
+#	Change Text output to use [System.Text.StringBuilder]
+#		Updated Functions Line and SaveAndCloseTextDocument
+#	Reformatted the terminating Write-Error messages to make them more visible and readable in the console
+#	Remove the code that checks for default value for script parameters
+#	Update Function SetWordCellFormat to change parameter $BackgroundColor to [int]
+#	Update Functions GetComputerWMIInfo and OutputNicInfo to fix two bugs in NIC Power Management settings
+#	Update Help Text
+#
 #V5.02 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
@@ -811,248 +826,6 @@ Set-StrictMode -Version 2
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 
-If($Null -eq $AdminAddress)
-{
-	$AdminAddress = "LocalHost"
-}
-If($Null -eq $CompanyAddress)
-{
-	$CompanyAddress = ""
-}
-If($Null -eq $CompanyEmail)
-{
-	$CompanyEmail = ""
-}
-If($Null -eq $CompanyFax)
-{
-	$CompanyFax = ""
-}
-If($Null -eq $CompanyName)
-{
-	$CompanyName = ""
-}
-If($Null -eq $CompanyPhone)
-{
-	$CompanyPhone = ""
-}
-If($Null -eq $CoverPage)
-{
-	$CoverPage="Sideline"
-}
-If($Null -eq $UserName)
-{
-	$UserName=$env:username
-}
-If($Null -eq $HTML)
-{
-	$HTML = $False
-}
-If($Null -eq $MSWord)
-{
-	$MSWord = $False
-}
-If($Null -eq $PDF)
-{
-	$PDF = $False
-}
-If($Null -eq $Text)
-{
-	$Text = $False
-}
-If($Null -eq $Administrators)
-{
-	$Administrators=$False
-}
-If($Null -eq $Applications)
-{
-	$Applications=$False
-}
-If($Null -eq $Logging)
-{
-	$Logging=$False
-}
-If($Null -eq $StartDate)
-{
-	$StartDate = ((Get-Date -displayhint date).AddDays(-7))
-}
-If($Null -eq $EndDate)
-{
-	$EndDate = (Get-Date -displayhint date)
-}
-If($Null -eq $Summary)
-{
-	$Summary = $False
-}
-If($Null -eq $MaxDetails)
-{
-	$MaxDetails=$False
-}
-If($Null -eq $Policies)
-{
-	$Policies = $False
-}
-If($Null -eq $NoPolicies)
-{
-	$NoPolicies = $False
-}
-If($Null -eq $NoADPolicies)
-{
-	$NoADPolicies = $False
-}
-If($Null -eq $AddDateTime)
-{
-	$AddDateTime = $False
-}
-If($Null -eq $Folder)
-{
-	$Folder = ""
-}
-If($Null -eq $Hardware)
-{
-	$Hardware = $False
-}
-If($Null -eq $Software)
-{
-	$Software = $False
-}
-If($Null -eq $Section)
-{
-	$Section = "All"
-}
-If($Null -eq $Dev)
-{
-	$Dev = $False
-}
-If($Null -eq $ScriptInfo)
-{
-	$ScriptInfo = $False
-}
-If($Null -eq $Log)
-{
-	$Log = $False
-}
-
-If(!(Test-Path Variable:AdminAddress))
-{
-	$AdminAddress = "LocalHost"
-}
-If(!(Test-Path Variable:CompanyAddress))
-{
-	$CompanyAddress = ""
-}
-If(!(Test-Path Variable:CompanyEmail))
-{
-	$CompanyEmail = ""
-}
-If(!(Test-Path Variable:CompanyFax))
-{
-	$CompanyFax = ""
-}
-If(!(Test-Path Variable:CompanyName))
-{
-	$CompanyName = ""
-}
-If(!(Test-Path Variable:CompanyPhone))
-{
-	$CompanyPhone = ""
-}
-If(!(Test-Path Variable:CoverPage))
-{
-	$CoverPage="Sideline"
-}
-If(!(Test-Path Variable:UserName))
-{
-	$UserName=$env:username
-}
-If(!(Test-Path Variable:HTML))
-{
-	$HTML = $False
-}
-If(!(Test-Path Variable:MSWord))
-{
-	$MSWord = $False
-}
-If(!(Test-Path Variable:PDF))
-{
-	$PDF = $False
-}
-If(!(Test-Path Variable:Text))
-{
-	$Text = $False
-}
-If(!(Test-Path Variable:Administrators))
-{
-	$Administrators=$False
-}
-If(!(Test-Path Variable:Applications))
-{
-	$Applications=$False
-}
-If(!(Test-Path Variable:Logging))
-{
-	$Logging=$False
-}
-If(!(Test-Path Variable:StartDate))
-{
-	$StartDate = ((Get-Date -displayhint date).AddDays(-7))
-}
-If(!(Test-Path Variable:EndDate))
-{
-	$EndDate = (Get-Date -displayhint date)
-}
-If(!(Test-Path Variable:Summary))
-{
-	$Summary = $False
-}
-If(!(Test-Path Variable:MaxDetails))
-{
-	$MaxDetails=$False
-}
-If(!(Test-Path Variable:Policies))
-{
-	$Policies = $False
-}
-If(!(Test-Path Variable:NoPolicies))
-{
-	$NoPolicies = $False
-}
-If(!(Test-Path Variable:NoADPolicies))
-{
-	$NoADPolicies = $False
-}
-If(!(Test-Path Variable:AddDateTime))
-{
-	$AddDateTime = $False
-}
-If(!(Test-Path Variable:Folder))
-{
-	$Folder = ""
-}
-If(!(Test-Path Variable:Hardware))
-{
-	$Hardware = $False
-}
-If(!(Test-Path Variable:Software))
-{
-	$Software = $False
-}
-If(!(Test-Path Variable:Section))
-{
-	$Section = "All"
-}
-If(!(Test-Path Variable:Dev))
-{
-	$Dev = $False
-}
-If(!(Test-Path Variable:ScriptInfo))
-{
-	$ScriptInfo = $False
-}
-If(!(Test-Path Variable:Log))
-{
-	$Log = $False
-}
-
 If($Null -eq $MSWord)
 {
 	If($Text -or $HTML -or $PDF)
@@ -1068,31 +841,6 @@ If($Null -eq $MSWord)
 If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq $False)
 {
 	$MSWord = $True
-}
-
-If($Log) 
-{
-	#start transcript logging
-	$Script:ThisScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
-	$Script:LogPath = "$Script:ThisScriptPath\XA65V5DocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
-	
-	try 
-	{
-		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
-		Write-Host "$(Get-Date): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
-		$Script:StartLog = $true
-	} 
-	catch 
-	{
-		Write-Host "$(Get-Date): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
-		$Script:StartLog = $false
-	}
-}
-
-If($Dev)
-{
-	$Error.Clear()
-	$Script:DevErrorFile = "$($pwd.Path)\XA65V5InventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 }
 
 If($Null -eq $MSWord)
@@ -1157,7 +905,15 @@ Else
 		Write-Host "$(Get-Date): Text is $($Text)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Host "$(Get-Date): HTML is $($HTML)" -BackgroundColor Black -ForegroundColor Yellow
 	}
-	Write-Error "Unable to determine output parameter.  Script cannot continue"
+	Write-Error "
+	`n`n
+	`t`t
+	Unable to determine output parameter.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n
+	"
 	Exit
 }
 
@@ -1184,8 +940,20 @@ If($NoPolicies -and $Section -eq "Policies")
 {
 	#conflict
 	$ErrorActionPreference = $SaveEAPreference
-	Write-Error -Message "`n`tYou specified conflicting parameters.`n`n`tYou specified the $($Section) section but also selected NoPolicies.`n`n`tPlease change one of these options and rerun the script.`n`n
-	Script cannot continue."
+	Write-Error -Message "
+	`n`n
+	`t`t
+	You specified conflicting parameters.
+	`n`n
+	`t`t
+	You specified the $($Section) section but also selected NoPolicies.
+	`n`n
+	`t`t
+	Please change one of these options and rerun the script.
+	`n`n
+	Script cannot continue.
+	`n`n
+	"
 	Exit
 }
 
@@ -1207,7 +975,13 @@ Switch ($Section)
 If($ValidSection -eq $False)
 {
 	$ErrorActionPreference = $SaveEAPreference
-	Write-Error -Message "`n`tThe Section parameter specified, $($Section), is an invalid Section option.`n`tValid options are:
+	Write-Error -Message "
+	`n`n
+	`t`t
+	The Section parameter specified, $($Section), is an invalid Section option.
+	`n`n
+	`t`t
+	Valid options are:
 	
 	`t`tAdmins
 	`t`tApps
@@ -1220,7 +994,10 @@ If($ValidSection -eq $False)
 	`t`tZones
 	`t`tAll
 	
-	`tScript cannot continue."
+	`t`t
+	Script cannot continue.
+	`n`n
+	"
 	Exit
 }
 
@@ -1239,16 +1016,71 @@ If($Folder -ne "")
 		Else
 		{
 			#it exists but it is a file not a folder
-			Write-Error "Folder $Folder is a file, not a folder.  Script cannot continue"
+			Write-Error "
+			`n`n
+			`t`t
+			Folder $Folder is a file, not a folder.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 	}
 	Else
 	{
 		#does not exist
-		Write-Error "Folder $Folder does not exist.  Script cannot continue"
+		Write-Error "
+		`n`n
+		`t`t
+		Folder $Folder does not exist.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		Exit
 	}
+}
+
+If($Folder -eq "")
+{
+	$Script:pwdpath = $pwd.Path
+}
+Else
+{
+	$Script:pwdpath = $Folder
+}
+
+If($Script:pwdpath.EndsWith("\"))
+{
+	#remove the trailing \
+	$Script:pwdpath = $Script:pwdpath.SubString(0, ($Script:pwdpath.Length - 1))
+}
+
+If($Log) 
+{
+	#start transcript logging
+	$Script:LogPath = "$Script:pwdpath\XA65V5DocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	
+	try 
+	{
+		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+		Write-Host "$(Get-Date): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+		$Script:StartLog = $true
+	} 
+	catch 
+	{
+		Write-Host "$(Get-Date): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+		$Script:StartLog = $false
+	}
+}
+
+If($Dev)
+{
+	$Error.Clear()
+	$Script:DevErrorFile = "$Script:pwdpath\XA65V5InventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 }
 
 #V5.01  Add check if $Policies -eq $True, see if PowerShell session is elevated
@@ -1280,17 +1112,17 @@ If($Policies -eq $True)
 	{
 		#abort script
 		Write-Error "
-		`n
-		`n
-		`tThe Citrix Group Policy module cannot be loaded or found in an elevated PowerShell session.
-		`n
-		`n
-		`tThe Policies parameter was used and this is an elevated PowerShell session.
-		`n
-		`n
-		`tRerun the script from a non-elevated PowerShell session. The script will now close.
-		`n
-		`n"
+		`n`n
+		`t`t
+		The Citrix Group Policy module cannot be loaded or found in an elevated PowerShell session.
+		`n`n
+		`t`t
+		The Policies parameter was used and this is an elevated PowerShell session.
+		`n`n
+		`t`t
+		Rerun the script from a non-elevated PowerShell session. The script will now close.
+		`n`n
+		"
 		Write-Verbose "$(Get-Date): "
 		Exit
 	}
@@ -1310,7 +1142,8 @@ If($MSWord -or $PDF)
 	#http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/
 	#http://msdn.microsoft.com/en-us/library/office/aa211923(v=office.11).aspx
 	[int]$wdAlignPageNumberRight = 2
-	[long]$wdColorGray15 = 14277081
+	[int]$wdColorGray15 = 14277081
+	[int]$wdColorGray05 = 15987699 
 	[int]$wdMove = 0
 	[int]$wdSeekMainDocument = 0
 	[int]$wdSeekPrimaryFooter = 4
@@ -1414,7 +1247,7 @@ If($HTML)
 
 If($TEXT)
 {
-	$Script:output = ""
+	[System.Text.StringBuilder] $global:Output = New-Object System.Text.StringBuilder( 16384 )
 }
 #endregion
 
@@ -1735,7 +1568,7 @@ Function GetComputerWMIInfo
 				
 				If($? -and $Null -ne $ThisNic)
 				{
-					OutputNicItem $Nic $ThisNic
+					OutputNicItem $Nic $ThisNic $RemoteComputerName
 				}
 				ElseIf(!$?)
 				{
@@ -2163,9 +1996,9 @@ Function OutputProcessorItem
 
 Function OutputNicItem
 {
-	Param([object]$Nic, [object]$ThisNic)
+	Param([object]$Nic, [object]$ThisNic, [string]$RemoteComputerName)
 	
-	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | Where-Object {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	$powerMgmt = Get-WmiObject -computername $RemoteComputerName MSPower_DeviceEnable -Namespace root\wmi | Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -2184,26 +2017,48 @@ Function OutputNicItem
 	}
 	
 	$xAvailability = ""
-	Switch ($processor.availability)
+	Switch ($ThisNic.availability)
 	{
-		1	{$xAvailability = "Other"; Break}
-		2	{$xAvailability = "Unknown"; Break}
-		3	{$xAvailability = "Running or Full Power"; Break}
-		4	{$xAvailability = "Warning"; Break}
-		5	{$xAvailability = "In Test"; Break}
-		6	{$xAvailability = "Not Applicable"; Break}
-		7	{$xAvailability = "Power Off"; Break}
-		8	{$xAvailability = "Off Line"; Break}
-		9	{$xAvailability = "Off Duty"; Break}
-		10	{$xAvailability = "Degraded"; Break}
-		11	{$xAvailability = "Not Installed"; Break}
-		12	{$xAvailability = "Install Error"; Break}
-		13	{$xAvailability = "Power Save - Unknown"; Break}
-		14	{$xAvailability = "Power Save - Low Power Mode"; Break}
-		15	{$xAvailability = "Power Save - Standby"; Break}
-		16	{$xAvailability = "Power Cycle"; Break}
-		17	{$xAvailability = "Power Save - Warning"; Break}
+		1		{$xAvailability = "Other"; Break}
+		2		{$xAvailability = "Unknown"; Break}
+		3		{$xAvailability = "Running or Full Power"; Break}
+		4		{$xAvailability = "Warning"; Break}
+		5		{$xAvailability = "In Test"; Break}
+		6		{$xAvailability = "Not Applicable"; Break}
+		7		{$xAvailability = "Power Off"; Break}
+		8		{$xAvailability = "Off Line"; Break}
+		9		{$xAvailability = "Off Duty"; Break}
+		10		{$xAvailability = "Degraded"; Break}
+		11		{$xAvailability = "Not Installed"; Break}
+		12		{$xAvailability = "Install Error"; Break}
+		13		{$xAvailability = "Power Save - Unknown"; Break}
+		14		{$xAvailability = "Power Save - Low Power Mode"; Break}
+		15		{$xAvailability = "Power Save - Standby"; Break}
+		16		{$xAvailability = "Power Cycle"; Break}
+		17		{$xAvailability = "Power Save - Warning"; Break}
 		Default	{$xAvailability = "Unknown"; Break}
+	}
+
+	#attempt to get Receive Side Scaling setting
+	$RSSEnabled = "N/A"
+	Try
+	{
+		#https://ios.developreference.com/article/10085450/How+do+I+enable+VRSS+(Virtual+Receive+Side+Scaling)+for+a+Windows+VM+without+relying+on+Enable-NetAdapterRSS%3F
+		$RSSEnabled = (Get-WmiObject -ComputerName $RemoteComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0).Enabled
+
+		If($RSSEnabled)
+		{
+			$RSSEnabled = "Enabled"
+		}
+		ELse
+		{
+			$RSSEnabled = "Disabled"
+		}
+	}
+	
+	Catch
+	{
+		$RSSEnabled = "Not available on $Script:RunningOS"
 	}
 
 	$xIPAddress = @()
@@ -2282,6 +2137,7 @@ Function OutputNicItem
 		}
 		$NicInformation += (@{ Data = "Availability"; Value = $xAvailability; }) 
 		$NicInformation += (@{ Data = "Allow the computer to turn off this device to save power"; Value = $PowerSaving; }) 
+		$NicInformation += @{ Data = "Receive Side Scaling"; Value = $RSSEnabled; }
 		$NicInformation += (@{ Data = "Physical Address"; Value = $Nic.macaddress; }) 
 		If($xIPAddress.Count -gt 1)
 		{
@@ -2393,6 +2249,7 @@ Function OutputNicItem
 		Line 2 "Availability`t`t: " $xAvailability
 		Line 2 "Allow computer to turn "
 		Line 2 "off device to save power: " $PowerSaving
+		Line 2 "Receive Side Scaling`t: " $RSSEnabled
 		Line 2 "Physical Address`t: " $nic.macaddress
 		Line 2 "IP Address`t`t: " $xIPAddress[0]
 		$cnt = -1
@@ -2494,6 +2351,7 @@ Function OutputNicItem
 		$rowdata += @(,('Availability',($htmlsilver -bor $htmlbold),$xAvailability,$htmlwhite))
 		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlbold),$PowerSaving,$htmlwhite))
 		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlbold),$Nic.macaddress,$htmlwhite))
+		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
 		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlbold),$xIPAddress[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
@@ -3107,7 +2965,18 @@ Function SetupWord
 	{
 		Write-Warning "The Word object could not be created.  You may need to repair your Word installation."
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tThe Word object could not be created.  You may need to repair your Word installation.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		The Word object could not be created.
+		`n`n
+		`t`t
+		You may need to repair your Word installation.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		Exit
 	}
 
@@ -3124,7 +2993,15 @@ Function SetupWord
 	If(!($Script:WordLanguageValue -gt -1))
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tUnable to determine the Word language value.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		Unable to determine the Word language value.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 	Write-Host "$(Get-Date): Word language value is $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
@@ -3149,13 +3026,44 @@ Function SetupWord
 	ElseIf($Script:WordVersion -eq $wdWord2007)
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tMicrosoft Word 2007 is no longer supported.`n`n`t`tScript will end.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		Microsoft Word 2007 is no longer supported.
+		`n`n
+		`t`tScript will end.
+		`n`n
+		"
 		AbortScript
+	}
+	ElseIf($Script:WordVersion -eq 0)
+	{
+		Write-Error "
+		`n`n
+		`t`t
+		The Word Version is 0. You should run a full online repair of your Office installation.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
+		Exit
 	}
 	Else
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tYou are running an untested or unsupported version of Microsoft Word.`n`n`t`tScript will end.`n`n`t`tPlease send info on your version of Word to webster@carlwebster.com`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		You are running an untested or unsupported version of Microsoft Word.
+		`n`n
+		`t`t
+		Script will end.
+		`n`n
+		`t`t
+		Please send info on your version of Word to webster@carlwebster.com
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3297,7 +3205,15 @@ Function SetupWord
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "$(Get-Date): Word language value $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Host "$(Get-Date): Culture code $($Script:WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Error "`n`n`t`tFor $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		For $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3360,7 +3276,15 @@ Function SetupWord
 	{
 		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tAn empty Word document could not be created.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		An empty Word document could not be created.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3369,7 +3293,15 @@ Function SetupWord
 	{
 		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tAn unknown error happened selecting the entire Word document for default formatting options.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		An unknown error happened selecting the entire Word document for default formatting options.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3610,21 +3542,35 @@ Function Get-RegKeyToObject
 #region Word, text, and HTML line output functions
 Function line
 #function created by Michael B. Smith, Exchange MVP
-#@essentialexchange on Twitter
-#http://TheEssentialExchange.com
+#@essentialexch on Twitter
+#https://essential.exchange/blog
 #for creating the formatted text report
 #created March 2011
 #updated March 2014
+# updated March 2019 to use StringBuilder (about 100 times more efficient than simple strings)
 {
-	Param( [int]$tabs = 0, [string]$name = '', [string]$value = '', [string]$newline = "`r`n", [switch]$nonewline )
-	While( $tabs -gt 0 ) { $Script:Output += "`t"; $tabs--; }
+	Param
+	(
+		[Int]    $tabs = 0, 
+		[String] $name = '', 
+		[String] $value = '', 
+		[String] $newline = [System.Environment]::NewLine, 
+		[Switch] $nonewline
+	)
+
+	while( $tabs -gt 0 )
+	{
+		$null = $global:Output.Append( "`t" )
+		$tabs--
+	}
+
 	If( $nonewline )
 	{
-		$Script:Output += $name + $value
+		$null = $global:Output.Append( $name + $value )
 	}
 	Else
 	{
-		$Script:Output += $name + $value + $newline
+		$null = $global:Output.AppendLine( $name + $value )
 	}
 }
 	
@@ -4624,7 +4570,7 @@ Function SetWordCellFormat
 		# Font size
 		[Parameter()] [ValidateNotNullOrEmpty()] [int] $Size = 0,
 		# Cell background color
-		[Parameter()] [AllowNull()] $BackgroundColor = $Null,
+		[Parameter()] [AllowNull()] [int]$BackgroundColor = $Null,
 		# Force solid background color
 		[Switch] $Solid,
 		[Switch] $Bold,
@@ -4927,7 +4873,7 @@ Function SaveandCloseTextDocument
 		$Script:FileName1 += "_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 	}
 
-	Write-Output $Script:Output | Out-File $Script:Filename1
+	Write-Output $global:Output.ToString() | Out-File $Script:Filename1 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
@@ -4939,28 +4885,13 @@ Function SetFileName1andFileName2
 {
 	Param([string]$OutputFileName)
 	
-	If($Folder -eq "")
-	{
-		$pwdpath = $pwd.Path
-	}
-	Else
-	{
-		$pwdpath = $Folder
-	}
-
-	If($pwdpath.EndsWith("\"))
-	{
-		#remove the trailing \
-		$pwdpath = $pwdpath.SubString(0, ($pwdpath.Length - 1))
-	}
-
 	#set $Script:Filename1 and $Script:Filename2 with no file extension
 	If($AddDateTime)
 	{
-		[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName)"
+		[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName)"
 		If($PDF)
 		{
-			[string]$Script:FileName2 = "$($pwdpath)\$($OutputFileName)"
+			[string]$Script:FileName2 = "$($Script:pwdpath)\$($OutputFileName)"
 		}
 	}
 
@@ -4970,10 +4901,10 @@ Function SetFileName1andFileName2
 		
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).docx"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).docx"
 			If($PDF)
 			{
-				[string]$Script:FileName2 = "$($pwdpath)\$($OutputFileName).pdf"
+				[string]$Script:FileName2 = "$($Script:pwdpath)\$($OutputFileName).pdf"
 			}
 		}
 
@@ -4983,7 +4914,7 @@ Function SetFileName1andFileName2
 	{
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).txt"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).txt"
 		}
 		ShowScriptOptions
 	}
@@ -4991,7 +4922,7 @@ Function SetFileName1andFileName2
 	{
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).html"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).html"
 		}
 		SetupHTML
 		ShowScriptOptions
@@ -5220,7 +5151,18 @@ Function ProcessScriptSetup
 	{
 		#We're missing Citrix Snapins that we need
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "Missing Citrix PowerShell Snap-ins Detected, check the console above for more information. Are you sure you are running this script on a XenApp 6.5 Server? Script will now close."
+		Write-Error "
+		`n`n
+		`t`t
+		Missing Citrix PowerShell Snap-ins Detected, check the console above for more information.
+		`n`n
+		`t`t
+		Are you sure you are running this script on a XenApp 6.5 Server?
+		`n`n
+		`t`t
+		Script will now close.
+		`n`n
+		"
 		Exit
 	}
 	#>
@@ -5243,13 +5185,18 @@ Function ProcessScriptSetup
 	}
 	ElseIf(!(Check-LoadedModule "Citrix.GroupPolicy.Commands") -and $Policies -eq $True)
 	{
-		Write-Error "The Citrix Group Policy module Citrix.GroupPolicy.Commands.psm1 could not be loaded 
-		`nPlease see the Prerequisites section in the ReadMe file (https://carlwebster.sharefile.com/d-s8e92231489542428). 
-		`n
-		`n
-		`t`tBecause the Policies parameter was used the script will now close.
-		`n
-		`n"
+		Write-Error "
+		`n`n
+		`t`t
+		The Citrix Group Policy module Citrix.GroupPolicy.Commands.psm1 could not be loaded 
+		`n`n
+		`t`t
+		Please see the Prerequisites section in the ReadMe file (https://carlwebster.sharefile.com/d-s8e92231489542428). 
+		`n`n
+		`t`t
+		Because the Policies parameter was used the script will now close.
+		`n`n
+		"
 		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
 		Exit
 	}
@@ -5271,7 +5218,15 @@ Function ProcessScriptSetup
 		If(!(Test-Path "$($pwd.path)\SoftwareExclusions.txt"))
 		{
 			$ErrorActionPreference = $SaveEAPreference
-			Write-Error "Software inventory requested but $($pwd.path)\SoftwareExclusions.txt does not exist.  Script cannot continue."
+			Write-Error "
+			`n`n
+			`t`t
+			Software inventory requested but $($pwd.path)\SoftwareExclusions.txt does not exist.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 		
@@ -5280,7 +5235,15 @@ Function ProcessScriptSetup
 		If(!($?))
 		{
 			$ErrorActionPreference = $SaveEAPreference
-			Write-Error "There was an error accessing or reading $($pwd.path)\SoftwareExclusions.txt.  Script cannot continue."
+			Write-Error "
+			`n`n
+			`t`t
+			There was an error accessing or reading $($pwd.path)\SoftwareExclusions.txt.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 		$x = $Null
@@ -5316,7 +5279,15 @@ Function ProcessScriptSetup
 			$ErrorActionPreference = $SaveEAPreference
 			Write-Warning "This script cannot be run remotely against a Session-only Host Server."
 			Write-Warning "Use Set-XADefaultComputerName XA65ControllerServerName or run the script on a controller."
-			Write-Error "Script cannot continue.  See messages above."
+			Write-Error "
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			`t`t
+			See messages above.
+			`n`n
+			"
 			Exit
 		}
 	}
@@ -5332,7 +5303,15 @@ Function ProcessScriptSetup
 			$ErrorActionPreference = $SaveEAPreference
 			Write-Warning "This script cannot be run on a Session-only Host Server if Remoting is not enabled."
 			Write-Warning "Use Set-XADefaultComputerName XA65ControllerServerName or run the script on a controller."
-			Write-Error "Script cannot continue.  See messages above."
+			Write-Error "
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			`t`t
+			See messages above.
+			`n`n
+			"
 			Exit
 		}
 	}
@@ -5364,11 +5343,27 @@ Function ProcessScriptSetup
 		Write-Warning "Farm information could not be retrieved"
 		If($Remoting)
 		{
-			Write-Error "A remote connection to $Script:RemoteXAServer could not be established.  Script cannot continue."
+			Write-Error "
+			`n`n
+			`t`t
+			A remote connection to $Script:RemoteXAServer could not be established.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 		}
 		Else
 		{
-			Write-Error "Farm information could not be retrieved.  Script cannot continue."
+			Write-Error "
+			`n`n
+			`t`t
+			Farm information could not be retrieved.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 		}
 		Exit
 	}
@@ -19146,7 +19141,7 @@ Function ProcessScriptEnd
 
 	If($ScriptInfo)
 	{
-		$SIFile = "$($pwd.Path)\XA65V5InventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+		$SIFile = "$Script:pwdpath\XA65V5InventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 		Out-File -FilePath $SIFile -InputObject ""
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)"
 		Out-File -FilePath $SIFile -Append -InputObject "AdminAddress       : $($AdminAddress)"
