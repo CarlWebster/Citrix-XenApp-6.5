@@ -8,6 +8,10 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.21 18-Dec-2014
+#	Updated for CTX129229 dated 18-Dec-2014
+#	Fix wrong variable name for saving as PDF for Word 2013
+
 #Version 4.2 3-Aug-2014
 #	Fix the SWExclusions function to work if SoftwareExclusions.txt file contains only one item
 #	Cleanup the script's parameters section
