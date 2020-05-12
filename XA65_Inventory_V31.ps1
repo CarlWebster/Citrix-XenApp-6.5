@@ -97,9 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.17
+	VERSION: 3.18
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: October 6, 2013
+	LASTEDIT: October 8, 2013
 #>
 
 
@@ -177,7 +177,10 @@ Set-StrictMode -Version 2
 #	Load Evaluators
 #	Worker Groups
 #	Health Monitoring and Recovery Tests in Computer Policies
-
+#Updated October 6, 2013
+#	Fixed two policy setting output issues
+#Updated October 8, 2013
+#	Updated to reflect updates in CTX129229
 
 
 Function CheckWordPrereq
@@ -1828,7 +1831,7 @@ If( $? )
 				
 				Write-Verbose "`t`tnumber of hotfixes is $($Rows-1)"
 				$HotfixArray = ""
-				$HRP1Installed = $False
+				$HRP2Installed = $False
 				WriteWordLine 0 0 ""
 				WriteWordLine 0 1 "Citrix Installed Hotfixes:"
 				Write-Verbose "`t`tCreate Word Table for Citrix Hotfixes"
@@ -1865,9 +1868,9 @@ If( $? )
 				{
 					$xRow++
 					$HotfixArray += $hotfix.HotfixName
-					If( $hotfix.HotfixName -eq "XA650W2K8R2X64R01")
+					If( $hotfix.HotfixName -eq "XA650W2K8R2X64R02")
 					{
-						$HRP1Installed = $True
+						$HRP2Installed = $True
 					}
 					$InstallDate = $hotfix.InstalledOn.ToString()
 					
@@ -1896,66 +1899,70 @@ If( $? )
 				WriteWordLine 0 0 ""
 
 				#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
-				#hotfix lists are from CTX129229 dated 29-MAY-2013
+				#hotfix lists are from CTX129229 dated 16-JUL-2013
 				Write-Verbose "`t`tcompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
-				# as of the 29-apr-2013 update, there are recommended hotfixes for pre and post R01
+				# as of the 16-JUL-2013 update, there are recommended hotfixes for pre and post R02
 				Write-Verbose "`t`tProcessing Citrix hotfix list for server $($server.ServerName)"
-				WriteWordLine 0 1 "Citrix Recommended Hotfixes:"
-				If( !$HRP1Installed )
+				If($HRP2Installed)
 				{
-					$RecommendedList = @("XA650W2K8R2X64001","XA650W2K8R2X64011","XA650W2K8R2X64019","XA650W2K8R2X64025")
+					$RecommendedList = @()
 				}
 				Else
 				{
-					$RecommendedList = @("XA650R01W2K8R2X64061")
+					$RecommendedList = @("XA650W2K8R2X64001","XA650W2K8R2X64011","XA650W2K8R2X64019","XA650W2K8R2X64025","XA650R01W2K8R2X64061", "XA650W2K8R2X64R02")
 				}
-				Write-Verbose "`t`tCreate Word Table for Citrix Hotfixes"
-				$TableRange = $doc.Application.Selection.Range
-				$Columns = 2
-				$Rows = $RecommendedList.count + 1
-				Write-Verbose "`t`tadd Citrix recommended hotfix table to doc"
-				$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
-				$table.Style = "Table Grid"
-				$table.Borders.InsideLineStyle = 1
-				$table.Borders.OutsideLineStyle = 1
-				$xRow = 1
-				Write-Verbose "`t`tformat first row with column headings"
-				$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
-				$Table.Cell($xRow,1).Range.Font.Bold = $True
-				$Table.Cell($xRow,1).Range.Text = "Citrix Hotfix"
-				$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
-				$Table.Cell($xRow,2).Range.Font.Bold = $True
-				$Table.Cell($xRow,2).Range.Text = "Status"
-				ForEach($element in $RecommendedList)
+				If($RecommendedList.count -gt 0)
 				{
-					$xRow++
-					$Table.Cell($xRow,1).Range.Text = $element
-					If(!$HotfixArray -contains $element)
+					WriteWordLine 0 1 "Citrix Recommended Hotfixes:"
+					Write-Verbose "`t`tCreate Word Table for Citrix Hotfixes"
+					$TableRange = $doc.Application.Selection.Range
+					$Columns = 2
+					$Rows = $RecommendedList.count + 1
+					Write-Verbose "`t`tadd Citrix recommended hotfix table to doc"
+					$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+					$table.Style = "Table Grid"
+					$table.Borders.InsideLineStyle = 1
+					$table.Borders.OutsideLineStyle = 1
+					$xRow = 1
+					Write-Verbose "`t`tformat first row with column headings"
+					$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+					$Table.Cell($xRow,1).Range.Font.Bold = $True
+					$Table.Cell($xRow,1).Range.Text = "Citrix Hotfix"
+					$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+					$Table.Cell($xRow,2).Range.Font.Bold = $True
+					$Table.Cell($xRow,2).Range.Text = "Status"
+					ForEach($element in $RecommendedList)
 					{
-						#missing a recommended Citrix hotfix
-						#WriteWordLine 0 2 "Recommended Citrix Hotfix $element is not installed"
-						$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorRed
-						$Table.Cell($xRow,2).Range.Font.Bold  = $True
-						$Table.Cell($xRow,2).Range.Font.Color = $WDColorBlack
-						$Table.Cell($xRow,2).Range.Text = "Not Installed"
+						$xRow++
+						$Table.Cell($xRow,1).Range.Text = $element
+						If(!$HotfixArray -contains $element)
+						{
+							#missing a recommended Citrix hotfix
+							#WriteWordLine 0 2 "Recommended Citrix Hotfix $element is not installed"
+							$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorRed
+							$Table.Cell($xRow,2).Range.Font.Bold  = $True
+							$Table.Cell($xRow,2).Range.Font.Color = $WDColorBlack
+							$Table.Cell($xRow,2).Range.Text = "Not Installed"
+						}
+						Else
+						{
+							$Table.Cell($xRow,2).Range.Text = "Installed"
+						}
 					}
-					Else
-					{
-						$Table.Cell($xRow,2).Range.Text = "Installed"
-					}
+					Write-Verbose "`t`tMove table of Citrix hotfixes to the right"
+					$Table.Rows.SetLeftIndent(43,1)
+					$table.AutoFitBehavior(1)
+
+					#return focus back to document
+					Write-Verbose "`t`treturn focus back to document"
+					$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+					#move to the end of the current document
+					Write-Verbose "`t`tmove to the end of the current document"
+					$selection.EndKey($wdStory,$wdMove) | Out-Null
+					WriteWordLine 0 0 ""
 				}
-				Write-Verbose "`t`tMove table of Citrix hotfixes to the right"
-				$Table.Rows.SetLeftIndent(43,1)
-				$table.AutoFitBehavior(1)
-
-				#return focus back to document
-				Write-Verbose "`t`treturn focus back to document"
-				$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
-
-				#move to the end of the current document
-				Write-Verbose "`t`tmove to the end of the current document"
-				$selection.EndKey($wdStory,$wdMove) | Out-Null
-				WriteWordLine 0 0 ""
+				
 				#build list of installed Microsoft hotfixes
 				Write-Verbose "`t`tProcessing Microsoft hotfixes for server $($server.ServerName)"
 				$MSInstalledHotfixes = Get-HotFix -computername $Server.ServerName -EA 0 | select-object -Expand HotFixID | sort-object HotFixID
@@ -1963,18 +1970,18 @@ If( $? )
 				{
 					#Server 2008 R2 SP1 installed
 					$RecommendedList = @("KB2444328", "KB2465772", "KB2551503", "KB2571388", 
-										"KB2578159", "KB2617858", "KB2620656", "KB2647753",
-										"KB2661001", "KB2661332", "KB2731847", "KB2748302",
-										"KB2775511", "KB2778831", "KB917607")
+									"KB2578159", "KB2617858", "KB2620656", "KB2647753",
+									"KB2661001", "KB2661332", "KB2731847", "KB2748302",
+									"KB2775511", "KB2778831", "KB917607")
 				}
 				Else
 				{
 					#Server 2008 R2 without SP1 installed
 					$RecommendedList = @("KB2265716", "KB2388142", "KB2383928", "KB2444328", 
-										"KB2465772", "KB2551503", "KB2571388", "KB2578159", 
-										"KB2617858", "KB2620656", "KB2647753", "KB2661001",
-										"KB2661332", "KB2731847", "KB2748302", "KB2778831", "KB917607", 
-										"KB975777", "KB979530", "KB980663", "KB983460")
+									"KB2465772", "KB2551503", "KB2571388", "KB2578159", 
+									"KB2617858", "KB2620656", "KB2647753", "KB2661001",
+									"KB2661332", "KB2731847", "KB2748302", "KB2778831", "KB917607", 
+									"KB975777", "KB979530", "KB980663", "KB983460")
 				}
 				
 				WriteWordLine 0 1 "Microsoft Recommended Hotfixes:"
