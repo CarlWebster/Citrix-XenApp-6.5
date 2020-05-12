@@ -8,6 +8,16 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.13 20-May-2014
+#	Bring up-to-date with the changes made to the Active Directory and DHCP documentation scripts
+#		Remove all hard-coded values for Word and Table functions
+#		Don't abort script if CompanyName is not provided
+#		Horizontal table header row flows across page Breaks
+#		Format most Warning and Error messages to make them more readable
+#		Test for existence of "word" variable before removal
+#		Fix GetComputerWMIInfo to work in a multi-forest Active Directory environment
+#	Next script update will require PowerShell Version 3.0 or higher
+
 #Version 4.12 12-Apr-2014
 #	Fix divide by 0 error when Worker Group by Security Group or OU and the name is longer than 60 characters
 #	Fix the verbose messages when processing Worker Groups to display Server, Security Group or OU
