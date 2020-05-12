@@ -8,6 +8,11 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.26 9-Feb-2016
+#	Added specifying an optional output folder
+#	Added the option to email the output file
+#	Fixed several spacing and typo errors
+
 #Version 4.25 29-Oct-2015
 #	Updated for CTX129229 that was updated September 2015
 
