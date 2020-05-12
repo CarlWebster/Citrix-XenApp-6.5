@@ -97,9 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.13
+	VERSION: 3.14
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: June 10, 2013
+	LASTEDIT: July 1, 2013
 .REMARKS
 	To see the examples, type: "Get-Help .\XA65_Inventory_V31.ps1 -examples".
 	For more information, type: "Get-Help .\XA65_Inventory_V31.ps1 -detailed".
@@ -171,6 +171,8 @@ Set-StrictMode -Version 2
 #	Citrix services that are Stopped will now show in a Red cell with bold, black text
 #	Recommended hotfixes that are Not Installed will now show in a Red cell with bold, black text
 #	Added a few more Write-Verbose statements
+#Updated July 1, 2013
+#	Include updated hotfix lists from CTX129229
 
 
 Function CheckWordPrereq
@@ -1894,7 +1896,7 @@ If( $? )
 				}
 				Else
 				{
-					$RecommendedList = @("XA650R01W2K8R2X64061","XA650R01W2K8R2X64090")
+					$RecommendedList = @("XA650R01W2K8R2X64061")
 				}
 				Write-Verbose "`t`tCreate Word Table for Citrix Hotfixes"
 				$TableRange = $doc.Application.Selection.Range
@@ -1952,7 +1954,7 @@ If( $? )
 					$RecommendedList = @("KB2444328", "KB2465772", "KB2551503", "KB2571388", 
 										"KB2578159", "KB2617858", "KB2620656", "KB2647753",
 										"KB2661001", "KB2661332", "KB2731847", "KB2748302",
-										"KB2775511","KB917607")
+										"KB2775511", "KB2778831", "KB917607")
 				}
 				Else
 				{
@@ -1960,7 +1962,7 @@ If( $? )
 					$RecommendedList = @("KB2265716", "KB2388142", "KB2383928", "KB2444328", 
 										"KB2465772", "KB2551503", "KB2571388", "KB2578159", 
 										"KB2617858", "KB2620656", "KB2647753", "KB2661001",
-										"KB2661332", "KB2731847", "KB2748302", "KB917607", 
+										"KB2661332", "KB2731847", "KB2748302", "KB2778831", "KB917607", 
 										"KB975777", "KB979530", "KB980663", "KB983460")
 				}
 				
