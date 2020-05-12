@@ -8,6 +8,16 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.12 12-Apr-2014
+#	Fix divide by 0 error when Worker Group by Security Group or OU and the name is longer than 60 characters
+#	Fix the verbose messages when processing Worker Groups to display Server, Security Group or OU
+#	For Worker Groups based on multiple OUs, sort the OU list by length of distinguished name 
+#	Remove hard-coded value in the BuildTableForServerOrWG function
+#	Add updated WriteWordLine function
+#	Change Command Line and Working Directory for Applications to a different size font and make them bold
+#	Citrix Services table, added a Startup Type column and color stopped services in red only if Startup Type is Auto 
+#	For Active Directory based Citrix policies, added the AD policy name to clarify which Citrix policies are contained in what AD policies
+
 #Version 4.11 1-Apr-2014
 #	Save current settings for Spell Check and Grammar Check before disabling them
 #	Before closing Word, put Spelling and Grammar settings back to original
