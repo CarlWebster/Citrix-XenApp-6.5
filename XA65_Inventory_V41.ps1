@@ -225,9 +225,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V41.ps1
-	VERSION: 4.11
+	VERSION: 4.12
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: April 1, 2014
+	LASTEDIT: April 12, 2014
 #>
 
 
@@ -420,6 +420,15 @@ If($Summary -eq $Null)
 #Version 4.11
 #	Save current settings for Spell Check and Grammar Check before disabling them
 #	Before closing Word, put Spelling and Grammar settings back to original
+#Version 4.12
+#	Fix divide by 0 error when Worker Group by Security Group or OU and the name is longer than 60 characters
+#	Fix the verbose messages when processing Worker Groups to display Server, Security Group or OU
+#	For Worker Groups based on multiple OUs, sort the OU list by length of distinguished name 
+#	Remove hard-coded value in the BuildTableForServerOrWG function
+#	Add updated WriteWordLine function
+#	Change Command Line and Working Directory for Applications to a different size font and make them bold
+#	Citrix Services table, added a Startup Type column and color stopped services in red only if Startup Type is Auto 
+#	For Active Directory based Citrix policies, added the AD policy name to clarify which Citrix policies are contained in what AD policies
 
 
 Set-StrictMode -Version 2
@@ -1496,10 +1505,20 @@ Function WriteWordLine
 #Function created by Ryan Revord
 #@rsrevord on Twitter
 #Function created to make output to Word easy in this script
+#updated 27-Mar-2014 to include font name, font size, italics and bold options
 {
-	Param([int]$style=0, [int]$tabs = 0, [string]$name = '', [string]$value = '', [string]$newline = "'n", [Switch]$nonewline)
-	[string]$output = ""
+	Param([int]$style=0, 
+	[int]$tabs = 0, 
+	[string]$name = '', 
+	[string]$value = '', 
+	[string]$fontName=$null,
+	[int]$fontSize=0,
+	[bool]$italics=$false,
+	[bool]$boldface=$false,
+	[Switch]$nonewline)
+	
 	#Build output style
+	[string]$output = ""
 	Switch ($style)
 	{
 		0 {$Selection.Style = $myHash.Word_NoSpacing}
@@ -1509,16 +1528,37 @@ Function WriteWordLine
 		4 {$Selection.Style = $myHash.Word_Heading4}
 		Default {$Selection.Style = $myHash.Word_NoSpacing}
 	}
+	
 	#build # of tabs
 	While($tabs -gt 0)
 	{ 
 		$output += "`t"; $tabs--; 
 	}
-		
+ 
+	If(![String]::IsNullOrEmpty($fontName)) 
+	{
+		$Selection.Font.name = $fontName
+	} 
+
+	If($fontSize -ne 0) 
+	{
+		$Selection.Font.size = $fontSize
+	} 
+ 
+	If($italics -eq $True) 
+	{
+		$Selection.Font.Italic = $True
+	} 
+ 
+	If($boldface -eq $True) 
+	{
+		$Selection.Font.Bold = $True
+	} 
+
 	#output the rest of the parameters.
 	$output += $name + $value
 	$Selection.TypeText($output)
-	
+ 
 	#test for new WriteWordLine 0.
 	If($nonewline)
 	{
@@ -2012,15 +2052,17 @@ Function ProcessCitrixPolicies
 			Write-Verbose "$(Get-Date): `tStarted $($Policy.PolicyName)`t$($Policy.Type)"
 			If(!$Summary)
 			{
-				WriteWordLine 2 0 $Policy.PolicyName
 				If($xDriveName -eq "")
 				{
 					$Global:TotalIMAPolicies++
+					WriteWordLine 2 0 $Policy.PolicyName
 					WriteWordLine 0 1 "IMA Farm based policy"
 				}
 				Else
 				{
 					$Global:TotalADPolicies++
+					#requested by Pavel Stadler to show which AD Policy a Citrix policy is contained in
+					WriteWordLine 2 0 "$($Policy.PolicyName) in $($CtxGPO)"
 					WriteWordLine 0 1 "Active Directory based policy"
 				}
 
@@ -3718,7 +3760,13 @@ Function GetCtxGPOsInAD
 
 Function BuildTableForServerOrWG
 {
-	Param([Array]$xArray)
+	Param([Array]$xArray, [String]$xType)
+	
+	#divide by 0 bug reported 9-Apr-2014 by Lee Dehmer 
+	#if security group name or OU name was longer than 60 characters it caused a divide by 0 error
+	
+	#added a second parameter to the function so the verbose message would say whether 
+	#the function is processing servers, security groups or OUs.
 	
 	If(-not ($xArray -is [Array]))
 	{
@@ -3726,6 +3774,9 @@ Function BuildTableForServerOrWG
 	}
 	[int]$MaxLength = 0
 	[int]$TmpLength = 0
+	#remove 60 as a hard-coded value
+	#60 is the max width the table can be when indented 36 points
+	[int]$MaxTableWidth = 60
 	ForEach($xName in $xArray)
 	{
 		$TmpLength = $xName.Length
@@ -3734,22 +3785,32 @@ Function BuildTableForServerOrWG
 			$MaxLength = $TmpLength
 		}
 	}
-	Write-Verbose "$(Get-Date): `t`tMax length of server name is $($MaxLength)"
+	Write-Verbose "$(Get-Date): `t`tMax length of $xType name is $($MaxLength)"
 	$TableRange = $doc.Application.Selection.Range
-	[int]$Columns = [Math]::Floor(60 / $MaxLength)
+	#removed hard-coded value of 60 and replace with MaxTableWidth variable
+	[int]$Columns = [Math]::Floor($MaxTableWidth / $MaxLength)
 	If($xArray.count -lt $Columns)
 	{
 		[int]$Rows = 1
 		#not enough array items to fill columns so use array count
-		$MaxCells = $xArray.Count
+		$MaxCells  = $xArray.Count
 		#reset column count so there are no empty columns
-		$Columns = $xArray.Count 
+		$Columns   = $xArray.Count 
+	}
+	ElseIf($Columns -eq 0)
+	{
+		#divide by 0 bug if this condition is not handled
+		#number was larger than $MaxTableWidth so there can only be one column
+		#with one cell per row
+		[int]$Rows = $xArray.count
+		$Columns   = 1
+		$MaxCells  = 1
 	}
 	Else
 	{
 		[int]$Rows = [Math]::Floor( ( $xArray.count + $Columns - 1 ) / $Columns)
 		#more array items than columns so don't go past last column
-		$MaxCells = $Columns
+		$MaxCells  = $Columns
 	}
 	$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 	$table.Style = $myHash.Word_TableGrid
@@ -4580,28 +4641,31 @@ If($? -and $Applications -ne $Null)
 			#location properties
 			If(!$streamedapp)
 			{
+				#requested by Pavel Stadler to put Command Line and Working Directory in a different sized font and make it bold
 				If(![String]::IsNullOrEmpty($Application.CommandLineExecutable))
 				{
 					If($Application.CommandLineExecutable.Length -lt 40)
 					{
-						WriteWordLine 0 1 "Command Line`t`t`t: " $Application.CommandLineExecutable
+						WriteWordLine 0 1 "Command Line`t`t`t: " -NoNewLine
+						WriteWordLine 0 0 $Application.CommandLineExecutable "" "Courier New" 9 $False $True
 					}
 					Else
 					{
 						WriteWordLine 0 1 "Command Line: " 
-						WriteWordLine 0 2 $Application.CommandLineExecutable
+						WriteWordLine 0 2 $Application.CommandLineExecutable "" "Courier New" 9 $False $True
 					}
 				}
 				If(![String]::IsNullOrEmpty($Application.WorkingDirectory))
 				{
 					If($Application.WorkingDirectory.Length -lt 40)
 					{
-						WriteWordLine 0 1 "Working directory`t`t: " $Application.WorkingDirectory
+						WriteWordLine 0 1 "Working directory`t`t: " -NoNewLine
+						WriteWordLine 0 0 $Application.WorkingDirectory "" "Courier New" 9 $False $True
 					}
 					Else
 					{
 						WriteWordLine 0 1 "Working directory: " 
-						WriteWordLine 0 2 $Application.WorkingDirectory
+						WriteWordLine 0 2 $Application.WorkingDirectory "" "Courier New" 9 $False $True
 					}
 				}
 				
@@ -4612,14 +4676,14 @@ If($? -and $Applications -ne $Null)
 					{
 						WriteWordLine 0 1 "Servers:"
 						$TempArray = $AppServerInfo.ServerNames | Sort-Object
-						BuildTableForServerOrWG $TempArray
+						BuildTableForServerOrWG $TempArray "Server"
 						$TempArray = $Null
 					}
 					If(![String]::IsNullOrEmpty($AppServerInfo.WorkerGroupNames))
 					{
 						WriteWordLine 0 1 "Worker Groups:"
 						$TempArray = $AppServerInfo.WorkerGroupNames | Sort-Object
-						BuildTableForServerOrWG $TempArray
+						BuildTableForServerOrWG $TempArray "Server"
 						$TempArray = $Null
 					}
 				}
@@ -5831,7 +5895,7 @@ If($?)
 				WriteWordLine 0 1 "Citrix Services"
 				Write-Verbose "$(Get-Date): `t`tCreate Word Table for Citrix services"
 				$TableRange = $doc.Application.Selection.Range
-				[int]$Columns = 2
+				[int]$Columns = 3
 				[int]$Rows = $services.count + 1
 				Write-Verbose "$(Get-Date): `t`tAdd Citrix services table to doc"
 				$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
@@ -5846,18 +5910,37 @@ If($?)
 				$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
 				$Table.Cell($xRow,2).Range.Font.Bold = $True
 				$Table.Cell($xRow,2).Range.Text = "Status"
+				$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,3).Range.Font.Bold = $True
+				$Table.Cell($xRow,3).Range.Text = "Startup Type"
 				ForEach($Service in $Services)
 				{
 					Write-Verbose "$(Get-Date): `t`t`tProcessing Citrix service $($Service.DisplayName)"
 					$xRow++
 					$Table.Cell($xRow,1).Range.Text = $Service.DisplayName
-					If($Service.Status -eq "Stopped")
+					
+					#startup type requested by Pavel Stadler
+					Try
+					{
+						Write-Verbose "$(Get-Date): `t`t`t`tGetting startup type for $($Service.DisplayName)"
+						$StartupType = (Get-WMIObject Win32_Service -Filter "Name='$($Service.Name)'").StartMode
+					}
+					
+					Catch
+					{
+						Write-Verbose "$(Get-Date): `t`t`t`tGetting startup type for $($Service.DisplayName) failed"
+						$StartupType = "Not Found"
+					}
+					
+					#also requested by Pavel Stadler, if service is stopped only color it red if startup type is automatic
+					If($Service.Status -eq "Stopped" -and $StartupType -eq "Auto")
 					{
 						$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorRed
 						$Table.Cell($xRow,2).Range.Font.Bold  = $True
 						$Table.Cell($xRow,2).Range.Font.Color = $WDColorBlack
 					}
 					$Table.Cell($xRow,2).Range.Text = $Service.Status
+					$Table.Cell($xRow,3).Range.Text = $StartupType
 				}
 
 				Write-Verbose "$(Get-Date): `t`tMove table of Citrix services to the right"
@@ -6171,7 +6254,7 @@ If($? -and $WorkerGroups -ne $Null)
 				Write-Verbose "$(Get-Date): `t`tProcessing Worker Group by Farm Servers"
 				Write-Verbose "$(Get-Date): `t`tCreate Word Table for Worker Group by Farm Server"
 				$TempArray = $WorkerGroup.ServerNames | Sort-Object
-				BuildTableForServerOrWG $TempArray
+				BuildTableForServerOrWG $TempArray "Server"
 				$TempArray = $Null
 			}
 			If($WorkerGroup.ServerGroups)
@@ -6181,7 +6264,7 @@ If($? -and $WorkerGroups -ne $Null)
 				Write-Verbose "$(Get-Date): `t`tProcessing Worker Group by Server Groups"
 				Write-Verbose "$(Get-Date): `t`tCreate Word Table for Worker Group by Server Groups"
 				$TempArray = $WorkerGroup.ServerGroups | Sort-Object
-				BuildTableForServerOrWG $TempArray
+				BuildTableForServerOrWG $TempArray "Security Group"
 				$TempArray = $Null
 			}
 			If($WorkerGroup.OUs)
@@ -6190,8 +6273,8 @@ If($? -and $WorkerGroups -ne $Null)
 				WriteWordLine 0 1 "Organizational Units:"
 				Write-Verbose "$(Get-Date): `t`tProcessing Worker Group by OUs"
 				Write-Verbose "$(Get-Date): `t`tCreate Word Table for Worker Group by OUs"
-				$TempArray = $WorkerGroup.OUs | Sort-Object
-				BuildTableForServerOrWG $TempArray
+				$TempArray = $WorkerGroup.OUs | Sort-Object {$_.Length}
+				BuildTableForServerOrWG $TempArray "OU"
 				$TempArray = $Null
 			}
 			#applications published to worker group
