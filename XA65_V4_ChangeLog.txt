@@ -8,6 +8,42 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.2 3-Aug-2014
+#	Fix the SWExclusions function to work if SoftwareExclusions.txt file contains only one item
+#	Cleanup the script's parameters section
+#	Code cleanup and standardization with the master template script
+#	Requires PowerShell V3 or later
+#	Removed support for Word 2007
+#	Word 2007 references in help text removed
+#	Cover page parameter now states only Word 2010 and 2013 are supported
+#	Most Word 2007 references in script removed:
+#		Function ValidateCoverPage
+#		Function SetupWord
+#		Function SaveandCloseDocumentandShutdownWord
+#	Function CheckWord2007SaveAsPDFInstalled removed
+#	If Word 2007 is detected, an error message is now given and the script is aborted
+#	Cleanup Word table code for the first row and background color
+#	Cleanup retrieving services and service startup type with Iain Brighton's optimization
+#	Add Iain Brighton's Word table functions
+#	Move Citrix Services table to new table functions
+#	Move Citrix and Microsoft hotfix tables to new table functions
+#	Move Appendix A and B tables to new table function
+#	Move hardware info to new table functions
+#	Add more write statements and error handling to the Configuration Logging report section
+#	Add parameters for MSWord, Text and HTML for future updates
+#	Add Section parameter
+#	Valid Section options are:
+#		Admins (Administrators)
+#		Apps (Applications)
+#		ConfigLog (Configuration Logging)
+#		LBPolicies (Load Balancing Policies)
+#		LoadEvals (Load Evaluators)
+#		Policies
+#		Servers
+#		WGs (Worker Groups)
+#		Zones
+#		All
+
 #Version 4.14 2-Jun-2014
 #	Added an AddDateTime parameter
 
