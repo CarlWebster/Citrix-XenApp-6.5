@@ -149,9 +149,9 @@
 	No objects are output from this script.  This script creates a Word document.
 .NOTES
 	NAME: XA65_Inventory_V4.ps1
-	VERSION: 4.01
+	VERSION: 4.02
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: November 12, 2013
+	LASTEDIT: December 5, 2013
 #>
 
 
@@ -186,19 +186,19 @@ Param([parameter(
 	Position = 3, 
 	Mandatory=$False)
 	] 
-	[Switch]$PDF,
+	[Switch]$PDF=$False,
 
 	[parameter(
 	Position = 4, 
 	Mandatory=$False)
 	] 
-	[Switch]$Hardware, 
+	[Switch]$Hardware=$False, 
 
 	[parameter(
 	Position = 5, 
 	Mandatory=$False)
 	] 
-	[Switch]$Software 
+	[Switch]$Software=$False 
 	)
 
 #force -verbose on
@@ -270,6 +270,10 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 #	Removed the .LINK section from the help text
 #Updated 12-Nov-2013
 #	Added back in the French sections that somehow got removed
+#Updated 5-Dec-2013
+#	Fixed bug where XA65ConfigLog.udl was not found even if it existed
+#	Fixed bug where the functions in Citrix.GroupPolicy.Command.psm1 were not found
+#	Initialize switch parameters as $False
 
 Set-StrictMode -Version 2
 
@@ -1235,6 +1239,7 @@ Function Check-LoadedModule
 #modified by Michael B. Smith to handle when the module doesn't exist on server
 #modified by @andyjmorgan
 #bug fixed by @schose
+#bug fixed by Peter Bosen
 #This Function handles all three scenarios:
 #
 # 1. Module is already imported into current session
@@ -1250,7 +1255,8 @@ Function Check-LoadedModule
 	#the following line did not work if the citrix.grouppolicy.commands.psm1 module
 	#was manually loaded from a non Default folder
 	#$ModuleFound = (!$LoadedModules -like "*$ModuleName*")
-	[string]$ModuleFound = ($LoadedModules -like "*$ModuleName*")
+	
+	[bool]$ModuleFound = ($LoadedModules -like "*$ModuleName*")
 	If(!$ModuleFound) 
 	{
 		$module = Import-Module -Name $ModuleName -PassThru -EA 0
@@ -4567,9 +4573,10 @@ If($ConfigLog)
 	#build connection string
 	#User ID is account that has access permission for the configuration logging database
 	#Initial Catalog is the name of the Configuration Logging SQL Database
-	If(Test-Path “$($pwd.path)\XA65ConfigLog.udl”)
+	#bug fixed by Esther Barthel
+	If(Test-Path "$($pwd.path)\XA65ConfigLog.udl")
 	{
-		$ConnectionString = Get-Content “$($pwd.path)\XA65ConfigLog.udl” | select-object -last 1
+		$ConnectionString = Get-Content "$($pwd.path)\XA65ConfigLog.udl" | select-object -last 1
 		$ConfigLogReport = get-CtxConfigurationLogReport -connectionstring $ConnectionString -EA 0
 
 		If($? -and $ConfigLogReport)
