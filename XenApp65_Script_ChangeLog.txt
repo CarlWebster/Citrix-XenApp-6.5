@@ -8,6 +8,13 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.30 7-Feb-2017
+#	Fix numerous typos
+#	Remove references to Text and HTML as those are never going to be added
+#	Removed snapin citrix.common.commands as it is no longer used and no cmdlets are used from that snapin
+#	Update help text
+#	Updated for CTX129229 dated December 2016
+
 #Version 4.26 9-Feb-2016
 #	Added specifying an optional output folder
 #	Added the option to email the output file
