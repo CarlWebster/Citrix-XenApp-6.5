@@ -323,9 +323,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V42.ps1
-	VERSION: 4.22
+	VERSION: 4.23
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: July 25, 2015
+	LASTEDIT: August 17, 2015
 #>
 
 
@@ -394,6 +394,9 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
+#Version 4.23 17-Aug-2015
+#	Updated for CTX129229 that was updated August 2015
+#
 #Version 4.22 25-Jul-2015
 #	Updated for CTX129229 dated 1-Apr-2015
 #	Add checking for KB3014783 for Server 2008 R2 w/o SP1
@@ -7702,6 +7705,7 @@ If($Section -eq "All" -or $Section -eq "Servers")
 						[bool]$HRP3Installed = $False
 						[bool]$HRP4Installed = $False
 						[bool]$HRP5Installed = $False
+						[bool]$HRP6Installed = $False
 						
 						If($MSWord -or $PDF)
 						{
@@ -7730,6 +7734,7 @@ If($Section -eq "All" -or $Section -eq "Servers")
 								"XA650W2K8R2X64R03" {$HRP3Installed = $True}
 								"XA650W2K8R2X64R04" {$HRP4Installed = $True}
 								"XA650W2K8R2X64R05" {$HRP5Installed = $True}
+								"XA650W2K8R2X64R06" {$HRP6Installed = $True}
 							}
 							$InstallDate = $hotfix.InstalledOn.ToString()
 							
@@ -7786,21 +7791,25 @@ If($Section -eq "All" -or $Section -eq "Servers")
 						#hotfix lists are from CTX129229 dated 18-DEC-2014
 						Write-Verbose "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
 						Write-Verbose "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)"
-						If($HRP5Installed)
+						If($HRP6Installed)
 						{
 							$RecommendedList = @()
 						}
+						ElseIf($HRP5Installed)
+						{
+							$RecommendedList = @("XA650W2K8R2X64R06")
+						}
 						ElseIf($HRP4Installed)
 						{
-							$RecommendedList = @("XA650W2K8R2X64R05")
+							$RecommendedList = @("XA650W2K8R2X64R05", "XA650W2K8R2X64R06")
 						}
 						ElseIf($HRP3Installed)
 						{
-							$RecommendedList = @("XA650W2K8R2X64R04", "XA650W2K8R2X64R05")
+							$RecommendedList = @("XA650W2K8R2X64R04", "XA650W2K8R2X64R05", "XA650W2K8R2X64R06")
 						}
 						ElseIf($HRP2Installed)
 						{
-							$RecommendedList = @("XA650W2K8R2X64R03", "XA650W2K8R2X64R04", "XA650W2K8R2X64R05")
+							$RecommendedList = @("XA650W2K8R2X64R03", "XA650W2K8R2X64R04", "XA650W2K8R2X64R05", "XA650W2K8R2X64R06")
 						}
 						Else
 						{
@@ -7915,15 +7924,14 @@ If($Section -eq "All" -or $Section -eq "Servers")
 							If($server.OSServicePack.IndexOf('1') -gt 0)
 							{
 								#Server 2008 R2 SP1 installed
-								$RecommendedList = @("KB2465772", "KB2620656", "KB2647753", "KB2661332", 
-												"KB2728738", "KB2748302", "KB2775511", "KB2778831",
-												"KB2896256", "KB2908190", "KB2920289", "KB917607")
+								$RecommendedList = @("KB2620656", "KB2647753", "KB2728738", "KB2748302", 
+												"KB2775511", "KB2778831", "KB2896256", "KB2908190", 
+												"KB2920289", "KB917607")
 							}
 							Else
 							{
 								#Server 2008 R2 without SP1 installed
-								$RecommendedList = @("KB2265716", "KB2388142", "KB2383928", "KB2465772", 
-												"KB2620656", "KB2647753", "KB2661332", "KB2728738", 
+								$RecommendedList = @("KB2265716", "KB2383928", "KB2647753", "KB2728738", 
 												"KB2748302", "KB2775511", "KB2778831", "KB2896256", 
 												"KB3014783", "KB917607", "KB975777", "KB979530", 
 												"KB980663", "KB983460")
