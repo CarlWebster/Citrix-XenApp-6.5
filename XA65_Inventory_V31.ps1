@@ -97,9 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.1
+	VERSION: 3.11
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: March 15, 2013
+	LASTEDIT: April 21, 2013
 .REMARKS
 	To see the examples, type: "Get-Help .\XA65_Inventory_V31.ps1 -examples".
 	For more information, type: "Get-Help .\XA65_Inventory_V31.ps1 -detailed".
@@ -134,6 +134,8 @@ Param(	[parameter(
 	[string]$UserName=$env:username )
 
 	
+Set-StrictMode -Version 2
+
 #Original Script created 8/17/2010 by Michael Bogobowicz, Citrix Systems.
 #To contact, please message @mikebogo on Twitter
 #This script is designed to be run on a XenApp 6.5 server
@@ -160,6 +162,8 @@ Param(	[parameter(
 #	?{?_.SessionId -eq $SessionID} should have been ?{$_.SessionId -eq $SessionID} in the CheckWordPrereq function
 #Updated March 15, 2013
 #	Include updated hotfix lists from CTX129229
+#Updated April 21, 2013
+#	Fixed a compatibility issue with the way the Word file was saved and Set-StrictMode -Version 2
 
 Function CheckWordPrereq
 {
@@ -3695,18 +3699,25 @@ If($CoverPagesExist)
 }
 
 write-verbose "Save and Close document and Shutdown Word"
-[ref]$SaveFormat = "microsoft.office.interop.word.WdSaveFormat" -as [type] 
 If ($WordVersion -eq 12)
 {
 	#Word 2007
-	$doc.SaveAs($filename, $SaveFormat::wdFormatDocument)
+	$SaveFormat = "microsoft.office.interop.word.WdSaveFormat" -as [type] 
+	$doc.SaveAs($filename, $SaveFormat)
 }
 Else
 {
-	$doc.SaveAs([REF]$filename, [ref]$SaveFormat::wdFormatDocument)
+	#the $saveFormat below passes StrictMode 2
+	#I found this at the following two links
+	#http://blogs.technet.com/b/bshukla/archive/2011/09/27/3347395.aspx
+	#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
+	$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatDocumentDefault")
+	$doc.SaveAs([REF]$filename, [ref]$SaveFormat)
 }
 
 $doc.Close()
 $Word.Quit()
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Word) | out-null
+Remove-Variable -Name word
 [gc]::collect() 
 [gc]::WaitForPendingFinalizers()
