@@ -8,6 +8,9 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Updated 3-Jan-2014
+#	If remoting is used, verify that remoting server is not in session-only mode
+
 #Updated 1-Jan-2014
 #	Updated for CTX129229 from 31-Dec-2013
 #	Add check for HRP03
