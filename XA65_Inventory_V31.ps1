@@ -97,9 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.11
+	VERSION: 3.12
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: April 21, 2013
+	LASTEDIT: May 4, 2013
 .REMARKS
 	To see the examples, type: "Get-Help .\XA65_Inventory_V31.ps1 -examples".
 	For more information, type: "Get-Help .\XA65_Inventory_V31.ps1 -detailed".
@@ -164,6 +164,8 @@ Set-StrictMode -Version 2
 #	Include updated hotfix lists from CTX129229
 #Updated April 21, 2013
 #	Fixed a compatibility issue with the way the Word file was saved and Set-StrictMode -Version 2
+#Updated May 4, 2013
+#	Include updated hotfix lists from CTX129229
 
 Function CheckWordPrereq
 {
@@ -1867,58 +1869,63 @@ If( $? )
 				WriteWordLine 0 0 ""
 
 				#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
-				#hotfix lists are from CTX129229 dated 4-MAR-2013
+				#hotfix lists are from CTX129229 dated 29-APR-2013
 				write-verbose "compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
+				# as of the 29-apr-2013 update, there are recommended hotfixes for pre and post R01
+				write-verbose "Processing Citrix hotfix list for server $($server.ServerName)"
+				WriteWordLine 0 2 "Citrix Recommended Hotfixes:"
 				If( !$HRP1Installed )
 				{
-					write-verbose "Processing pre HRP01 hotfix list for server $($server.ServerName)"
-					WriteWordLine 0 2 "Citrix Recommended Hotfixes:"
 					$RecommendedList = @("XA650W2K8R2X64001","XA650W2K8R2X64011","XA650W2K8R2X64019","XA650W2K8R2X64025")
-					write-verbose "Create Word Table for Citrix Hotfixes"
-					$TableRange = $doc.Application.Selection.Range
-					$Columns = 2
-					$Rows = $RecommendedList.count + 1
-					write-verbose "add Citrix recommended hotfix table to doc"
-					$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
-					$table.Style = "Table Grid"
-					$table.Borders.InsideLineStyle = 1
-					$table.Borders.OutsideLineStyle = 1
-					$xRow = 1
-					write-verbose "format first row with column headings"
-					$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
-					$Table.Cell($xRow,1).Range.Font.Bold = $True
-					$Table.Cell($xRow,1).Range.Text = "Citrix Hotfix"
-					$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
-					$Table.Cell($xRow,2).Range.Font.Bold = $True
-					$Table.Cell($xRow,2).Range.Text = "Status"
-					ForEach($element in $RecommendedList)
-					{
-						$xRow++
-						$Table.Cell($xRow,1).Range.Text = $element
-						If(!$HotfixArray -contains $element)
-						{
-							#missing a recommended Citrix hotfix
-							#WriteWordLine 0 3 "Recommended Citrix Hotfix $element is not installed"
-							$Table.Cell($xRow,2).Range.Text = "Not Installed"
-						}
-						Else
-						{
-							$Table.Cell($xRow,2).Range.Text = "Installed"
-						}
-					}
-					write-verbose "Move table of Citrix hotfixes to the right"
-					$Table.Rows.SetLeftIndent(75,1)
-					$table.AutoFitBehavior(1)
-
-					#return focus back to document
-					write-verbose "return focus back to document"
-					$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
-
-					#move to the end of the current document
-					write-verbose "move to the end of the current document"
-					$selection.EndKey($wdStory,$wdMove) | Out-Null
-					WriteWordLine 0 0 ""
 				}
+				Else
+				{
+					$RecommendedList = @("XA650R01W2K8R2X64061","XA650R01W2K8R2X64090")
+				}
+				write-verbose "Create Word Table for Citrix Hotfixes"
+				$TableRange = $doc.Application.Selection.Range
+				$Columns = 2
+				$Rows = $RecommendedList.count + 1
+				write-verbose "add Citrix recommended hotfix table to doc"
+				$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+				$table.Style = "Table Grid"
+				$table.Borders.InsideLineStyle = 1
+				$table.Borders.OutsideLineStyle = 1
+				$xRow = 1
+				write-verbose "format first row with column headings"
+				$Table.Cell($xRow,1).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,1).Range.Font.Bold = $True
+				$Table.Cell($xRow,1).Range.Text = "Citrix Hotfix"
+				$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorGray15
+				$Table.Cell($xRow,2).Range.Font.Bold = $True
+				$Table.Cell($xRow,2).Range.Text = "Status"
+				ForEach($element in $RecommendedList)
+				{
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = $element
+					If(!$HotfixArray -contains $element)
+					{
+						#missing a recommended Citrix hotfix
+						#WriteWordLine 0 3 "Recommended Citrix Hotfix $element is not installed"
+						$Table.Cell($xRow,2).Range.Text = "Not Installed"
+					}
+					Else
+					{
+						$Table.Cell($xRow,2).Range.Text = "Installed"
+					}
+				}
+				write-verbose "Move table of Citrix hotfixes to the right"
+				$Table.Rows.SetLeftIndent(75,1)
+				$table.AutoFitBehavior(1)
+
+				#return focus back to document
+				write-verbose "return focus back to document"
+				$doc.ActiveWindow.ActivePane.view.SeekView=$wdSeekMainDocument
+
+				#move to the end of the current document
+				write-verbose "move to the end of the current document"
+				$selection.EndKey($wdStory,$wdMove) | Out-Null
+				WriteWordLine 0 0 ""
 				#build list of installed Microsoft hotfixes
 				write-verbose "Processing Microsoft hotfixes for server $($server.ServerName)"
 				$MSInstalledHotfixes = Get-HotFix -computername $Server.ServerName -EA 0 | select-object -Expand HotFixID | sort-object HotFixID
@@ -1928,7 +1935,7 @@ If( $? )
 					$RecommendedList = @("KB2444328", "KB2465772", "KB2551503", "KB2571388", 
 										"KB2578159", "KB2617858", "KB2620656", "KB2647753",
 										"KB2661001", "KB2661332", "KB2731847", "KB2748302",
-										"KB917607")
+										"KB2775511","KB917607")
 				}
 				Else
 				{
