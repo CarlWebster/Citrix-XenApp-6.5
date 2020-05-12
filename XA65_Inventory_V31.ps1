@@ -97,12 +97,9 @@
 	http://www.carlwebster.com/documenting-a-citrix-xenapp-6-5-farm-with-microsoft-powershell-and-word-version-3-1
 .NOTES
 	NAME: XA65_Inventory_V31.ps1
-	VERSION: 3.15
+	VERSION: 3.16
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: July 3, 2013
-.REMARKS
-	To see the examples, type: "Get-Help .\XA65_Inventory_V31.ps1 -examples".
-	For more information, type: "Get-Help .\XA65_Inventory_V31.ps1 -detailed".
+	LASTEDIT: September 9, 2013
 #>
 
 
@@ -499,7 +496,7 @@ Function _SetDocumentProperty
 
 #Script begins
 
-if (!(Check-NeededPSSnapins "Citrix.Common.Commands","Citrix.Common.GroupPolicy","Citrix.XenApp.Commands")){
+if (!(Check-NeededPSSnapins "Citrix.Common.Commands","Citrix.XenApp.Commands")){
     #We're missing Citrix Snapins that we need
     write-error "Missing Citrix PowerShell Snap-ins Detected, check the console above for more information. Are you sure you are running this script on a XenApp 6.5 Server? Script will now close."
     break
@@ -3343,7 +3340,7 @@ Else
 							}
 							If($Setting.WaitForPrintersToBeCreated.State -ne "NotConfigured")
 							{
-								WriteWordLine 0 2 "ICA\Printing\Wait for printers to be created (desktop): " $Setting.WaitForPrintersToBeCreated.Values
+								WriteWordLine 0 2 "ICA\Printing\Wait for printers to be created (desktop): " $Setting.WaitForPrintersToBeCreated.State
 							}
 							If($Setting.ClientPrinterAutoCreation.State -ne "NotConfigured")
 							{
@@ -3359,7 +3356,7 @@ Else
 							}
 							If($Setting.GenericUniversalPrinterAutoCreation.State -ne "NotConfigured")
 							{
-								WriteWordLine 0 2 "ICA\Printing\Client Printers\Auto-create generic universal printer: " $Setting.GenericUniversalPrinterAutoCreation.Value
+								WriteWordLine 0 2 "ICA\Printing\Client Printers\Auto-create generic universal printer: " $Setting.GenericUniversalPrinterAutoCreation.State
 							}
 							If($Setting.ClientPrinterNames.State -ne "NotConfigured")
 							{
