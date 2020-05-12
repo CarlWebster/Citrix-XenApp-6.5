@@ -331,9 +331,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V42.ps1
-	VERSION: 4.24
+	VERSION: 4.25
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: October 5, 2015
+	LASTEDIT: October 29, 2015
 #>
 
 
@@ -402,8 +402,12 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
+#Version 4.25 29-Oct-2015
+#	Updated for CTX129229 that was updated September 2015
+#
 #Version 4.24 5-Oct-2015
 #	Added support for Word 2016
+#
 #Version 4.23 17-Aug-2015
 #	Updated for CTX129229 that was updated August 2015
 #
@@ -7841,16 +7845,16 @@ If($Section -eq "All" -or $Section -eq "Servers")
 						}
 
 						#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
-						#hotfix lists are from CTX129229 dated 18-DEC-2014
+						#hotfix lists are from CTX129229 dated 28-SEP-2015
 						Write-Verbose "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229"
 						Write-Verbose "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)"
 						If($HRP6Installed)
 						{
-							$RecommendedList = @()
+							$RecommendedList = @(XA650R06W2K8R2X64001)
 						}
 						ElseIf($HRP5Installed)
 						{
-							$RecommendedList = @("XA650W2K8R2X64R06")
+							$RecommendedList = @("XA650W2K8R2X64R06", "XA650R05W2K8R2X64020", "XA650R05W2K8R2X64025")
 						}
 						ElseIf($HRP4Installed)
 						{
@@ -7978,16 +7982,16 @@ If($Section -eq "All" -or $Section -eq "Servers")
 							{
 								#Server 2008 R2 SP1 installed
 								$RecommendedList = @("KB2620656", "KB2647753", "KB2728738", "KB2748302", 
-												"KB2775511", "KB2778831", "KB2896256", "KB2908190", 
-												"KB2920289", "KB917607")
+												"KB2775511", "KB2778831", "KB2871131", "KB2896256", 
+												"KB2908190", "KB2920289", "KB917607")
 							}
 							Else
 							{
 								#Server 2008 R2 without SP1 installed
 								$RecommendedList = @("KB2265716", "KB2383928", "KB2647753", "KB2728738", 
-												"KB2748302", "KB2775511", "KB2778831", "KB2896256", 
-												"KB3014783", "KB917607", "KB975777", "KB979530", 
-												"KB980663", "KB983460")
+												"KB2748302", "KB2775511", "KB2778831", "KB2871131", 
+												"KB2896256", "KB3014783", "KB917607", "KB975777", 
+												"KB979530", "KB980663", "KB983460")
 							}
 							
 							If($RecommendedList.count -gt 0)

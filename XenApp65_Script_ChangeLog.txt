@@ -8,6 +8,9 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.25 29-Oct-2015
+#	Updated for CTX129229 that was updated September 2015
+
 #Version 4.24 5-Oct-2015
 #	Added support for Word 2016
 
