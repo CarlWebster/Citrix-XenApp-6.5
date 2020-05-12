@@ -1,4 +1,4 @@
-#Requires -Version 3.0
+﻿#Requires -Version 3.0
 #This File is in Unicode format.  Do not edit in an ASCII editor.
 
 <#
@@ -354,9 +354,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V43.ps1
-	VERSION: 4.31
+	VERSION: 4.32
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: February 13, 2017
+	LASTEDIT: March 6, 2017
 #>
 
 
@@ -442,6 +442,23 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
+
+#Version 4.32 6-Mar-2017
+#	Added the following policy settings:
+#		Connector for Configuration Manager 2012\Advance warning frequency interval
+#		Connector for Configuration Manager 2012\Advance warning message box body text
+#		Connector for Configuration Manager 2012\Advance warning message box title
+#		Connector for Configuration Manager 2012\Advance warning time period
+#		Connector for Configuration Manager 2012\Deadline calculation time for newly available PVS images
+#		Connector for Configuration Manager 2012\Final force logoff message box body text
+#		Connector for Configuration Manager 2012\Final force logoff message box title
+#		Connector for Configuration Manager 2012\Force logoff grace period
+#		Connector for Configuration Manager 2012\Force logoff message box body text
+#		Connector for Configuration Manager 2012\Force logoff message box title
+#		Connector for Configuration Manager 2012\PVS Integration enabled
+#		Connector for Configuration Manager 2012\Reboot message box body text
+#		Connector for Configuration Manager 2012\Regular time interval at which the agent task is to run
+#	Fixed the extraneous stuff displayed on the console when the ADGPRDRV psdrive was created
 
 #Version 4.31 13-Feb-2017
 #	Added Chinese language support
@@ -2869,6 +2886,167 @@ Function ProcessCitrixPolicies
 						If($Setting.Type -eq "Computer")
 						{
 							Write-Verbose "$(Get-Date): `t`tComputer settings"
+							
+							Write-Verbose "$(Get-Date): `t`t`tConnector for Configuration Manager 2012"
+							If((validStateProp $Setting AdvanceWarningFrequency State ) -and ($Setting.AdvanceWarningFrequency.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Advance warning frequency interval: "
+								$tmp = $Setting.AdvanceWarningFrequency.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting AdvanceWarningMessageBody State ) -and ($Setting.AdvanceWarningMessageBody.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Advance warning message box body text: "
+								$tmpArray = $Setting.AdvanceWarningMessageBody.Value.Split("`n")
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $TmpArray)
+								{
+									If($Null -eq $Thing)
+									{
+										$Thing = ''
+									}
+									$cnt++
+									$tmp = "$($Thing) "
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											WriteWordLine 0 2 $txt ""
+											WriteWordLine 0 3 "" $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											WriteWordLine 0 3 $txt $tmp
+										}
+									}
+									$txt = ""
+								}
+								$TmpArray = $Null
+								$tmp = $Null
+							}
+							If((validStateProp $Setting AdvanceWarningMessageTitle State ) -and ($Setting.AdvanceWarningMessageTitle.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Advance warning message box title: "
+								$tmp = $Setting.AdvanceWarningMessageTitle.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting AdvanceWarningPeriod State ) -and ($Setting.AdvanceWarningPeriod.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Advance warning time period: "
+								$tmp = $Setting.AdvanceWarningPeriod.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting PvsImageUpdateDeadlinePeriod State ) -and ($Setting.PvsImageUpdateDeadlinePeriod.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Deadline calculation time for newly available PVS images: "
+								$tmp = $Setting.PvsImageUpdateDeadlinePeriod.Value
+								WriteWordLine 0 2 $txt $tmp
+							}
+							If((validStateProp $Setting FinalForceLogoffMessageBody State ) -and ($Setting.FinalForceLogoffMessageBody.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Final force logoff message box body text: "
+								$tmpArray = $Setting.FinalForceLogoffMessageBody.Value.Split("`n")
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $TmpArray)
+								{
+									If($Null -eq $Thing)
+									{
+										$Thing = ''
+									}
+									$cnt++
+									$tmp = "$($Thing) "
+									If($cnt -eq 1)
+									{
+										WriteWordLine 0 2 $txt ""
+										WriteWordLine 0 3 "" $tmp
+									}
+									Else
+									{
+										WriteWordLine 0 3 $txt $tmp
+									}
+									$txt = ""
+								}
+								$TmpArray = $Null
+								$tmp = $Null
+							}
+							If((validStateProp $Setting FinalForceLogoffMessageTitle State ) -and ($Setting.FinalForceLogoffMessageTitle.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Final force logoff message box title: "
+								$tmp = $Setting.FinalForceLogoffMessageTitle.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting ForceLogoffGracePeriod State ) -and ($Setting.ForceLogoffGracePeriod.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Force logoff grace period: "
+								$tmp = $Setting.ForceLogoffGracePeriod.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting ForceLogoffMessageBody State ) -and ($Setting.ForceLogoffMessageBody.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Force logoff message box body text: "
+								$tmpArray = $Setting.ForceLogoffMessageBody.Value.Split("`n")
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $TmpArray)
+								{
+									If($Null -eq $Thing)
+									{
+										$Thing = ''
+									}
+									$cnt++
+									$tmp = "$($Thing) "
+									If($cnt -eq 1)
+									{
+										WriteWordLine 0 2 $txt ""
+										WriteWordLine 0 3 "" $tmp
+									}
+									Else
+									{
+										WriteWordLine 0 3 $txt $tmp
+									}
+									$txt = ""
+								}
+								$TmpArray = $Null
+								$tmp = $Null
+							}
+							If((validStateProp $Setting ForceLogoffMessageTitle State ) -and ($Setting.ForceLogoffMessageTitle.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Force logoff message box title: "
+								$tmp = $Setting.ForceLogoffMessageTitle.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting ImageProviderIntegrationEnabled State ) -and ($Setting.ImageProviderIntegrationEnabled.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\PVS Integration enabled: "
+								$tmp = $Setting.ImageProviderIntegrationEnabled.State
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting RebootMessageBody State ) -and ($Setting.RebootMessageBody.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Reboot message box body text: "
+								$tmp = $Setting.RebootMessageBody.Value
+								WriteWordLine 0 2 $txt ""
+								WriteWordLine 0 3 "" $tmp
+							}
+							If((validStateProp $Setting AgentTaskInterval State ) -and ($Setting.AgentTaskInterval.State -ne "NotConfigured"))
+							{
+								$txt = "Connector for Configuration Manager 2012\Regular time interval at which the agent task is to run: "
+								$tmp = $Setting.AgentTaskInterval.Value
+								WriteWordLine 0 2 $txt $tmp
+							}
+							
 							Write-Verbose "$(Get-Date): `t`t`tICA"
 							WriteWordLine 0 1 "Computer settings:"
 							If($Setting.IcaListenerTimeout.State -ne "NotConfigured")
@@ -7933,7 +8111,7 @@ If($Section -eq "All" -or $Section -eq "Policies")
 				ForEach($CtxGPO in $CtxGPOArray)
 				{
 					Write-Verbose "$(Get-Date): Creating ADGpoDrv PSDrive"
-					New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope "Global" 4>$Null
+					New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope "Global" *>$Null
 					If(Get-PSDrive ADGpoDrv -EA 0)
 					{
 						Write-Verbose "$(Get-Date): Processing Citrix AD Policy $($CtxGPO)"

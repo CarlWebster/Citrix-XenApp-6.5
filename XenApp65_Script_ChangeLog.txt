@@ -8,6 +8,23 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.32 6-Mar-2017
+#	Added the following policy settings:
+#		Connector for Configuration Manager 2012\Advance warning frequency interval
+#		Connector for Configuration Manager 2012\Advance warning message box body text
+#		Connector for Configuration Manager 2012\Advance warning message box title
+#		Connector for Configuration Manager 2012\Advance warning time period
+#		Connector for Configuration Manager 2012\Deadline calculation time for newly available PVS images
+#		Connector for Configuration Manager 2012\Final force logoff message box body text
+#		Connector for Configuration Manager 2012\Final force logoff message box title
+#		Connector for Configuration Manager 2012\Force logoff grace period
+#		Connector for Configuration Manager 2012\Force logoff message box body text
+#		Connector for Configuration Manager 2012\Force logoff message box title
+#		Connector for Configuration Manager 2012\PVS Integration enabled
+#		Connector for Configuration Manager 2012\Reboot message box body text
+#		Connector for Configuration Manager 2012\Regular time interval at which the agent task is to run
+#	Fixed the extraneous stuff displayed on the console when the ADGPRDRV psdrive was created
+
 #Version 4.31 13-Feb-2017
 #	Added Chinese language support
 #	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
