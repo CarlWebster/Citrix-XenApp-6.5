@@ -149,9 +149,9 @@
 	No objects are output from this script.  This script creates a Word document.
 .NOTES
 	NAME: XA65_Inventory_V4.ps1
-	VERSION: 4.04
+	VERSION: 4.05
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith and Jeff Wouters)
-	LASTEDIT: January 1, 2014
+	LASTEDIT: January 3, 2014
 #>
 
 
@@ -281,6 +281,8 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 #Updated 1-Jan-2014
 #	Updated for CTX129229 from 31-Dec-2013
 #	Add check for HRP03
+#Updated 3-Jan-2014
+#	If remoting is used, verify that remoting server is not in session-only mode
 
 Set-StrictMode -Version 2
 
@@ -3539,6 +3541,15 @@ If(![String]::IsNullOrEmpty($RemoteXAServer))
 If($Remoting)
 {
 	Write-Verbose "$(Get-Date): Remoting is enabled to XenApp server $RemoteXAServer"
+	#now need to make sure the script is not being run against a session-only host
+	$Server = Get-XAServer -ServerName $RemoteXAServer -EA 0
+	If($Server.ElectionPreference -eq "WorkerMode")
+	{
+		Write-Warning "This script cannot be run remotely against a Session-only Host Server."
+		Write-Warning "Use Set-XADefaultComputerName XA65ControllerServerName or run the script on a controller."
+		Write-Error "Script cannot continue.  See messages above."
+		Exit
+	}
 }
 Else
 {
