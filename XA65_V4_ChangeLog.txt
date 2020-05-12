@@ -8,6 +8,31 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.1 19-Jan-2014
+#	Added additional error checking when retrieving Network Interface WMI data
+#	Added additional Write-Verbose statements for the AD policy function
+#	Added beginning and ending dates for retrieving Configuration Logging data
+#	Added four policy settings that are only for AD based Citrix policies
+#	Added help text to show the script produces a Word or PDF document
+#	Added help text to show the Summary option cannot be used with either the Software or Hardware options
+#	Added Parameter sets to support the Summary option
+#	Added Summary report option
+#	Changed Configuration Logging section to a Word table
+#	Changed to using $PSCulture for Word culture setting
+#	Don't abort script if Cover Page is not found
+#	Fixed bug where the AD Policy function did not work if there was only one AD policy
+#	For applications, move list of servers and worker groups to table
+#	For the software inventory add DisplayVersion to the table
+#	For Worker Groups, move list of servers and applications to table
+#	Function, validStateProp, created by Michael B. Smith to handle "property cannot be found on this object" error on Mobile Experience policy settings
+#	If remoting is used, verify that remoting server is not in session-only mode
+#	In Appendix B, if the License Server cell is empty replace with the text "Set by policy"
+#	Only include Valid hotfixes in the table of installed Citrix hotfixes
+#	Removed the Valid column for the Citrix hotfix table
+#	Removed the extra blank line between Administrators
+#	The XenApp 6.5 Mobility Pack added a new User policy node with three settings
+#	Updated for CTX129229 that was updated on 31-Dec-2013
+
 #Updated 3-Jan-2014
 #	If remoting is used, verify that remoting server is not in session-only mode
 
