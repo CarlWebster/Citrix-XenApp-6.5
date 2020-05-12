@@ -218,6 +218,23 @@
 	
 	This parameter is disabled by default.
 	This parameter has an alias of NoAD.
+.PARAMETER Policies
+	Give detailed information for both Site and Citrix AD based Policies.
+	
+	Using the Policies parameter can cause the report to take a very long time 
+	to complete and can generate an extremely long report.
+	
+	Note: The Citrix Group Policy PowerShell module will not load from an elevated 
+	PowerShell session. 
+	If the module is manually imported, the module is not detected from an elevated 
+	PowerShell session.
+	
+	There are three related parameters: Policies, NoPolicies, and NoADPolicies.
+	
+	Policies and NoPolicies are mutually exclusive and priority is given to NoPolicies.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of Pol.
 .PARAMETER Folder
 	Specifies the optional output folder to save the output report. 
 .PARAMETER MaxDetails
@@ -549,9 +566,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.00
+	VERSION: 5.01
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: December 13, 2018
+	LASTEDIT: April 21, 2019
 #>
 
 #endregion
@@ -757,7 +774,14 @@ Param(
 #http://www.CarlWebster.com
 #Version 5.00 created on June 1, 2015
 
-#V5.00 released to the community 14-Dec-2018
+#V5.01 21-Apr-2019
+#	If Policies parameter is used, check to see if PowerShell session is elevated. If it is,
+#		abort the script. This is the #2 support email.
+#		Added a Note to the Help Text and ReadMe file about the Citrix.GroupPolicy.Commands module:
+#		Note: The Citrix Group Policy PowerShell module will not load from an elevated PowerShell session. 
+#		If the module is manually imported, the module is not detected from an elevated PowerShell session.
+
+##V5.00 released to the community 14-Dec-2018
 #	Removed minimum requirement for PowerShell V3
 #	Fixed all code to make it work in PowerShell V2
 #	Removed all SMTP related code as we could not could that code to work with PowerShell V2
@@ -1215,6 +1239,51 @@ If($Folder -ne "")
 	{
 		#does not exist
 		Write-Error "Folder $Folder does not exist.  Script cannot continue"
+		Exit
+	}
+}
+
+#V5.01  Add check if $Policies -eq $True, see if PowerShell session is elevated
+#		If session is elevated, abort the script
+Function ElevatedSession
+{
+	#added in V5.01
+	$currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent() )
+
+	If($currentPrincipal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ))
+	{
+		Write-Verbose "$(Get-Date): This is an elevated PowerShell session"
+		Return $True
+	}
+	Else
+	{
+		Write-Verbose "$(Get-Date): This is NOT an elevated PowerShell session" -Foreground White
+		Return $False
+	}
+}
+
+If($Policies -eq $True)
+{
+	Write-Verbose "$(Get-Date): Testing for elevated PowerShell session."
+	#see if session is elevated
+	$Elevated = ElevatedSession
+	
+	If($Elevated -eq $True)
+	{
+		#abort script
+		Write-Error "
+		`n
+		`n
+		`tThe Citrix Group Policy module cannot be loaded or found in an elevated PowerShell session.
+		`n
+		`n
+		`tThe Policies parameter was used and this is an elevated PowerShell session.
+		`n
+		`n
+		`tRerun the script from a non-elevated PowerShell session. The script will now close.
+		`n
+		`n"
+		Write-Verbose "$(Get-Date): "
 		Exit
 	}
 }
