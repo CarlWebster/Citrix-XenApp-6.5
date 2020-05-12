@@ -10,6 +10,7 @@
 	Document includes a Cover Page, Table of Contents and Footer.
 	Version 4.xx includes support for the following language versions of Microsoft Word:
 		Catalan
+		Chinese
 		Danish
 		Dutch
 		English
@@ -353,9 +354,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V43.ps1
-	VERSION: 4.30
+	VERSION: 4.31
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: February 7, 2017
+	LASTEDIT: February 13, 2017
 #>
 
 
@@ -441,6 +442,10 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
+
+#Version 4.31 13-Feb-2017
+#	Added Chinese language support
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
 
 #Version 4.30 7-Feb-2017
 #	Fix numerous typos
@@ -1547,7 +1552,7 @@ Function SetWordHashTable
 {
 	Param([string]$CultureCode)
 
-	#optimized by Michael B. SMith
+	#optimized by Michael B. Smith
 	
 	# DE and FR translations for Word 2010 by Vladimir Radojevic
 	# Vladimir.Radojevic@Commerzreal.com
@@ -1569,31 +1574,23 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-
+	#zh - Chinese
+	
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automática 2' }
-
-			'da-'	{ 'Automatisk tabel 2' }
-
-			'de-'	{ 'Automatische Tabelle 2' }
-
-			'en-'	{ 'Automatic Table 2' }
-
-			'es-'	{ 'Tabla automática 2' }
-
-			'fi-'	{ 'Automaattinen taulukko 2' }
-
-			'fr-'	{ 'Sommaire Automatique 2' }
-
-			'nb-'	{ 'Automatisk tabell 2' }
-
-			'nl-'	{ 'Automatische inhoudsopgave 2' }
-
-			'pt-'	{ 'Sumário Automático 2' }
-
-			'sv-'	{ 'Automatisk innehållsförteckning2' }
+			'ca-'	{ 'Taula automática 2'; Break }
+			'da-'	{ 'Automatisk tabel 2'; Break }
+			'de-'	{ 'Automatische Tabelle 2'; Break }
+			'en-'	{ 'Automatic Table 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
+			'fi-'	{ 'Automaattinen taulukko 2'; Break }
+			'fr-'	{ 'Table automatique 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
+			'nb-'	{ 'Automatisk tabell 2'; Break }
+			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -1614,6 +1611,7 @@ Function GetCulture
 	#codes obtained from http://support.microsoft.com/kb/221435
 	#http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
+	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -1636,10 +1634,12 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_} {$CultureCode = "ca-"}
+		{$ChineseArray -contains $_} {$CultureCode = "zh-"}
 		{$DanishArray -contains $_} {$CultureCode = "da-"}
 		{$DutchArray -contains $_} {$CultureCode = "nl-"}
 		{$EnglishArray -contains $_} {$CultureCode = "en-"}
@@ -1885,6 +1885,16 @@ Function ValidateCoverPage
 					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
 					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
 					"Övergående")
+				}
+			}
+
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
 				}
 			}
 

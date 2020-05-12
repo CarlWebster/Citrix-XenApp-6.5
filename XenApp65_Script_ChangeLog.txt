@@ -8,6 +8,10 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.31 13-Feb-2017
+#	Added Chinese language support
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+
 #Version 4.30 7-Feb-2017
 #	Fix numerous typos
 #	Remove references to Text and HTML as those are never going to be added
