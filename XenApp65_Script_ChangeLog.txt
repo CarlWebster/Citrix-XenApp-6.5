@@ -8,6 +8,21 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 5.00 created on June 1, 2015
+#V5.00 released to the community 14-Dec-2018
+#	Removed minimum requirement for PowerShell V3
+#	Fixed all code to make it work in PowerShell V2
+#	Removed all SMTP related code as we could not could that code to work with PowerShell V2
+#	Added HTML and Text output options
+#	Added parameters to bring the code up to the same standard as the other documentation scripts
+#		AdminAddress
+#		MaxDetails
+#		Dev
+#		ScriptInfo
+#		Log
+#		NoPolicies
+#		NoADPolicies
+
 #Version 4.33 13-Jun-2017
 #	Add four new Cover Page properties
 #		Company Address
