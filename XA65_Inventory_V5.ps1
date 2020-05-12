@@ -170,12 +170,12 @@
 .PARAMETER StartDate
 	Start date, in MM/DD/YYYY HH:MM format, for the Configuration Logging report.
 	Default is today's date minus seven days.
-	If the StartDate is entered as 01/01/2019, the date becomes 01/01/2019 00:00:00.
+	If the StartDate is entered as 01/01/2020, the date becomes 01/01/2020 00:00:00.
 	This parameter has an alias of SD.
 .PARAMETER EndDate
 	End date, in MM/DD/YYYY HH:MM format, for the Configuration Logging report.
 	Default is today's date.
-	If the EndDate is entered as 01/01/2019, the date becomes 01/01/2019 00:00:00.
+	If the EndDate is entered as 01/01/2020, the date becomes 01/01/2020 00:00:00.
 	This parameter has an alias of ED.
 .PARAMETER Summary
 	Only give summary information, no details.
@@ -184,8 +184,8 @@
 .PARAMETER AddDateTime
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2019 at 6PM is 2019-06-01_1800.
-	Output filename will be ReportName_2019-06-01_1800.docx (or .pdf).
+	June 1, 2020 at 6PM is 2020-06-01_1800.
+	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER Section
@@ -388,7 +388,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2019" -EndDate "01/02/2019" 
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020" -EndDate "01/02/2020" 
 	
 	Will use all Default values and add additional information for each server about its 
 	installed applications.
@@ -400,9 +400,9 @@
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
-	Will return all Configuration Logging entries from "01/01/2019 00:00:00" through "01/02/2019 "00:00:00".
+	Will return all Configuration Logging entries from "01/01/2020 00:00:00" through "01/02/2020 "00:00:00".
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2019" -EndDate "01/01/2019" 
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020" -EndDate "01/01/2020" 
 	
 	Will use all Default values and add additional information for each server about its 
 	installed applications.
@@ -413,11 +413,11 @@
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
-	Will return all Configuration Logging entries from "01/01/2019 00:00:00" through 
-	"01/01/2019 "00:00:00".  In other words, nothing is returned.
+	Will return all Configuration Logging entries from "01/01/2020 00:00:00" through 
+	"01/01/2020 "00:00:00".  In other words, nothing is returned.
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2019 21:00:00" 
-	-EndDate "01/01/2019 22:00:00" 
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020 21:00:00" 
+	-EndDate "01/01/2020 22:00:00" 
 	
 	Will use all Default values and add additional information for each server about its 
 	installed applications.
@@ -429,7 +429,7 @@
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
-	Will return all Configuration Logging entries from 9PM to 10PM on 01/01/2019.
+	Will return all Configuration Logging entries from 9PM to 10PM on 01/01/2020.
 .EXAMPLE
 	PS C:\PSScript .\XA65_Inventory_V5.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster"
@@ -505,8 +505,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2019 at 6PM is 2019-06-01_1800.
-	Output filename will be XA65FarmName_2019-06-01_1800.docx
+	June 1, 2020 at 6PM is 2020-06-01_1800.
+	Output filename will be XA65FarmName_2020-06-01_1800.docx
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -PDF -AddDateTime
 	
@@ -523,8 +523,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2019 at 6PM is 2019-06-01_1800.
-	Output filename will be XA65FarmName_2019-06-01_1800.pdf
+	June 1, 2020 at 6PM is 2020-06-01_1800.
+	Output filename will be XA65FarmName_2020-06-01_1800.pdf
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -Folder \\FileServer\ShareName
 	
@@ -566,9 +566,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.01
+	VERSION: 5.02
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: April 21, 2019
+	LASTEDIT: December 17, 2019
 #>
 
 #endregion
@@ -774,14 +774,22 @@ Param(
 #http://www.CarlWebster.com
 #Version 5.00 created on June 1, 2015
 
+#V5.02 17-Dec-2019
+#	Fix Swedish Table of Contents (Thanks to Johan Kallio)
+#		From 
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#		To
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+#	Updated help text
+#
 #V5.01 21-Apr-2019
 #	If Policies parameter is used, check to see if PowerShell session is elevated. If it is,
 #		abort the script. This is the #2 support email.
 #		Added a Note to the Help Text and ReadMe file about the Citrix.GroupPolicy.Commands module:
 #		Note: The Citrix Group Policy PowerShell module will not load from an elevated PowerShell session. 
 #		If the module is manually imported, the module is not detected from an elevated PowerShell session.
-
-##V5.00 released to the community 14-Dec-2018
+#
+#V5.00 released to the community 14-Dec-2018
 #	Removed minimum requirement for PowerShell V3
 #	Fixed all code to make it work in PowerShell V2
 #	Removed all SMTP related code as we could not could that code to work with PowerShell V2
@@ -2617,7 +2625,8 @@ Function SetWordHashTable
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
 			'pt-'	{ 'Sumário Automático 2'; Break }
-			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			# fix in 5.02 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
@@ -19218,6 +19227,12 @@ Function ProcessScriptEnd
 		}
 	}
 	$ErrorActionPreference = $SaveEAPreference
+			
+	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
+	Write-Host "               This FREE script was brought to you by Conversant Group              " -BackgroundColor Black -ForegroundColor White
+	Write-Host "We design, build, and manage infrastructure for a secure, dependable user experience" -BackgroundColor Black -ForegroundColor White
+	Write-Host "                       Visit our website conversantgroup.com                        " -BackgroundColor Black -ForegroundColor White
+	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
 }
 #endregion
 
