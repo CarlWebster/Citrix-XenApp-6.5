@@ -8,6 +8,9 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
+#Version 4.23 17-Aug-2015
+#	Updated for CTX129229 that was updated August 2015
+
 #Version 4.22 25-Jul-2015
 #	Updated for CTX129229 dated 1-Apr-2015
 #	Add checking for KB3014783 for Server 2008 R2 w/o SP1
