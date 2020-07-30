@@ -568,9 +568,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.03
+	VERSION: 5.04
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: May 9, 2020
+	LASTEDIT: July 30, 2020
 #>
 
 #endregion
@@ -776,6 +776,9 @@ Param(
 #http://www.CarlWebster.com
 #Version 5.00 created on June 1, 2015
 
+#V5.04 30-Jul-2020
+#	Fixed a lot more code, especially parameter variable initialization, that just didn't work in PoSH V2
+#
 #V5.03 9-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
 #	Add Receive Side Scaling setting to Function OutputNICItem
@@ -826,6 +829,124 @@ Set-StrictMode -Version 2
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 
+#add this for PowerShell V2
+If($Null -eq $Text)
+{
+	$Text = $False
+}
+If($Null -eq $HTML)
+{
+	$HTML = $False
+}
+If($Null -eq $PDF)
+{
+	$PDF = $False
+}
+If($Null -eq $MSWord)
+{
+	$MSWord = $False
+}
+If($Null -eq $AddDateTime)
+{
+	$AddDateTime = $False
+}
+If($Null -eq $Folder)
+{
+	$Folder = ""
+}
+If($Null -eq $Dev)
+{
+	$Dev = $False
+}
+If($Null -eq $ScriptInfo)
+{
+	$ScriptInfo = $False
+}
+If($Null -eq $UserName)
+{
+	$UserName = $False
+}
+If($Null -eq $CoverPage)
+{
+	$CoverPage = $False
+}
+If($Null -eq $CompanyPhone)
+{
+	$CompanyPhone = $False
+}
+If($Null -eq $CompanyFax)
+{
+	$CompanyFax = $False
+}
+If($Null -eq $CompanyEmail)
+{
+	$CompanyEmail = $False
+}
+If($Null -eq $CompanyAddress)
+{
+	$CompanyAddress = $False
+}
+
+If(!(Test-Path Variable:Text))
+{
+	$Text = $False
+}
+If(!(Test-Path Variable:HTML))
+{
+	$HTML = $False
+}
+If(!(Test-Path Variable:PDF))
+{
+	$PDF = $False
+}
+If(!(Test-Path Variable:MSWord))
+{
+	$MSWord = $False
+}
+If(!(Test-Path Variable:AddDateTime))
+{
+	$AddDateTime = $False
+}
+If(!(Test-Path Variable:Folder))
+{
+	$Folder = ""
+}
+If(!(Test-Path Variable:Dev))
+{
+	$Dev = $False
+}
+If(!(Test-Path Variable:ScriptInfo))
+{
+	$ScriptInfo = $False
+}
+If(!(Test-Path Variable:UserName))
+{
+	$UserName = $False
+}
+If(!(Test-Path Variable:CompanyAddress))
+{
+	$CompanyAddress = $False
+}
+If(!(Test-Path Variable:CompanyEmail))
+{
+	$CompanyEmail = $False
+}
+If(!(Test-Path Variable:CompanyFax))
+{
+	$CompanyFax = $False
+}
+If(!(Test-Path Variable:CompanyPhone))
+{
+	$CompanyPhone = $False
+}
+If(!(Test-Path Variable:CoverPage))
+{
+	$CoverPage = $False
+}
+
+#end of adding for PoSH V2
+
+
 If($Null -eq $MSWord)
 {
 	If($Text -or $HTML -or $PDF)
@@ -865,57 +986,62 @@ Write-Host "$(Get-Date): Testing output parameters" -BackgroundColor Black -Fore
 If($MSWord)
 {
 	Write-Host "$(Get-Date): MSWord is set" -BackgroundColor Black -ForegroundColor Yellow
+	$PDF = $False
+	$Text = $False
+	$HTML =$False
 }
-ElseIf($PDF)
+If($PDF)
 {
 	Write-Host "$(Get-Date): PDF is set" -BackgroundColor Black -ForegroundColor Yellow
+	$Text = $False
+	$HTML =$False
+	$MSWord = $False
 }
-ElseIf($Text)
+If($Text)
 {
 	Write-Host "$(Get-Date): Text is set" -BackgroundColor Black -ForegroundColor Yellow
+	$PDF = $False
+	$HTML =$False
+	$MSWord = $False
 }
-ElseIf($HTML)
+If($HTML)
 {
 	Write-Host "$(Get-Date): HTML is set" -BackgroundColor Black -ForegroundColor Yellow
+	$PDF = $False
+	$Text = $False
+	$MSWord = $False
 }
-Else
-{
-	$ErrorActionPreference = $SaveEAPreference
-	Write-Host "$(Get-Date): Unable to determine output parameter" -BackgroundColor Black -ForegroundColor Yellow
-	If($Null -eq $MSWord)
-	{
-		Write-Host "$(Get-Date): MSWord is Null" -BackgroundColor Black -ForegroundColor Yellow
-	}
-	ElseIf($Null -eq $PDF)
-	{
-		Write-Host "$(Get-Date): PDF is Null" -BackgroundColor Black -ForegroundColor Yellow
-	}
-	ElseIf($Null -eq $Text)
-	{
-		Write-Host "$(Get-Date): Text is Null" -BackgroundColor Black -ForegroundColor Yellow
-	}
-	ElseIf($Null -eq $HTML)
-	{
-		Write-Host "$(Get-Date): HTML is Null" -BackgroundColor Black -ForegroundColor Yellow
-	}
-	Else
-	{
-		Write-Host "$(Get-Date): MSWord is $($MSWord)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): PDF is $($PDF)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): Text is $($Text)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): HTML is $($HTML)" -BackgroundColor Black -ForegroundColor Yellow
-	}
-	Write-Error "
-	`n`n
-	`t`t
-	Unable to determine output parameter.
-	`n`n
-	`t`t
-	Script cannot continue.
-	`n`n
-	"
-	Exit
-}
+
+#move these up here for PoSH V2
+[int]$Script:TotalPublishedApps = 0
+[int]$Script:TotalPublishedContent = 0
+[int]$Script:TotalPublishedDesktops = 0
+[int]$Script:TotalStreamedApps = 0
+[int]$Script:TotalApps = 0
+$Script:SessionSharingItems = @()
+[int]$Script:TotalComputerPolicies = 0
+[int]$Script:TotalUserPolicies = 0
+[int]$Script:TotalIMAPolicies = 0
+[int]$Script:TotalADPolicies = 0
+[int]$Script:TotalADPoliciesNotProcessed = 0
+[int]$Script:TotalPolicies = 0
+[int]$Script:TotalFullAdmins = 0
+[int]$Script:TotalViewAdmins = 0
+[int]$Script:TotalCustomAdmins = 0
+[int]$Script:TotalAdmins = 0
+[int]$Script:TotalConfigLogItems = 0
+[int]$Script:TotalLBPolicies = 0
+[int]$Script:TotalLoadEvaluators = 0
+[int]$Script:TotalControllers = 0
+[int]$Script:TotalWorkers = 0
+[int]$Script:TotalServers = 0
+$Script:ServerItems = @()
+[int]$Script:TotalWGByServerName = 0
+[int]$Script:TotalWGByServerGroup = 0
+[int]$Script:TotalWGByOU = 0
+[int]$Script:TotalWGs = 0
+[int]$Script:TotalZones = 0
+#end of adding for PoSH V2
 
 #If the MaxDetails parameter is used, set a bunch of stuff true and some stuff false
 If($MaxDetails)
@@ -4873,7 +4999,14 @@ Function SaveandCloseTextDocument
 		$Script:FileName1 += "_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 	}
 
-	Write-Output $global:Output.ToString() | Out-File $Script:Filename1 4>$Null
+	If($psversiontable.psversion.major -eq 2)
+	{
+		Write-Output $global:Output.ToString() | Out-File $Script:Filename1
+	}
+	Else
+	{
+		Write-Output $global:Output.ToString() | Out-File $Script:Filename1 4>$Null
+	}
 }
 
 Function SaveandCloseHTMLDocument
@@ -5376,7 +5509,7 @@ Function ProcessConfigLogSettings
 	If(!$Summary -and ($Section -eq "All" -or $Section -eq "ConfigLog"))
 	{
 		Write-Host "$(Get-Date): Processing Configuration Logging" -BackgroundColor Black -ForegroundColor Yellow
-		[bool]$ConfigLog = $False
+		[bool]$Script:ConfigLog = $False
 		$ConfigurationLogging = Get-XAConfigurationLog -EA 0
 
 		If($? -and $Null -ne $ConfigurationLogging)
@@ -5528,12 +5661,6 @@ Function ProcessAdministrators
 	If($Section -eq "All" -or $Section -eq "Admins")
 	{
 		Write-Host "$(Get-Date): Processing Administrators" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalFullAdmins = 0
-		[int]$Script:TotalViewAdmins = 0
-		[int]$Script:TotalCustomAdmins = 0
-		[int]$Script:TotalAdmins = 0
-
 		Write-Host "$(Get-Date): `tRetrieving Administrators" -BackgroundColor Black -ForegroundColor Yellow
 
 		$Administrators = Get-XAAdministrator -EA 0| Sort-Object AdministratorName
@@ -5913,12 +6040,6 @@ Function OutputApplications
 	Param([object] $Applications)
 
 	Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-	[int]$Script:TotalPublishedApps = 0
-	[int]$Script:TotalPublishedContent = 0
-	[int]$Script:TotalPublishedDesktops = 0
-	[int]$Script:TotalStreamedApps = 0
-	[int]$Script:TotalApps = 0
-	$Script:SessionSharingItems = @()
 
 	If($MSWord -or $PDF)
 	{
@@ -7287,14 +7408,11 @@ Function ProcessConfigLogging
 {
 	If(!$Summary -and ($Section -eq "All" -or $Section -eq "ConfigLog"))
 	{
-		Write-Host "$(Get-Date): Setting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalConfigLogItems = 0
-
-		If($ConfigLog)
+		If($Script:ConfigLog)
 		{
 			Write-Host "$(Get-Date): Processing Configuration Logging/History Report" -BackgroundColor Black -ForegroundColor Yellow
 			#history AKA Configuration Logging report
-			#only process if $ConfigLog = $True and XA65ConfigLog.udl file exists
+			#only process if $Script:ConfigLog = $True and XA65ConfigLog.udl file exists
 			#build connection string
 			#User ID is account that has access permission for the configuration logging database
 			#Initial Catalog is the name of the Configuration Logging SQL Database
@@ -7434,7 +7552,6 @@ Function ProcessLoadBalancingPolicies
 	{
 		#load balancing policies
 		Write-Host "$(Get-Date): Processing Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalLBPolicies = 0
 
 		Write-Host "$(Get-Date): `tRetrieving Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
 		$LoadBalancingPolicies = @(Get-XALoadBalancingPolicy -EA 0 | Sort-Object PolicyName)
@@ -8103,8 +8220,6 @@ Function ProcessLoadEvaluators
 	{
 		#load evaluators
 		Write-Host "$(Get-Date): Processing Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalLoadEvaluators = 0
 
 		Write-Host "$(Get-Date): `tRetrieving Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
 		$LoadEvaluators = Get-XALoadEvaluator -EA 0| Sort-Object LoadEvaluatorName
@@ -8589,10 +8704,6 @@ Function ProcessServers
 	{
 		#servers
 		Write-Host "$(Get-Date): Processing Servers" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalControllers = 0
-		[int]$Script:TotalWorkers = 0
-		[int]$Script:TotalServers = 0
-		$Script:ServerItems = @()
 
 		Write-Host "$(Get-Date): `tRetrieving Servers" -BackgroundColor Black -ForegroundColor Yellow
 		If($Summary)
@@ -10177,11 +10288,6 @@ Function ProcessWorkerGroups
 	{
 		#worker groups
 		Write-Host "$(Get-Date): Processing Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalWGByServerName = 0
-		[int]$Script:TotalWGByServerGroup = 0
-		[int]$Script:TotalWGByOU = 0
-		[int]$Script:TotalWGs = 0
 
 		Write-Host "$(Get-Date): `tRetrieving Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
 		$WorkerGroups = Get-XAWorkerGroup -EA 0| Sort-Object WorkerGroupName
@@ -10603,8 +10709,6 @@ Function ProcessZones
 	{
 		#zones
 		Write-Host "$(Get-Date): Processing Zones" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
-		[int]$Script:TotalZones = 0
 
 		Write-Host "$(Get-Date): `tRetrieving Zones" -BackgroundColor Black -ForegroundColor Yellow
 		$Zones = Get-XAZone -EA 0| Sort-Object ZoneName
@@ -10952,13 +11056,6 @@ Function ProcessPolicies
 {
 	Write-Host "$(Get-Date): Processing Policies" -BackgroundColor Black -ForegroundColor Yellow
 	
-	[int]$Script:TotalComputerPolicies = 0
-	[int]$Script:TotalUserPolicies = 0
-	[int]$Script:TotalIMAPolicies = 0
-	[int]$Script:TotalADPolicies = 0
-	[int]$Script:TotalADPoliciesNotProcessed = 0
-	[int]$Script:TotalPolicies = 0
-
 	If($Policies)
 	{
 		ProcessCitrixPolicies "localfarmgpo" "Computer"

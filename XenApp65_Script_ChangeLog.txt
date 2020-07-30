@@ -6,6 +6,9 @@
 
 #Version 5.00 created on June 1, 2015
 
+#V5.04 30-Jul-2020
+#	Fixed a lot more code, especially parameter variable initialization, that just didn't work in PoSH V2
+
 #V5.03 9-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
 #	Add Receive Side Scaling setting to Function OutputNICItem
