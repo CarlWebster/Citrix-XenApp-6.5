@@ -9,20 +9,19 @@
 	Creates an inventory of a Citrix XenApp 6.5 Farm using Microsoft PowerShell, Word,
 	plain text or HTML.
 	
-	Script runs fastest in PowerShell version 5.
+	The script runs fastest in PowerShell version 5.
 
-	Word is NOT needed to run the script. This script will output in Text and HTML.
+	Word is NOT needed to run the script. This script outputs in Text and HTML.
 	
 	You do NOT have to run this script on a Collector. This script was developed and run 
 	from a Windows 7 VM. Unfortunately, Citrix did not add remoting support to the Group
-	Policy module. If Policy information is required, the script will need to be run on 
-	a Collector.
+	Policy module. If Policy information is required, the script must run on a Collector.
 	
 	You can run this script remotely using the –AdminAddress (AA) parameter.
 
 	Creates an output file named after the XenApp 6.5 Farm.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
 		Chinese
@@ -39,12 +38,13 @@
 		
 .PARAMETER CompanyName
 	Company Name to use for the Cover Page.  
-	Default value is contained in HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
-	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated on the 
-	computer running the script.
+	Default value is contained in 
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
+	on the computer running the script.
 	This parameter has an alias of CN.
 .PARAMETER CompanyAddress
-	Company Address to use for the Cover Page, if the Cover Page has the Address field.  
+	Company Address to use for the Cover Page if the Cover Page has the Address field.  
 		The following Cover Pages have an Address field:
 			Banded (Word 2013/2016)
 			Contrast (Word 2010)
@@ -58,20 +58,20 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CA.
 .PARAMETER CompanyEmail
-	Company Email to use for the Cover Page, if the Cover Page has the Email field.  
+	Company Email to use for the Cover Page if the Cover Page has the Email field.  
 		The following Cover Pages have an Email field:
 			Facet (Word 2013/2016)
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CE.
 .PARAMETER CompanyFax
-	Company Fax to use for the Cover Page, if the Cover Page has the Fax field.  
+	Company Fax to use for the Cover Page if the Cover Page has the Fax field.  
 		The following Cover Pages have a Fax field:
 			Contrast (Word 2010)
 			Exposure (Word 2010)
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CF.
 .PARAMETER CompanyPhone
-	Company Phone to use for the Cover Page, if the Cover Page has the Phone field.  
+	Company Phone to use for the Cover Page if the Cover Page has the Phone field.  
 		The following Cover Pages have a Phone field:
 			Contrast (Word 2010)
 			Exposure (Word 2010)
@@ -130,10 +130,12 @@
 	Default value is contained in $env:username
 	This parameter has an alias of UN.
 .PARAMETER AdminAddress
-	Specifies the address of a XenApp Collector the PowerShell snapins will connect to. 
+	Specifies the address of a XenApp Collector the PowerShell snapins will connect 
+	to. 
 	The Collector cannot be a Session-Host only server.
 	This can be provided as a host name or an IP address. 
-	This parameter defaults to nothing to allow the connection to be set outside the script.
+	This parameter defaults to nothing to allow the connection to be set outside the 
+	script.
 	This parameter has an alias of AA.
 .PARAMETER PDF
 	SaveAs PDF file instead of DOCX file.
@@ -149,45 +151,49 @@
 	Creates an HTML file with an .html extension.
 	This parameter is disabled by default.
 .PARAMETER Hardware
-	Use WMI to gather hardware information on: Computer System, Disks, Processor and Network 
-	Interface Cards
+	Use WMI to gather hardware information on: Computer System, Disks, Processor and 
+	Network Interface Cards
 
 	This parameter may require the script be run from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e. Domain Admin or 
-	Local Administrator).
+	using an account with permission to retrieve hardware information (i.e.n Domain 
+	Admin or Local Administrator).
 
-	Selecting this parameter will add to both the time it takes to run the script and size 
-	of the report.
+	Selecting this parameter will add to both the time it takes to run the script and 
+	size of the report.
 
 	This parameter is disabled by default.
 	This parameter has an alias of HW.
 .PARAMETER Software
 	Gather software installed by querying the registry.  
 	Use SoftwareExclusions.txt to exclude software from the report.
-	SoftwareExclusions.txt must exist, and be readable, in the same folder as this script.
-	SoftwareExclusions.txt can be an empty file to have no installed applications excluded.
-	See Get-Help About-Wildcards for help on formatting the lines to exclude applications.
+	SoftwareExclusions.txt must exist, and be readable, in the same folder as this 
+	script.
+	SoftwareExclusions.txt can be an empty file to have no installed applications 
+	excluded.
+	See Get-Help About-Wildcards for help on formatting the lines to exclude 
+	applications.
 	This parameter is disabled by default.
 	This parameter has an alias of SW.
 .PARAMETER StartDate
 	Start date, in MM/DD/YYYY HH:MM format, for the Configuration Logging report.
 	Default is today's date minus seven days.
-	If the StartDate is entered as 01/01/2020, the date becomes 01/01/2020 00:00:00.
+	If the StartDate is entered as 01/01/2022, the date becomes 01/01/2022 00:00:00.
 	This parameter has an alias of SD.
 .PARAMETER EndDate
 	End date, in MM/DD/YYYY HH:MM format, for the Configuration Logging report.
 	Default is today's date.
-	If the EndDate is entered as 01/01/2020, the date becomes 01/01/2020 00:00:00.
+	If the EndDate is entered as 01/01/2022, the date becomes 01/01/2022 00:00:00.
 	This parameter has an alias of ED.
 .PARAMETER Summary
 	Only give summary information, no details.
 	This parameter is disabled by default.
-	This parameter cannot be used with either the Hardware, Software, StartDate or EndDate parameters.
+	This parameter cannot be used with either the Hardware, Software, StartDate or 
+	EndDate parameters.
 .PARAMETER AddDateTime
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf).
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	Output filename will be ReportName_2022-06-01_1800.docx (or .pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER Section
@@ -272,6 +278,26 @@
 	This parameter has an alias of SI.
 .PARAMETER Log
 	Generates a log file for troubleshooting.
+.PARAMETER ReportFooter
+	Outputs a footer section at the end of the report.
+
+	This parameter has an alias of RF.
+	
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Start Date Time in Local Format is a script variable.
+	Elapsed time is a calculated value.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1
 	
@@ -390,7 +416,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020" -EndDate "01/02/2020" 
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2022" -EndDate "01/02/2022" 
 	
 	Will use all Default values and add additional information for each server about its 
 	installed applications.
@@ -402,24 +428,10 @@
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
-	Will return all Configuration Logging entries from "01/01/2020 00:00:00" through "01/02/2020 "00:00:00".
+	Will return all Configuration Logging entries from "01/01/2022 00:00:00" through 
+	"01/02/2022 "00:00:00".
 .EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020" -EndDate "01/01/2020" 
-	
-	Will use all Default values and add additional information for each server about its 
-	installed applications.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
-
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
-	Will return all Configuration Logging entries from "01/01/2020 00:00:00" through 
-	"01/01/2020 "00:00:00".  In other words, nothing is returned.
-.EXAMPLE
-	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2020 21:00:00" 
-	-EndDate "01/01/2020 22:00:00" 
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2022" -EndDate "01/01/2022" 
 	
 	Will use all Default values and add additional information for each server about its 
 	installed applications.
@@ -431,7 +443,23 @@
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
-	Will return all Configuration Logging entries from 9PM to 10PM on 01/01/2020.
+	Will return all Configuration Logging entries from "01/01/2022 00:00:00" through 
+	"01/01/2022 "00:00:00". In other words, nothing is returned.
+.EXAMPLE
+	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -StartDate "01/01/2022 21:00:00" 
+	-EndDate "01/01/2022 22:00:00" 
+	
+	Will use all Default values and add additional information for each server about its 
+	installed applications.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
+	$env:username = Administrator
+
+	Carl Webster for the Company Name.
+	Sideline for the Cover Page format.
+	Administrator for the User Name.
+	Will return all Configuration Logging entries from 9PM to 10PM on 01/01/2022.
 .EXAMPLE
 	PS C:\PSScript .\XA65_Inventory_V5.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster"
@@ -507,8 +535,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be XA65FarmName_2020-06-01_1800.docx
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	Output filename will be XA65FarmName_2022-06-01_1800.docx
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -PDF -AddDateTime
 	
@@ -525,8 +553,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be XA65FarmName_2020-06-01_1800.pdf
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	Output filename will be XA65FarmName_2022-06-01_1800.pdf
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -Folder \\FileServer\ShareName
 	
@@ -563,14 +591,15 @@
 	Creates a text file for transcript logging named 
 	XA65V5DocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .INPUTS
-	None.  You cannot pipe objects to this script.
+	None. You cannot pipe objects to this script.
 .OUTPUTS
-	No objects are output from this script.  This script creates a Word or PDF document.
+	No objects are output from this script. This script creates a Word, PDF, 
+	plain text, or HTML document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.04
+	VERSION: 5.05
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: July 30, 2020
+	LASTEDIT: December 1, 2021
 #>
 
 #endregion
@@ -722,6 +751,10 @@ Param(
 	[Alias('Pol')]
 	[Switch]$Policies=$False,	
 	
+	[parameter(Mandatory=$False)] 
+	[Alias("RF")]
+	[Switch]$ReportFooter=$False,
+
 	[parameter(ParameterSetName='HTML',Mandatory=$False)] 
 	[parameter(ParameterSetName='PDF',Mandatory=$False)] 
 	[parameter(ParameterSetName='Text',Mandatory=$False)] 
@@ -739,6 +772,8 @@ Param(
 	[parameter(ParameterSetName='PDF',Mandatory=$False)] 
 	[parameter(ParameterSetName='Text',Mandatory=$False)] 
 	[parameter(ParameterSetName='Word',Mandatory=$False)] 
+	[ValidateSet('All', 'Admins', 'Apps', 'ConfigLog', 
+	'LoadEvals', 'Policies', 'Servers', 'WGs', 'Zones')]
 	[Alias('SW')]
 	[Switch]$Software=$False,
 
@@ -774,7 +809,47 @@ Param(
 #webster@carlwebster.com
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
-#Version 5.00 created on June 1, 2015
+#Version 5.00 created on December 1, 2018
+
+#V5.05 1-Dec-2021
+#	Added a test to see if $AdminAddress equals $Env:ComputerName
+#		If they are the same, do not try and set up remoting since remoting is not needed
+#	Added Function OutputReportFooter
+#	Added Parameter ReportFooter
+#		Outputs a footer section at the end of the report
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Added the missing section title for Policies and sub-section titles for IMA Policies and Active Directory Policies
+#	Changed all Write-Host $(Get-Date) to add -Format G to put the dates in the user's locale
+#	Fixed several issues causing script errors with PowerShell V2
+#	Fixed several property tests in Function ProcessPolicies
+#	Fixed text output in Functions OutputNicItem, OutputServer, and ProcessPolicies
+#	Fixed HTML, Text, and Word/PDF output in Function OutputApplication
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#	In Function OutputServer, if the server's IP address is not present report "No data" 
+#		Usually is not present in PowerShell V2
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Removed Function Check-LoadedModule
+#	Removed Receive Side Scaling from hardware inventory since it is not available in Windows Server 2008 R2
+#	Removed the requirement for the Citrix.GroupPolicy.Commands.psm1 module file (Thanks to Guy Leech for the help)
+#		Added the following functions from the module to the script and cleaned up the Citrix code
+#			CreateDictionary
+#			CreateObject
+#			FilterString
+#			Get-CitrixGroupPolicy
+#			Get-CitrixGroupPolicyConfiguration
+#			Get-CitrixGroupPolicyFilter
+#	Removed the block for Elevation if Policies are processed
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the ReadMe file
 
 #V5.04 30-Jul-2020
 #	Fixed a lot more code, especially parameter variable initialization, that just didn't work in PoSH V2
@@ -828,6 +903,12 @@ Set-StrictMode -Version 2
 #force  on
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
+
+#stuff for report footer
+$script:MyVersion           = '5.05'
+$Script:ScriptName          = "XA65_Inventory_V5.ps1"
+$tmpdate                    = [datetime] "12/1/2021"
+$Script:ReleaseDate         = $tmpdate.ToUniversalTime().ToShortDateString()
 
 #add this for PowerShell V2
 If($Null -eq $Text)
@@ -981,32 +1062,32 @@ If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq 
 	$MSWord = $True
 }
 
-Write-Host "$(Get-Date): Testing output parameters" -BackgroundColor Black -ForegroundColor Yellow
+Write-Host "$(Get-Date -Format G): Testing output parameters" -BackgroundColor Black -ForegroundColor Yellow
 
 If($MSWord)
 {
-	Write-Host "$(Get-Date): MSWord is set" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): MSWord is set" -BackgroundColor Black -ForegroundColor Yellow
 	$PDF = $False
 	$Text = $False
 	$HTML =$False
 }
 If($PDF)
 {
-	Write-Host "$(Get-Date): PDF is set" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): PDF is set" -BackgroundColor Black -ForegroundColor Yellow
 	$Text = $False
 	$HTML =$False
 	$MSWord = $False
 }
 If($Text)
 {
-	Write-Host "$(Get-Date): Text is set" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Text is set" -BackgroundColor Black -ForegroundColor Yellow
 	$PDF = $False
 	$HTML =$False
 	$MSWord = $False
 }
 If($HTML)
 {
-	Write-Host "$(Get-Date): HTML is set" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): HTML is set" -BackgroundColor Black -ForegroundColor Yellow
 	$PDF = $False
 	$Text = $False
 	$MSWord = $False
@@ -1129,7 +1210,7 @@ If($ValidSection -eq $False)
 
 If($Folder -ne "")
 {
-	Write-Host "$(Get-Date): Testing folder path" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Testing folder path" -BackgroundColor Black -ForegroundColor Yellow
 	#does it exist
 	If(Test-Path $Folder -EA 0)
 	{
@@ -1137,7 +1218,7 @@ If($Folder -ne "")
 		If(Test-Path $Folder -pathType Container -EA 0)
 		{
 			#it exists and it is a folder
-			Write-Host "$(Get-Date): Folder path $Folder exists and is a folder" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Folder path $Folder exists and is a folder" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
@@ -1193,12 +1274,12 @@ If($Log)
 	try 
 	{
 		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
-		Write-Host "$(Get-Date): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
 		$Script:StartLog = $true
 	} 
 	catch 
 	{
-		Write-Host "$(Get-Date): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
 		$Script:StartLog = $false
 	}
 }
@@ -1207,51 +1288,6 @@ If($Dev)
 {
 	$Error.Clear()
 	$Script:DevErrorFile = "$Script:pwdpath\XA65V5InventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
-}
-
-#V5.01  Add check if $Policies -eq $True, see if PowerShell session is elevated
-#		If session is elevated, abort the script
-Function ElevatedSession
-{
-	#added in V5.01
-	$currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent() )
-
-	If($currentPrincipal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ))
-	{
-		Write-Verbose "$(Get-Date): This is an elevated PowerShell session"
-		Return $True
-	}
-	Else
-	{
-		Write-Verbose "$(Get-Date): This is NOT an elevated PowerShell session" -Foreground White
-		Return $False
-	}
-}
-
-If($Policies -eq $True)
-{
-	Write-Verbose "$(Get-Date): Testing for elevated PowerShell session."
-	#see if session is elevated
-	$Elevated = ElevatedSession
-	
-	If($Elevated -eq $True)
-	{
-		#abort script
-		Write-Error "
-		`n`n
-		`t`t
-		The Citrix Group Policy module cannot be loaded or found in an elevated PowerShell session.
-		`n`n
-		`t`t
-		The Policies parameter was used and this is an elevated PowerShell session.
-		`n`n
-		`t`t
-		Rerun the script from a non-elevated PowerShell session. The script will now close.
-		`n`n
-		"
-		Write-Verbose "$(Get-Date): "
-		Exit
-	}
 }
 #endregion
 
@@ -1262,7 +1298,7 @@ If($MSWord -or $PDF)
 {
 	#try and fix the issue with the $CompanyName variable
 	$Script:CoName = $CompanyName
-	Write-Host "$(Get-Date): CoName is $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): CoName is $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
 	
 	#the following values were attained from 
 	#http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/
@@ -1392,8 +1428,8 @@ Function GetComputerWMIInfo
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
 
 	#Get Computer info
-	Write-Host "$(Get-Date): `t`tProcessing WMI Computer information" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): `t`t`tHardware information" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `t`tProcessing WMI Computer information" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `t`t`tHardware information" -BackgroundColor Black -ForegroundColor Yellow
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Computer Information: $($RemoteComputerName)"
@@ -1434,7 +1470,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Host "$(Get-Date): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1461,7 +1497,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): No results Returned for Computer information" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): No results Returned for Computer information" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Computer information" "" $Null 0 $False $True
@@ -1477,7 +1513,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get Disk info
-	Write-Host "$(Get-Date): `t`t`tDrive information" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `t`t`tDrive information" -BackgroundColor Black -ForegroundColor Yellow
 
 	If($MSWord -or $PDF)
 	{
@@ -1517,7 +1553,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Host "$(Get-Date): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1543,7 +1579,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): No results Returned for Drive information" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): No results Returned for Drive information" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Drive information" "" $Null 0 $False $True
@@ -1560,7 +1596,7 @@ Function GetComputerWMIInfo
 	
 
 	#Get CPU's and stepping
-	Write-Host "$(Get-Date): `t`t`tProcessor information" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `t`t`tProcessor information" -BackgroundColor Black -ForegroundColor Yellow
 
 	If($MSWord -or $PDF)
 	{
@@ -1596,7 +1632,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Host "$(Get-Date): Get-WmiObject win32_Processor failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1622,7 +1658,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): No results Returned for Processor information" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): No results Returned for Processor information" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Processor information" "" $Null 0 $False $True
@@ -1638,7 +1674,7 @@ Function GetComputerWMIInfo
 	}
 
 	#Get Nics
-	Write-Host "$(Get-Date): `t`t`tNIC information" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `t`t`tNIC information" -BackgroundColor Black -ForegroundColor Yellow
 
 	If($MSWord -or $PDF)
 	{
@@ -1698,8 +1734,8 @@ Function GetComputerWMIInfo
 				}
 				ElseIf(!$?)
 				{
-					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Host "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Warning "$(Get-Date -Format G): Error retrieving NIC information"
+					Write-Host "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
 					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
@@ -1728,7 +1764,7 @@ Function GetComputerWMIInfo
 				}
 				Else
 				{
-					Write-Host "$(Get-Date): No results Returned for NIC information" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): No results Returned for NIC information" -BackgroundColor Black -ForegroundColor Yellow
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "No results Returned for NIC information" "" $Null 0 $False $True
@@ -1747,8 +1783,8 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Host "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Warning "$(Get-Date -Format G): Error retrieving NIC configuration information"
+		Write-Host "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1777,7 +1813,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): No results Returned for NIC configuration information" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): No results Returned for NIC configuration information" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for NIC configuration information" "" $Null 0 $False $True
@@ -2165,28 +2201,6 @@ Function OutputNicItem
 		Default	{$xAvailability = "Unknown"; Break}
 	}
 
-	#attempt to get Receive Side Scaling setting
-	$RSSEnabled = "N/A"
-	Try
-	{
-		#https://ios.developreference.com/article/10085450/How+do+I+enable+VRSS+(Virtual+Receive+Side+Scaling)+for+a+Windows+VM+without+relying+on+Enable-NetAdapterRSS%3F
-		$RSSEnabled = (Get-WmiObject -ComputerName $RemoteComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0).Enabled
-
-		If($RSSEnabled)
-		{
-			$RSSEnabled = "Enabled"
-		}
-		ELse
-		{
-			$RSSEnabled = "Disabled"
-		}
-	}
-	
-	Catch
-	{
-		$RSSEnabled = "Not available on $Script:RunningOS"
-	}
-
 	$xIPAddress = @()
 	ForEach($IPAddress in $Nic.ipaddress)
 	{
@@ -2263,7 +2277,6 @@ Function OutputNicItem
 		}
 		$NicInformation += (@{ Data = "Availability"; Value = $xAvailability; }) 
 		$NicInformation += (@{ Data = "Allow the computer to turn off this device to save power"; Value = $PowerSaving; }) 
-		$NicInformation += @{ Data = "Receive Side Scaling"; Value = $RSSEnabled; }
 		$NicInformation += (@{ Data = "Physical Address"; Value = $Nic.macaddress; }) 
 		If($xIPAddress.Count -gt 1)
 		{
@@ -2375,7 +2388,6 @@ Function OutputNicItem
 		Line 2 "Availability`t`t: " $xAvailability
 		Line 2 "Allow computer to turn "
 		Line 2 "off device to save power: " $PowerSaving
-		Line 2 "Receive Side Scaling`t: " $RSSEnabled
 		Line 2 "Physical Address`t: " $nic.macaddress
 		Line 2 "IP Address`t`t: " $xIPAddress[0]
 		$cnt = -1
@@ -2405,7 +2417,7 @@ Function OutputNicItem
 			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled
 			Line 2 "DHCP Lease Obtained`t: " $dhcpleaseobtaineddate
 			Line 2 "DHCP Lease Expires`t: " $dhcpleaseexpiresdate
-			Line 2 "DHCP Server`t`t:" $nic.dhcpserver
+			Line 2 "DHCP Server`t`t: " $nic.dhcpserver
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
@@ -2477,7 +2489,6 @@ Function OutputNicItem
 		$rowdata += @(,('Availability',($htmlsilver -bor $htmlbold),$xAvailability,$htmlwhite))
 		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlbold),$PowerSaving,$htmlwhite))
 		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlbold),$Nic.macaddress,$htmlwhite))
-		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
 		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlbold),$xIPAddress[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
@@ -2990,7 +3001,7 @@ Function SWExclusions
 
 Function CheckWordPrereq
 {
-	If((Test-Path  REGISTRY::HKEY_CLASSES_ROOT\Word.Application) -eq $False)
+	If((Test-Path REGISTRY::HKEY_CLASSES_ROOT\Word.Application) -eq $False)
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`t`tThis script directly outputs to Microsoft Word, please install Microsoft Word`n`n" -BackgroundColor Black -ForegroundColor Yellow
@@ -3001,7 +3012,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -3081,10 +3092,10 @@ Function FindWordDocumentEnd
 
 Function SetupWord
 {
-	Write-Host "$(Get-Date): Setting up Word" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Setting up Word" -BackgroundColor Black -ForegroundColor Yellow
     
 	# Setup word for output
-	Write-Host "$(Get-Date): Create Word comObject." -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Create Word comObject." -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Word = New-Object -comobject "Word.Application" -EA 0
 	
 	If(!$? -or $Null -eq $Script:Word)
@@ -3106,7 +3117,7 @@ Function SetupWord
 		Exit
 	}
 
-	Write-Host "$(Get-Date): Determine Word language value" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Determine Word language value" -BackgroundColor Black -ForegroundColor Yellow
 	If( ( validStateProp $Script:Word Language Value__ ) )
 	{
 		[int]$Script:WordLanguageValue = [int]$Script:Word.Language.Value__
@@ -3130,7 +3141,7 @@ Function SetupWord
 		"
 		AbortScript
 	}
-	Write-Host "$(Get-Date): Word language value is $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Word language value is $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
 	
 	$Script:WordCultureCode = GetCulture $Script:WordLanguageValue
 	
@@ -3196,7 +3207,7 @@ Function SetupWord
 	#only validate CompanyName if the field is blank
 	If([String]::IsNullOrEmpty($Script:CoName))
 	{
-		Write-Host "$(Get-Date): Company name is blank.  Retrieve company name from registry." -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Company name is blank.  Retrieve company name from registry." -BackgroundColor Black -ForegroundColor Yellow
 		$TmpName = ValidateCompanyName
 		
 		If([String]::IsNullOrEmpty($TmpName))
@@ -3208,13 +3219,13 @@ Function SetupWord
 		Else
 		{
 			$Script:CoName = $TmpName
-			Write-Host "$(Get-Date): Updated company name to $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Updated company name to $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
 		}
 	}
 
 	If($Script:WordCultureCode -ne "en-")
 	{
-		Write-Host "$(Get-Date): Check Default Cover Page for $($WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Check Default Cover Page for $($WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
 		[bool]$CPChanged = $False
 		Switch ($Script:WordCultureCode)
 		{
@@ -3317,11 +3328,11 @@ Function SetupWord
 
 		If($CPChanged)
 		{
-			Write-Host "$(Get-Date): Changed Default Cover Page from Sideline to $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Changed Default Cover Page from Sideline to $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
 		}
 	}
 
-	Write-Host "$(Get-Date): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
 	[bool]$ValidCP = $False
 	
 	$ValidCP = ValidateCoverPage $Script:WordVersion $CoverPage $Script:WordCultureCode
@@ -3329,8 +3340,8 @@ Function SetupWord
 	If(!$ValidCP)
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Host "$(Get-Date): Word language value $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): Culture code $($Script:WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Word language value $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Culture code $($Script:WordCultureCode)" -BackgroundColor Black -ForegroundColor Yellow
 		Write-Error "
 		`n`n
 		`t`t
@@ -3349,7 +3360,7 @@ Function SetupWord
 
 	#http://jdhitsolutions.com/blog/2012/05/san-diego-2012-powershell-deep-dive-slides-and-demos/
 	#using Jeff's Demo-WordReport.ps1 file for examples
-	Write-Host "$(Get-Date): Load Word Templates" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Load Word Templates" -BackgroundColor Black -ForegroundColor Yellow
 
 	[bool]$Script:CoverPagesExist = $False
 	[bool]$BuildingBlocksExist = $False
@@ -3358,7 +3369,7 @@ Function SetupWord
 	#word 2010/2013/2016
 	$BuildingBlocksCollection = $Script:Word.Templates | Where-Object{$_.name -eq "Built-In Building Blocks.dotx"}
 
-	Write-Host "$(Get-Date): Attempt to load cover page $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Attempt to load cover page $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
 	$part = $Null
 
 	$BuildingBlocksCollection | 
@@ -3391,16 +3402,16 @@ Function SetupWord
 
 	If(!$Script:CoverPagesExist)
 	{
-		Write-Host "$(Get-Date): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist." -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist." -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Warning "This report will not have a Cover Page."
 	}
 
-	Write-Host "$(Get-Date): Create empty word doc" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Create empty word doc" -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Doc = $Script:Word.Documents.Add()
 	If($Null -eq $Script:Doc)
 	{
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3417,7 +3428,7 @@ Function SetupWord
 	$Script:Selection = $Script:Word.Selection
 	If($Null -eq $Script:Selection)
 	{
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3436,7 +3447,7 @@ Function SetupWord
 	$Script:Word.ActiveDocument.DefaultTabStop = 36
 
 	#Disable Spell and Grammar Check to resolve issue and improve performance (from Pat Coughlin)
-	Write-Host "$(Get-Date): Disable grammar and spell checking" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Disable grammar and spell checking" -BackgroundColor Black -ForegroundColor Yellow
 	#bug reported 1-Apr-2014 by Tim Mangan
 	#save current options first before turning them off
 	$Script:CurrentGrammarOption = $Script:Word.Options.CheckGrammarAsYouType
@@ -3447,17 +3458,17 @@ Function SetupWord
 	If($BuildingBlocksExist)
 	{
 		#insert new page, getting ready for table of contents
-		Write-Host "$(Get-Date): Insert new page, getting ready for table of contents" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Insert new page, getting ready for table of contents" -BackgroundColor Black -ForegroundColor Yellow
 		$part.Insert($Script:Selection.Range,$True) | Out-Null
 		$Script:Selection.InsertNewPage()
 
 		#table of contents
-		Write-Host "$(Get-Date): Table of Contents - $($Script:MyHash.Word_TableOfContents)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Table of Contents - $($Script:MyHash.Word_TableOfContents)" -BackgroundColor Black -ForegroundColor Yellow
 		$toc = $BuildingBlocks.BuildingBlockEntries.Item($Script:MyHash.Word_TableOfContents)
 		If($Null -eq $toc)
 		{
-			Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-			Write-Host "$(Get-Date): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved." -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved." -BackgroundColor Black -ForegroundColor Yellow
 			Write-Warning "This report will not have a Table of Contents."
 		}
 		Else
@@ -3467,16 +3478,16 @@ Function SetupWord
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): Table of Contents are not installed." -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Table of Contents are not installed." -BackgroundColor Black -ForegroundColor Yellow
 		Write-Warning "Table of Contents are not installed so this report will not have a Table of Contents."
 	}
 
 	#set the footer
-	Write-Host "$(Get-Date): Set the footer" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Set the footer" -BackgroundColor Black -ForegroundColor Yellow
 	[string]$footertext = "Report created by $username"
 
 	#get the footer
-	Write-Host "$(Get-Date): Get the footer and format font" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Get the footer and format font" -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
@@ -3490,15 +3501,15 @@ Function SetupWord
 			$footer.range.Font.Bold = $True
 		}
 	} #end ForEach
-	Write-Host "$(Get-Date): Footer text" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Footer text" -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Selection.HeaderFooter.Range.Text = $footerText
 
 	#add page numbering
-	Write-Host "$(Get-Date): Add page numbering" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Add page numbering" -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Selection.HeaderFooter.PageNumbers += ($wdAlignPageNumberRight) | Out-Null
 
 	FindWordDocumentEnd
-	Write-Host "$(Get-Date):" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G):" -BackgroundColor Black -ForegroundColor Yellow
 	#end of Jeff Hicks 
 }
 
@@ -3511,7 +3522,7 @@ Function UpdateDocumentProperties
 	{
 		If($Script:CoverPagesExist)
 		{
-			Write-Host "$(Get-Date): Set Cover Page Properties" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Set Cover Page Properties" -BackgroundColor Black -ForegroundColor Yellow
 			#8-Jun-2017 put these 4 items in alpha order
             Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value $UserName
             Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value $Script:CoName
@@ -3563,7 +3574,7 @@ Function UpdateDocumentProperties
 			[string]$abstract = (Get-Date -Format d).ToString()
 			$ab.Text = $abstract
 
-			Write-Host "$(Get-Date): Update the Table of Contents" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Update the Table of Contents" -BackgroundColor Black -ForegroundColor Yellow
 			#update the Table of Contents
 			$Script:Doc.TablesOfContents.item(1).Update()
 			$cp = $Null
@@ -4357,7 +4368,7 @@ Function CheckHTMLColor
 
 Function SetupHTML
 {
-	Write-Host "$(Get-Date): Setting up HTML" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Setting up HTML" -BackgroundColor Black -ForegroundColor Yellow
 	If($AddDateTime)
 	{
 		$Script:FileName1 += "_$(Get-Date -f yyyy-MM-dd_HHmm).html"
@@ -4488,7 +4499,7 @@ Function AddWordTable
 				## Add the table headers from -Headers or -Columns (except when in -List(view)
 				If(-not $List) 
 				{
-					Write-Debug ("$(Get-Date): `t`tBuilding table headers");
+					Write-Debug ("$(Get-Date -Format G): `t`tBuilding table headers");
 					If($Null -ne $Headers) 
 					{
                         [ref] $Null = $WordRangeString.AppendFormat("{0}`n", [string]::Join("`t", $Headers));
@@ -4500,7 +4511,7 @@ Function AddWordTable
 				}
 
 				## Iterate through each PSCustomObject
-				Write-Debug ("$(Get-Date): `t`tBuilding table rows");
+				Write-Debug ("$(Get-Date -Format G): `t`tBuilding table rows");
 				ForEach($Object in $CustomObject) 
 				{
 					$OrderedValues = @();
@@ -4512,7 +4523,7 @@ Function AddWordTable
 					## Use the ordered list to add each column in specified order
 					[ref] $Null = $WordRangeString.AppendFormat("{0}`n", [string]::Join("`t", $OrderedValues));
 				} ## end ForEach
-				Write-Debug ("$(Get-Date): `t`t`tAdded '{0}' table rows" -f ($CustomObject.Count));
+				Write-Debug ("$(Get-Date -Format G): `t`t`tAdded '{0}' table rows" -f ($CustomObject.Count));
 			} ## end CustomObject
 
 			Default 
@@ -4527,7 +4538,7 @@ Function AddWordTable
 				## Add the table headers from -Headers or -Columns (except when in -List(view)
 				If(-not $List) 
 				{
-					Write-Debug ("$(Get-Date): `t`tBuilding table headers");
+					Write-Debug ("$(Get-Date -Format G): `t`tBuilding table headers");
 					If($Null -ne $Headers) 
 					{ 
 						[ref] $Null = $WordRangeString.AppendFormat("{0}`n", [string]::Join("`t", $Headers));
@@ -4539,7 +4550,7 @@ Function AddWordTable
 				}
                 
 				## Iterate through each Hashtable
-				Write-Debug ("$(Get-Date): `t`tBuilding table rows");
+				Write-Debug ("$(Get-Date -Format G): `t`tBuilding table rows");
 				ForEach($Hash in $Hashtable) 
 				{
 					$OrderedValues = @();
@@ -4552,12 +4563,12 @@ Function AddWordTable
 					[ref] $Null = $WordRangeString.AppendFormat("{0}`n", [string]::Join("`t", $OrderedValues));
 				} ## end ForEach
 
-				Write-Debug ("$(Get-Date): `t`t`tAdded '{0}' table rows" -f $Hashtable.Count);
+				Write-Debug ("$(Get-Date -Format G): `t`t`tAdded '{0}' table rows" -f $Hashtable.Count);
 			} ## end default
 		} ## end switch
 
 		## Create a MS Word range and set its text to our tab-delimited, concatenated string
-		Write-Debug ("$(Get-Date): `t`tBuilding table range");
+		Write-Debug ("$(Get-Date -Format G): `t`tBuilding table range");
 		$WordRange = $Script:Doc.Application.Selection.Range;
 		$WordRange.Text = $WordRangeString.ToString();
 
@@ -4583,7 +4594,7 @@ Function AddWordTable
 
 		## Invoke ConvertToTable method - with named arguments - to convert Word range to a table
 		## See http://msdn.microsoft.com/en-us/library/office/aa171893(v=office.11).aspx
-		Write-Debug ("$(Get-Date): `t`tConverting range to table");
+		Write-Debug ("$(Get-Date -Format G): `t`tConverting range to table");
 		## Store the table reference just in case we need to set alternate row coloring
 		$WordTable = $WordRange.GetType().InvokeMember(
 			"ConvertToTable",                               # Method name
@@ -4599,7 +4610,7 @@ Function AddWordTable
 		## Implement grid lines (will wipe out any existing formatting
 		If($Format -lt 0) 
 		{
-			Write-Debug ("$(Get-Date): `t`tSetting table format");
+			Write-Debug ("$(Get-Date -Format G): `t`tSetting table format");
 			$WordTable.Style = $Format;
 		}
 
@@ -4821,51 +4832,6 @@ Function SetWordTableAlternateRowColor
 #endregion
 
 #region general script functions
-Function Check-LoadedModule
-#Function created by Jeff Wouters
-#@JeffWouters on Twitter
-#modified by Michael B. Smith to handle when the module doesn't exist on server
-#modified by @andyjmorgan
-#bug fixed by @schose
-#bug fixed by Peter Bosen
-#This Function handles all three scenarios:
-#
-# 1. Module is already imported into current session
-# 2. Module is not already imported into current session, it does exists on the server and is imported
-# 3. Module does not exist on the server
-
-{
-	Param([parameter(Mandatory = $True)][alias("Module")][string]$ModuleName)
-	#$LoadedModules = Get-Module | Select-Object Name
-	#following line changed at the recommendation of @andyjmorgan
-	$LoadedModules = Get-Module | ForEach-Object { $_.Name.ToString() }
-	#bug reported on 21-JAN-2013 by @schose 
-	#the following line did not work if the citrix.grouppolicy.commands.psm1 module
-	#was manually loaded from a non Default folder
-	#$ModuleFound = (!$LoadedModules -like "*$ModuleName*")
-	
-	[string]$ModuleFound = ($LoadedModules -like "*$ModuleName*")
-	If($ModuleFound -ne $ModuleName) 
-	{
-		$module = Import-Module -Name $ModuleName -PassThru -EA 0
-		If($module -and $?)
-		{
-			# module imported properly
-			Return $True
-		}
-		Else
-		{
-			# module import failed
-			Return $False
-		}
-	}
-	Else
-	{
-		#module already imported into current session
-		Return $True
-	}
-}
-
 Function SaveandCloseDocumentandShutdownWord
 {
 	#bug fix 1-Apr-2014
@@ -4873,7 +4839,7 @@ Function SaveandCloseDocumentandShutdownWord
 	$Script:Word.Options.CheckGrammarAsYouType = $Script:CurrentGrammarOption
 	$Script:Word.Options.CheckSpellingAsYouType = $Script:CurrentSpellingOption
 
-	Write-Host "$(Get-Date): Save and Close document and Shutdown Word" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Save and Close document and Shutdown Word" -BackgroundColor Black -ForegroundColor Yellow
 	If($Script:WordVersion -eq $wdWord2010)
 	{
 		#the $saveFormat below passes StrictMode 2
@@ -4882,11 +4848,11 @@ Function SaveandCloseDocumentandShutdownWord
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
-			Write-Host "$(Get-Date): Saving as DOCX file first before saving to PDF" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
-			Write-Host "$(Get-Date): Saving DOCX file" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Saving DOCX file" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		If($AddDateTime)
 		{
@@ -4896,12 +4862,12 @@ Function SaveandCloseDocumentandShutdownWord
 				$Script:FileName2 += "_$(Get-Date -f yyyy-MM-dd_HHmm).pdf"
 			}
 		}
-		Write-Host "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
 		$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatDocumentDefault")
 		$Script:Doc.SaveAs([REF]$Script:FileName1, [ref]$SaveFormat)
 		If($PDF)
 		{
-			Write-Host "$(Get-Date): Now saving as PDF" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Now saving as PDF" -BackgroundColor Black -ForegroundColor Yellow
 			$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatPDF")
 			$Script:Doc.SaveAs([REF]$Script:FileName2, [ref]$saveFormat)
 		}
@@ -4910,11 +4876,11 @@ Function SaveandCloseDocumentandShutdownWord
 	{
 		If($PDF)
 		{
-			Write-Host "$(Get-Date): Saving as DOCX file first before saving to PDF" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
-			Write-Host "$(Get-Date): Saving DOCX file" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Saving DOCX file" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		If($AddDateTime)
 		{
@@ -4924,16 +4890,16 @@ Function SaveandCloseDocumentandShutdownWord
 				$Script:FileName2 += "_$(Get-Date -f yyyy-MM-dd_HHmm).pdf"
 			}
 		}
-		Write-Host "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
 		$Script:Doc.SaveAs2([REF]$Script:FileName1, [ref]$wdFormatDocumentDefault)
 		If($PDF)
 		{
-			Write-Host "$(Get-Date): Now saving as PDF" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Now saving as PDF" -BackgroundColor Black -ForegroundColor Yellow
 			$Script:Doc.SaveAs([REF]$Script:FileName2, [ref]$wdFormatPDF)
 		}
 	}
 
-	Write-Host "$(Get-Date): Closing Word" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Closing Word" -BackgroundColor Black -ForegroundColor Yellow
 	$Script:Doc.Close()
 	$Script:Word.Quit()
 	If($PDF)
@@ -4944,7 +4910,7 @@ Function SaveandCloseDocumentandShutdownWord
 			$cnt++
 			If($cnt -gt 1)
 			{
-				Write-Host "$(Get-Date): Waiting another 10 seconds to allow Word to fully close (try # $($cnt))" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): Waiting another 10 seconds to allow Word to fully close (try # $($cnt))" -BackgroundColor Black -ForegroundColor Yellow
 				Start-Sleep -Seconds 10
 				$Script:Word.Quit()
 				If($cnt -gt 2)
@@ -4958,37 +4924,36 @@ Function SaveandCloseDocumentandShutdownWord
 					$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
 					If($wordprocess -gt 0)
 					{
-						Write-Host "$(Get-Date): Attempting to stop WinWord process # $($wordprocess)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): Attempting to stop WinWord process # $($wordprocess)" -BackgroundColor Black -ForegroundColor Yellow
 						Stop-Process $wordprocess -EA 0
 					}
 				}
 			}
-			Write-Host "$(Get-Date): Attempting to delete $($Script:FileName1) since only $($Script:FileName2) is needed (try # $($cnt))" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Attempting to delete $($Script:FileName1) since only $($Script:FileName2) is needed (try # $($cnt))" -BackgroundColor Black -ForegroundColor Yellow
 			Remove-Item $Script:FileName1 -EA 0
 		}
 	}
-	Write-Host "$(Get-Date): System Cleanup" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): System Cleanup" -BackgroundColor Black -ForegroundColor Yellow
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 	If(Test-Path variable:global:word)
 	{
-		Remove-Variable -Name word -Scope Global
+		Remove-Variable -Name word -Scope Global 4>$Null
 	}
 	$SaveFormat = $Null
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
 	
-	#is the winword process still running? kill it
+	#is the winword Process still running? kill it
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 
-	#Find out if winword is running in our session
-	$wordprocess = $Null
-	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
-	If($null -ne $wordprocess -and $wordprocess -gt 0)
+	#Find out if winword running in our session
+	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+	If( $wordprocess -and $wordprocess.Id -gt 0)
 	{
-		Write-Host "$(Get-Date): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)" -BackgroundColor Black -ForegroundColor Yellow
-		Stop-Process $wordprocess -EA 0
+		Write-Host "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)" -BackgroundColor Black -ForegroundColor Yellow
+		Stop-Process $wordprocess.Id -EA 0
 	}
 }
 
@@ -4998,6 +4963,10 @@ Function SaveandCloseTextDocument
 	{
 		$Script:FileName1 += "_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 	}
+
+	Write-Host "$(Get-Date -Format G): Saving Text file" -BackgroundColor Black -ForegroundColor Yellow
+	Line 0 ""
+	Line 0 "Report Complete"
 
 	If($psversiontable.psversion.major -eq 2)
 	{
@@ -5011,6 +4980,9 @@ Function SaveandCloseTextDocument
 
 Function SaveandCloseHTMLDocument
 {
+	Write-Host "$(Get-Date -Format G): Saving HTML file" -BackgroundColor Black -ForegroundColor Yellow
+	WriteHTMLLine 0 0 ""
+	WriteHTMLLine 0 0 "Report Complete"
 	Out-File -FilePath $Script:FileName1 -Append -InputObject "<p></p></body></html>"
 }
 
@@ -5062,6 +5034,70 @@ Function SetFileName1andFileName2
 	}
 }
 
+Function OutputReportFooter
+{
+	<#
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Script version is a script variable.
+	Start Date Time in Local Format is a script variable.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
+	#>
+
+	$runtime = $(Get-Date) - $Script:StartTime
+	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
+		$runtime.Days,
+		$runtime.Hours,
+		$runtime.Minutes,
+		$runtime.Seconds,
+		$runtime.Milliseconds)
+
+	If($MSWORD -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "Report Footer"
+		WriteWordLine 2 0 "Report Information:"
+		WriteWordLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteWordLine 0 1 "Script version: $Script:MyVersion"
+		WriteWordLine 0 1 "Started on $Script:StartTime"
+		WriteWordLine 0 1 "Elapsed time: $Str"
+		WriteWordLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteWordLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+	If($Text)
+	{
+		Line 0 "///  Report Footer  \\\"
+		Line 1 "Report Information:"
+		Line 2 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		Line 2 "Script version: $Script:MyVersion"
+		Line 2 "Started on $Script:StartTime"
+		Line 2 "Elapsed time: $Str"
+		Line 2 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		Line 2 "Ran from the folder $Script:pwdpath"
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Report Footer&nbsp;&nbsp;\\\"
+		WriteHTMLLine 2 0 "Report Information:"
+		WriteHTMLLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteHTMLLine 0 1 "Script version: $Script:MyVersion"
+		WriteHTMLLine 0 1 "Started on $Script:StartTime"
+		WriteHTMLLine 0 1 "Elapsed time: $Str"
+		WriteHTMLLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteHTMLLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+}
+
 Function ProcessDocumentOutput
 {
 	If($MSWORD -or $PDF)
@@ -5077,18 +5113,15 @@ Function ProcessDocumentOutput
 		SaveandCloseHTMLDocument
 	}
 
-	$GotFile = $False
-
 	If($PDF)
 	{
 		If(Test-Path "$($Script:FileName2)")
 		{
-			Write-Host "$(Get-Date): $($Script:FileName2) is ready for use" -BackgroundColor Black -ForegroundColor Yellow
-			$GotFile = $True
+			Write-Host "$(Get-Date -Format G): $($Script:FileName2) is ready for use" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
-			Write-Warning "$(Get-Date): Unable to save the output file, $($Script:FileName2)"
+			Write-Warning "$(Get-Date -Format G): Unable to save the output file, $($Script:FileName2)"
 			Write-Error "Unable to save the output file, $($Script:FileName2)"
 		}
 	}
@@ -5096,12 +5129,11 @@ Function ProcessDocumentOutput
 	{
 		If(Test-Path "$($Script:FileName1)")
 		{
-			Write-Host "$(Get-Date): $($Script:FileName1) is ready for use" -BackgroundColor Black -ForegroundColor Yellow
-			$GotFile = $True
+			Write-Host "$(Get-Date -Format G): $($Script:FileName1) is ready for use" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
-			Write-Warning "$(Get-Date): Unable to save the output file, $($Script:FileName1)"
+			Write-Warning "$(Get-Date -Format G): Unable to save the output file, $($Script:FileName1)"
 			Write-Error "Unable to save the output file, $($Script:FileName1)"
 		}
 	}
@@ -5109,64 +5141,65 @@ Function ProcessDocumentOutput
 
 Function ShowScriptOptions
 {
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Add DateTime       : $($AddDateTime)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): AdminAddress       : $($AdminAddress)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Administrators     : $($Administrators)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Applications       : $($Applications)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Company Name       : $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Company Address    : $($CompanyAddress)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Company Email      : $($CompanyEmail)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Company Fax        : $($CompanyFax)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Company Phone      : $($CompanyPhone)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Cover Page         : $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Add DateTime       : $($AddDateTime)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): AdminAddress       : $($AdminAddress)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Administrators     : $($Administrators)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Applications       : $($Applications)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Company Name       : $($Script:CoName)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Company Address    : $($CompanyAddress)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Company Email      : $($CompanyEmail)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Company Fax        : $($CompanyFax)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Company Phone      : $($CompanyPhone)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Cover Page         : $($CoverPage)" -BackgroundColor Black -ForegroundColor Yellow
 	If($Dev)
 	{
-		Write-Host "$(Get-Date): DevErrorFile       : $($Script:DevErrorFile)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): DevErrorFile       : $($Script:DevErrorFile)" -BackgroundColor Black -ForegroundColor Yellow
 	}
-	Write-Host "$(Get-Date): Farm name          : $($Script:FarmName)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Filename1          : $($Script:filename1)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Farm name          : $($Script:FarmName)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Filename1          : $($Script:filename1)" -BackgroundColor Black -ForegroundColor Yellow
 	If($PDF)
 	{
-		Write-Host "$(Get-Date): Filename2          : $($Script:Filename2)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Filename2          : $($Script:Filename2)" -BackgroundColor Black -ForegroundColor Yellow
 	}
-	Write-Host "$(Get-Date): Folder             : $($Folder)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): HW Inventory       : $($Hardware)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Log                : $($Log)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Logging            : $($Logging)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Folder             : $($Folder)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): HW Inventory       : $($Hardware)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Log                : $($Log)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Logging            : $($Logging)" -BackgroundColor Black -ForegroundColor Yellow
 	If($Logging)
 	{
-		Write-Host "$(Get-Date):    Start Date      : $($StartDate)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date):    End Date        : $($EndDate)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G):    Start Date      : $($StartDate)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G):    End Date        : $($EndDate)" -BackgroundColor Black -ForegroundColor Yellow
 	}
-	Write-Host "$(Get-Date): MaxDetail          : $($MaxDetails)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): NoADPolicies       : $($NoADPolicies)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): NoPolicies         : $($NoPolicies)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Policies           : $($Policies)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Save As PDF        : $($PDF)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Save As HTML       : $($HTML)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Save As TEXT       : $($TEXT)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Save As WORD       : $($MSWORD)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): ScriptInfo         : $($ScriptInfo)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Section            : $($Section)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Summary            : $($Summary)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Title              : $($Script:Title)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): User Name          : $($UserName)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): OS Detected        : $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): PoSH version       : $($Host.Version)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): PSCulture          : $($PSCulture)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): PSUICulture        : $($PSUICulture)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): MaxDetail          : $($MaxDetails)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): NoADPolicies       : $($NoADPolicies)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): NoPolicies         : $($NoPolicies)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Policies           : $($Policies)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Report Footer      : $ReportFooter" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Save As PDF        : $($PDF)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Save As HTML       : $($HTML)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Save As TEXT       : $($TEXT)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Save As WORD       : $($MSWORD)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): ScriptInfo         : $($ScriptInfo)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Section            : $($Section)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Summary            : $($Summary)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Title              : $($Script:Title)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): User Name          : $($UserName)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): OS Detected        : $($Script:RunningOS)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): PoSH version       : $($Host.Version)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): PSCulture          : $($PSCulture)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): PSUICulture        : $($PSUICulture)" -BackgroundColor Black -ForegroundColor Yellow
 	If($MSWORD -or $PDF)
 	{
-		Write-Host "$(Get-Date): Word language      : $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): Word version       : $($Script:WordProduct)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Word language      : $($Script:WordLanguageValue)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Word version       : $($Script:WordProduct)" -BackgroundColor Black -ForegroundColor Yellow
 	}
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Script start       : $($Script:StartTime)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Script start       : $($Script:StartTime)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 }
 
 Function validStateProp( [object] $object, [string] $topLevel, [string] $secondLevel )
@@ -5189,17 +5222,34 @@ Function AbortScript
 {
 	If($MSWord -or $PDF)
 	{
-		$Script:Word.quit()
-		Write-Host "$(Get-Date): System Cleanup" -BackgroundColor Black -ForegroundColor Yellow
-		[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
 		If(Test-Path variable:global:word)
 		{
-			Remove-Variable -Name word -Scope Global
+			$Script:Word.quit()
+			[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+			Remove-Variable -Name word -Scope Global 4>$Null
 		}
 	}
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
-	Write-Host "$(Get-Date): Script has been aborted" -BackgroundColor Black -ForegroundColor Yellow
+
+	If($MSWord -or $PDF)
+	{
+		#is the winword Process still running? kill it
+
+		#find out our session (usually "1" except on TS/RDC or Citrix)
+		$SessionID = (Get-Process -PID $PID).SessionId
+
+		#Find out if winword running in our session
+		$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+		If( $wordprocess -and $wordprocess.Id -gt 0)
+		{
+			Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+			Stop-Process $wordprocess.Id -EA 0
+		}
+	}
+
+	Write-Host "$(Get-Date -Format G): Script has been aborted" -BackgroundColor Black -ForegroundColor Yellow
 	$ErrorActionPreference = $SaveEAPreference
 	Exit
 }
@@ -5239,12 +5289,12 @@ Function TranscriptLogging
 			{
 				Start-Transcript -Path $Script:LogPath -Append -Verbose:$false | Out-Null
 			}
-			Write-Host "$(Get-Date): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Transcript/log started at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
 			$Script:StartLog = $true
 		} 
 		catch 
 		{
-			Write-Host "$(Get-Date): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath" -BackgroundColor Black -ForegroundColor Yellow
 			$Script:StartLog = $false
 		}
 	}
@@ -5280,59 +5330,20 @@ Function ProcessScriptSetup
 {
 	$script:startTime = Get-Date
 
-	<#If(!(Check-NeededPSSnapins "Citrix.Common.Commands","Citrix.XenApp.Commands"))
+	If(!(Get-PSSnapin Citrix.Common.Commands -EA 0))
 	{
-		#We're missing Citrix Snapins that we need
-		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "
-		`n`n
-		`t`t
-		Missing Citrix PowerShell Snap-ins Detected, check the console above for more information.
-		`n`n
-		`t`t
-		Are you sure you are running this script on a XenApp 6.5 Server?
-		`n`n
-		`t`t
-		Script will now close.
-		`n`n
-		"
-		Exit
+		Add-PSSnapin Citrix.Common.Commands -EA 0
 	}
-	#>
-	Add-PSSnapin Citrix.Common.Commands -EA 0
-	Add-PSSnapin Citrix.XenApp.Commands -EA 0
+	If(!(Get-PSSnapin Citrix.XenApp.Commands -EA 0))
+	{
+		Add-PSSnapin Citrix.XenApp.Commands -EA 0
+	}
+	If(!(Get-PSSnapin Citrix.Common.GroupPolicy	-EA 0))
+	{
+		Add-PSSnapin Citrix.Common.GroupPolicy	-EA 0
+	}
 	
 	$Script:DoPolicies = $True
-	If($NoPolicies)
-	{
-		Write-Host "$(Get-Date): NoPolicies was specified so do not search for Citrix.GroupPolicy.Commands.psm1" -BackgroundColor Black -ForegroundColor Yellow
-		$Script:DoPolicies = $False
-	}
-	ElseIf(!(Check-LoadedModule "Citrix.GroupPolicy.Commands") -and $Policies -eq $False)
-	{
-		Write-Warning "The Citrix Group Policy module Citrix.GroupPolicy.Commands.psm1 could not be loaded `n
-		Please see the Prerequisites section in the ReadMe file (https://carlwebster.sharefile.com/d-s8e92231489542428). 
-		`nCitrix Policy documentation will not take place"
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-		$Script:DoPolicies = $False
-	}
-	ElseIf(!(Check-LoadedModule "Citrix.GroupPolicy.Commands") -and $Policies -eq $True)
-	{
-		Write-Error "
-		`n`n
-		`t`t
-		The Citrix Group Policy module Citrix.GroupPolicy.Commands.psm1 could not be loaded 
-		`n`n
-		`t`t
-		Please see the Prerequisites section in the ReadMe file (https://carlwebster.sharefile.com/d-s8e92231489542428). 
-		`n`n
-		`t`t
-		Because the Policies parameter was used the script will now close.
-		`n`n
-		"
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-		Exit
-	}
 	
 	If($Policies -eq $False -and $NoPolicies -eq $False -and $NoADPolicies -eq $False)
 	{
@@ -5394,20 +5405,45 @@ Function ProcessScriptSetup
 			$Script:Remoting = $True
 		}
 	}
+	ElseIf($AdminAddress -eq $Env:ComputerName)
+	{
+		#script is running on the computer specified by $AdminAddress, so do nothing
+		$Script:Remoting = $False
+		Write-Host "" -BackgroundColor Black -ForegroundColor White
+		Write-Host "$(Get-Date -Format G): AdminAdress $AdminAddress is the name of the local server. Remoting is not enabled." -BackgroundColor Black -ForegroundColor White
+		Write-Host "" -BackgroundColor Black -ForegroundColor White
+	}
 	ElseIf($AdminAddress -ne "LocalHost")
 	{
 		#do nothing if $AdminAddress is LocalHost
-		Set-XADefaultComputerName $AdminAddress -Scope LocalMachine -EA 0
+		try
+		{
+			Set-XADefaultComputerName -ComputerName $AdminAddress -Scope LocalMachine -EA 0
+		}
+		
+		catch
+		{
+			Write-Host "
+	`t`t
+	A remote connection to $AdminAddress could not be established.
+	`t`t
+	Try running the script from an elevated PowerShell session.
+	`t`t
+	Script cannot continue.
+			" -ForegroundColor Red -BackgroundColor Black
+			AbortScript
+		}
+		
 		$Script:RemoteXAServer = Get-XADefaultComputerName -EA 0
 		$Script:Remoting = $True
 	}
 	
 	If($Script:Remoting)
 	{
-		Write-Host "$(Get-Date): Remoting is enabled to XenApp server $Script:RemoteXAServer" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Remoting is enabled to XenApp server $Script:RemoteXAServer" -BackgroundColor Black -ForegroundColor Yellow
 		#now need to make sure the script is not being run against a session-only host
 		$Server = Get-XAServer -ServerName $Script:RemoteXAServer -EA 0
-		If($Server.ElectionPreference -eq "WorkerMode")
+		If($? -and $Server.ElectionPreference -eq "WorkerMode")
 		{
 			$ErrorActionPreference = $SaveEAPreference
 			Write-Warning "This script cannot be run remotely against a Session-only Host Server."
@@ -5426,7 +5462,7 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): Remoting is not being used" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Remoting is not being used" -BackgroundColor Black -ForegroundColor Yellow
 		
 		#now need to make sure the script is not being run on a session-only host
 		$ServerName = $env:computername
@@ -5450,12 +5486,12 @@ Function ProcessScriptSetup
 	}
 
 	# Get farm information
-	Write-Host "$(Get-Date): Getting initial Farm data" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Getting initial Farm data" -BackgroundColor Black -ForegroundColor Yellow
 	$farm = Get-XAFarm -EA 0
 
 	If($? -and $Null -ne $Farm)
 	{
-		Write-Host "$(Get-Date): Verify farm version" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Verify farm version" -BackgroundColor Black -ForegroundColor Yellow
 		#first check to make sure this is a XenApp 6.5 farm
 		If($Farm.ServerVersion.ToString().SubString(0,3) -eq "6.5")
 		{
@@ -5498,7 +5534,7 @@ Function ProcessScriptSetup
 			`n`n
 			"
 		}
-		Exit
+		AbortScript
 	}
 }
 #endregion
@@ -5508,7 +5544,7 @@ Function ProcessConfigLogSettings
 {
 	If(!$Summary -and ($Section -eq "All" -or $Section -eq "ConfigLog"))
 	{
-		Write-Host "$(Get-Date): Processing Configuration Logging" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Configuration Logging" -BackgroundColor Black -ForegroundColor Yellow
 		[bool]$Script:ConfigLog = $False
 		$ConfigurationLogging = Get-XAConfigurationLog -EA 0
 
@@ -5526,8 +5562,8 @@ Function ProcessConfigLogSettings
 			$txt = "Unable to retrieve Configuration Logging settings"
 			OutputWarning $txt
 		}
-		Write-Host "$(Get-Date): Finished Configuration Logging" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Configuration Logging" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -5660,8 +5696,8 @@ Function ProcessAdministrators
 {
 	If($Section -eq "All" -or $Section -eq "Admins")
 	{
-		Write-Host "$(Get-Date): Processing Administrators" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): `tRetrieving Administrators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Administrators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Administrators" -BackgroundColor Black -ForegroundColor Yellow
 
 		$Administrators = Get-XAAdministrator -EA 0| Sort-Object AdministratorName
 
@@ -5686,8 +5722,8 @@ Function ProcessAdministrators
 			$txt = "Unable to retrieve Administrators"
 			OutputWarning $txt
 		}
-		Write-Host "$(Get-Date): Finished Processing Administrators" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Administrators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -5715,7 +5751,7 @@ Function OutputSummaryAdministrators
 	
 	ForEach($Administrator in $Administrators)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing administrator $($Administrator.AdministratorName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing administrator $($Administrator.AdministratorName)" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 0 0 
@@ -5788,7 +5824,7 @@ Function OutputAdministrators
 	
 	ForEach($Administrator in $Administrators)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing administrator $($Administrator.AdministratorName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing administrator $($Administrator.AdministratorName)" -BackgroundColor Black -ForegroundColor Yellow
 		
 		$xAdminType = ""
 		Switch ($Administrator.AdministratorType)
@@ -5817,7 +5853,7 @@ Function OutputAdministrators
 			$AdministratorFarmPrivileges = $Administrator.FarmPrivileges
 			ForEach($farmprivilege in $AdministratorFarmPrivileges) 
 			{
-				Write-Host "$(Get-Date): `t`t`tProcessing farm privilege $farmprivilege" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`t`tProcessing farm privilege $farmprivilege" -BackgroundColor Black -ForegroundColor Yellow
 				Switch ($farmprivilege)
 				{
 					"Unknown"                   {$xFarmPrivileges += "Unknown"; Break}
@@ -5839,7 +5875,7 @@ Function OutputAdministrators
 				}
 			}
 	
-			Write-Host "$(Get-Date): `t`t`tProcessing folder privileges" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `t`t`tProcessing folder privileges" -BackgroundColor Black -ForegroundColor Yellow
 			$AdministratorFolderPrivileges = $Administrator.FolderPrivileges
 			ForEach($folderprivilege in $AdministratorFolderPrivileges) 
 			{
@@ -5848,7 +5884,7 @@ Function OutputAdministrators
 				#WorkerGroups
 				#Applications
 				
-				Write-Host "$(Get-Date): `t`t`t`tProcessing folder permissions for $($FolderPrivilege.FolderPath)" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`t`t`tProcessing folder permissions for $($FolderPrivilege.FolderPath)" -BackgroundColor Black -ForegroundColor Yellow
 				$FolderPrivilegeFolderPrivileges = $FolderPrivilege.FolderPrivileges
 				ForEach($FolderPermission in $FolderPrivilegeFolderPrivileges)
 				{
@@ -6005,9 +6041,9 @@ Function ProcessApplications
 {
 	If($Section -eq "All" -or $Section -eq "Apps")
 	{
-		Write-Host "$(Get-Date): Processing Applications" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Applications" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Applications" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Applications" -BackgroundColor Black -ForegroundColor Yellow
 		If($Summary)
 		{
 			$Applications = Get-XAApplication -EA 0 | Sort-Object DisplayName
@@ -6023,15 +6059,15 @@ Function ProcessApplications
 		}
 		ElseIf($Null -eq $Applications)
 		{
-			Write-Host "$(Get-Date): There are no Applications published" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): There are no Applications published" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else 
 		{
 			Write-Warning "Application information could not be retrieved."
 		}
 		$Applications = $Null
-		Write-Host "$(Get-Date): Finished Processing Applications" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Applications" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -6039,7 +6075,7 @@ Function OutputApplications
 {
 	Param([object] $Applications)
 
-	Write-Host "$(Get-Date): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `tSetting summary variables" -BackgroundColor Black -ForegroundColor Yellow
 
 	If($MSWord -or $PDF)
 	{
@@ -6058,7 +6094,7 @@ Function OutputApplications
 
 	ForEach($Application in $Applications)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing application $($Application.BrowserName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing application $($Application.BrowserName)" -BackgroundColor Black -ForegroundColor Yellow
 		
 		If(!$Summary)
 		{
@@ -6076,7 +6112,7 @@ Function OutputApplications
 				#Printer Mapping (unexplained in article)
 				#Encryption
 				
-				Write-Host "$(Get-Date): `t`t`tGather session sharing info for Appendix A" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`t`tGather session sharing info for Appendix A" -BackgroundColor Black -ForegroundColor Yellow
 				$obj = New-Object -TypeName PSObject
 				$obj | Add-Member -MemberType NoteProperty -Name ApplicationName      -Value $Application.BrowserName
 				$obj | Add-Member -MemberType NoteProperty -Name MaximumColorQuality  -Value $Application.ColorDepth
@@ -6285,44 +6321,49 @@ Function OutputApplications
 				$ScriptInformation += @{ Data = "Client application folder"; Value = $Application.ClientFolder; }
 				If($Application.AddToClientStartMenu)
 				{
-					$ScriptInformation += @{ Data = "Add to client's start menu"; Value = ""; }
+					$ScriptInformation += @{ Data = "Add to client's start menu"; Value = "Enabled"; }
 					If($Application.StartMenuFolder)
 					{
 						$ScriptInformation += @{ Data = "Start menu folder"; Value = $Application.StartMenuFolder; }
 					}
 				}
+				Else
+				{
+					$ScriptInformation += @{ Data = "Add to client's start menu"; Value = "Disabled"; }
+				}
+
 				If($Application.AddToClientDesktop)
 				{
-					$ScriptInformation += @{ Data = "Add shortcut to the client's desktop"; Value = ""; }
+					$ScriptInformation += @{ Data = "Add shortcut to the client's desktop"; Value = "Enabled"; }
+				}
+				Else
+				{
+					$ScriptInformation += @{ Data = "Add shortcut to the client's desktop"; Value = "Disabled"; }
 				}
 			
 				#access control properties
 				If($Application.ConnectionsThroughAccessGatewayAllowed)
 				{
-					If($Application.ConnectionsThroughAccessGatewayAllowed)
-					{
-						$tmp = "Yes"
-					} 
-					Else
-					{
-						$tmp = "No"
-					}
-					$ScriptInformation += @{ Data = "Allow connections made through AGAE"; Value = $tmp; }
-					$tmp = $Null
+					$tmp = "Yes"
+				} 
+				Else
+				{
+					$tmp = "No"
 				}
+				$ScriptInformation += @{ Data = "Allow connections made through AGAE"; Value = $tmp; }
+				$tmp = $Null
+
 				If($Application.OtherConnectionsAllowed)
 				{
-					If($Application.OtherConnectionsAllowed)
-					{
-						$tmp = "Yes"
-					} 
-					Else
-					{
-						$tmp = "No"
-					}
-					$ScriptInformation += @{ Data = "Any connection"; Value = $tmp; }
-					$tmp = $Null
+					$tmp = "Yes"
+				} 
+				Else
+				{
+					$tmp = "No"
 				}
+				$ScriptInformation += @{ Data = "Any connection"; Value = $tmp; }
+				$tmp = $Null
+
 				If($Application.AccessSessionConditionsEnabled)
 				{
 					$ScriptInformation += @{ Data = "Any connection that meets any of the following filters"; Value = $Application.AccessSessionConditionsEnabled; }
@@ -6408,21 +6449,17 @@ Function OutputApplications
 				$ScriptInformation += @{ Data = "Allow only 1 instance of app for each user"; Value = $tmp; }
 				$tmp = $Null
 			
-			
-				If($Application.CpuPriorityLevel)
+				Switch ($Application.CpuPriorityLevel)
 				{
-					Switch ($Application.CpuPriorityLevel)
-					{
-						"Unknown"     	{$Tmp = "Unknown"; Break}
-						"BelowNormal" 	{$Tmp = "Below Normal"; Break}
-						"Low"         	{$Tmp = "Low"; Break}
-						"Normal"      	{$Tmp = "Normal"; Break}
-						"AboveNormal" 	{$Tmp = "Above Normal"; Break}
-						"High"        	{$Tmp = "High"; Break}
-						Default			{$Tmp = "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
-					}
-					$ScriptInformation += @{ Data = "Application importance"; Value = $tmp; }
+					"Unknown"     	{$Tmp = "Unknown"; Break}
+					"BelowNormal" 	{$Tmp = "Below Normal"; Break}
+					"Low"         	{$Tmp = "Low"; Break}
+					"Normal"      	{$Tmp = "Normal"; Break}
+					"AboveNormal" 	{$Tmp = "Above Normal"; Break}
+					"High"        	{$Tmp = "High"; Break}
+					Default			{$Tmp = "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
 				}
+				$ScriptInformation += @{ Data = "Application importance"; Value = $tmp; }
 				
 				#client options properties
 				Switch ($Application.AudioType)
@@ -6448,44 +6485,35 @@ Function OutputApplications
 
 				If($Application.SslConnectionEnabled)
 				{
-					If($Application.SslConnectionEnabled)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
+					$Tmp = "Enabled"
+				}
+				Else
+				{
+					$Tmp = "Disabled"
 				}
 				$ScriptInformation += @{ Data = "Enable SSL and TLS protocols"; Value = $tmp; }
 				$tmp = $Null
 
-				If($Application.EncryptionLevel)
+				Switch ($Application.EncryptionLevel)
 				{
-					Switch ($Application.EncryptionLevel)
-					{
-						"Unknown" 	{$Tmp = "Unknown"; Break}
-						"Basic"   	{$Tmp = "Basic"; Break}
-						"LogOn"   	{$Tmp = "128-Bit Login Only (RC-5)"; Break}
-						"Bits40"  	{$Tmp = "40-Bit (RC-5)"; Break}
-						"Bits56"  	{$Tmp = "56-Bit (RC-5)"; Break}
-						"Bits128" 	{$Tmp = "128-Bit (RC-5)"; Break}
-						Default		{$Tmp = "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
-					}
+					"Unknown" 	{$Tmp = "Unknown"; Break}
+					"Basic"   	{$Tmp = "Basic"; Break}
+					"LogOn"   	{$Tmp = "128-Bit Login Only (RC-5)"; Break}
+					"Bits40"  	{$Tmp = "40-Bit (RC-5)"; Break}
+					"Bits56"  	{$Tmp = "56-Bit (RC-5)"; Break}
+					"Bits128" 	{$Tmp = "128-Bit (RC-5)"; Break}
+					Default		{$Tmp = "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
 				}
 				$ScriptInformation += @{ Data = "Encryption"; Value = $tmp; }
 				$tmp = $Null
 				
 				If($Application.EncryptionRequired)
 				{
-					If($Application.EncryptionRequired)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
+					$Tmp = "Enabled"
+				}
+				Else
+				{
+					$Tmp = "Disabled"
 				}
 				$ScriptInformation += @{ Data = "Minimum requirement"; Value = $tmp; }
 				$tmp = $Null
@@ -6503,49 +6531,40 @@ Function OutputApplications
 				$tmp = $Null
 				
 				#appearance properties
-				If($Application.WindowType)
+				$ScriptInformation += @{ Data = "Session window size"; Value = $Application.WindowType; }
+
+				Switch ($Application.ColorDepth)
 				{
-					$ScriptInformation += @{ Data = "Session window size"; Value = $Application.WindowType; }
+					"Unknown"     	{$Tmp = "Unknown color depth"; Break}
+					"Colors8Bit"  	{$Tmp = "256-color (8-bit)"; Break}
+					"Colors16Bit" 	{$Tmp = "Better Speed (16-bit)"; Break}
+					"Colors32Bit" 	{$Tmp = "Better Appearance (32-bit)"; Break}
+					Default			{$Tmp = "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
 				}
-				If($Application.ColorDepth)
-				{
-					Switch ($Application.ColorDepth)
-					{
-						"Unknown"     	{$Tmp = "Unknown color depth"; Break}
-						"Colors8Bit"  	{$Tmp = "256-color (8-bit)"; Break}
-						"Colors16Bit" 	{$Tmp = "Better Speed (16-bit)"; Break}
-						"Colors32Bit" 	{$Tmp = "Better Appearance (32-bit)"; Break}
-						Default			{$Tmp = "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
-					}
-					$ScriptInformation += @{ Data = "Maximum color quality"; Value = $tmp; }
-					$tmp = $Null
-				}
+				$ScriptInformation += @{ Data = "Maximum color quality"; Value = $tmp; }
+				$tmp = $Null
+
 				If($Application.TitleBarHidden)
 				{
-					If($Application.TitleBarHidden)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
-					$ScriptInformation += @{ Data = "Hide application title bar"; Value = $tmp; }
-					$tmp = $Null
+					$Tmp = "Enabled"
 				}
+				Else
+				{
+					$Tmp = "Disabled"
+				}
+				$ScriptInformation += @{ Data = "Hide application title bar"; Value = $tmp; }
+				$tmp = $Null
+
 				If($Application.MaximizedOnStartup)
 				{
-					If($Application.MaximizedOnStartup)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
-					$ScriptInformation += @{ Data = "Maximize application at startup"; Value = $tmp; }
-					$tmp = $Null
+					$Tmp = "Enabled"
 				}
+				Else
+				{
+					$Tmp = "Disabled"
+				}
+				$ScriptInformation += @{ Data = "Maximize application at startup"; Value = $tmp; }
+				$tmp = $Null
 				$AppServerInfo = $Null
 				
 				$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -6721,48 +6740,51 @@ Function OutputApplications
 
 				#shortcut presentation properties
 				#application icon is ignored
-				If(![String]::IsNullOrEmpty($Application.ClientFolder))
-				{
-					Line 1 "Client application folder`t`t`t: " $Application.ClientFolder
-				}
+				Line 1 "Client application folder`t`t`t: " $Application.ClientFolder
+
 				If($Application.AddToClientStartMenu)
 				{
-					Line 1 "Add to client's start menu"
+					Line 1 "Add to client's start menu`t`t`t: Enabled"
 					If($Application.StartMenuFolder)
 					{
 						Line 2 "Start menu folder`t`t`t: " $Application.StartMenuFolder
 					}
 				}
+				Else
+				{
+					Line 1 "Add to client's start menu`t`t`t: Disabled"
+				}
+
 				If($Application.AddToClientDesktop)
 				{
-					Line 1 "Add shortcut to the client's desktop"
+					Line 1 "Add shortcut to the client's desktop`t`t: Enabled"
+				}
+				Else
+				{
+					Line 1 "Add shortcut to the client's desktop`t`t: Disabled"
 				}
 			
 				#access control properties
+				Line 1 "Allow connections made through AGAE`t`t: " -nonewline
 				If($Application.ConnectionsThroughAccessGatewayAllowed)
 				{
-					Line 1 "Allow connections made through AGAE`t`t: " -nonewline
-					If($Application.ConnectionsThroughAccessGatewayAllowed)
-					{
-						Line 0 "Yes"
-					} 
-					Else
-					{
-						Line 0 "No"
-					}
+					Line 0 "Yes"
+				} 
+				Else
+				{
+					Line 0 "No"
 				}
+
+				Line 1 "Any connection`t`t`t`t`t: " -nonewline
 				If($Application.OtherConnectionsAllowed)
 				{
-					Line 1 "Any connection`t`t`t`t`t: " -nonewline
-					If($Application.OtherConnectionsAllowed)
-					{
-						Line 0 "Yes"
-					} 
-					Else
-					{
-						Line 0 "No"
-					}
+					Line 0 "Yes"
+				} 
+				Else
+				{
+					Line 0 "No"
 				}
+
 				If($Application.AccessSessionConditionsEnabled)
 				{
 					Line 1 "Any connection that meets any of the following filters: " $Application.AccessSessionConditionsEnabled
@@ -6785,10 +6807,10 @@ Function OutputApplications
 				{
 					If($AppServerInfo.FileTypes)
 					{
-						Line 1 "File type associations:"
+						Line 1 "File type associations`t`t`t`t:"
 						ForEach($filetype in $AppServerInfo.FileTypes)
 						{
-							Line 2 $filetype
+							Line 7 "  " $filetype
 						}
 					}
 					Else
@@ -6839,19 +6861,16 @@ Function OutputApplications
 					Line 0 "Yes"
 				}
 			
-				If($Application.CpuPriorityLevel)
+				Line 1 "Application importance`t`t`t`t: " -nonewline
+				Switch ($Application.CpuPriorityLevel)
 				{
-					Line 1 "Application importance`t`t`t`t: " -nonewline
-					Switch ($Application.CpuPriorityLevel)
-					{
-						"Unknown"     	{Line 0 "Unknown"; Break}
-						"BelowNormal" 	{Line 0 "Below Normal"; Break}
-						"Low"         	{Line 0 "Low"; Break}
-						"Normal"      	{Line 0 "Normal"; Break}
-						"AboveNormal" 	{Line 0 "Above Normal"; Break}
-						"High"        	{Line 0 "High"; Break}
-						Default			{Line 0 "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
-					}
+					"Unknown"     	{Line 0 "Unknown"; Break}
+					"BelowNormal" 	{Line 0 "Below Normal"; Break}
+					"Low"         	{Line 0 "Low"; Break}
+					"Normal"      	{Line 0 "Normal"; Break}
+					"AboveNormal" 	{Line 0 "Above Normal"; Break}
+					"High"        	{Line 0 "High"; Break}
+					Default			{Line 0 "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
 				}
 				
 				#client options properties
@@ -6863,6 +6882,7 @@ Function OutputApplications
 					"Basic"   	{Line 0 "Enabled"; Break}
 					Default		{Line 0 "Enable legacy audio could not be determined: $($Application.AudioType)"; Break}
 				}
+
 				Line 1 "Minimum requirement`t`t`t`t: " -nonewline
 				If($Application.AudioRequired)
 				{
@@ -6872,43 +6892,37 @@ Function OutputApplications
 				{
 					Line 0 "Disabled"
 				}
+
+				Line 1 "Enable SSL and TLS protocols`t`t`t: " -nonewline
 				If($Application.SslConnectionEnabled)
 				{
-					Line 1 "Enable SSL and TLS protocols`t`t`t: " -nonewline
-					If($Application.SslConnectionEnabled)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
+					Line 0 "Enabled"
 				}
-				If($Application.EncryptionLevel)
+				Else
 				{
-					Line 1 "Encryption`t`t`t`t`t: " -nonewline
-					Switch ($Application.EncryptionLevel)
-					{
-						"Unknown" 	{Line 0 "Unknown"; Break}
-						"Basic"   	{Line 0 "Basic"; Break}
-						"LogOn"   	{Line 0 "128-Bit Login Only (RC-5)"; Break}
-						"Bits40"  	{Line 0 "40-Bit (RC-5)"; Break}
-						"Bits56"  	{Line 0 "56-Bit (RC-5)"; Break}
-						"Bits128" 	{Line 0 "128-Bit (RC-5)"; Break}
-						Default		{Line 0 "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
-					}
+					Line 0 "Disabled"
 				}
+
+				Line 1 "Encryption`t`t`t`t`t: " -nonewline
+				Switch ($Application.EncryptionLevel)
+				{
+					"Unknown" 	{Line 0 "Unknown"; Break}
+					"Basic"   	{Line 0 "Basic"; Break}
+					"LogOn"   	{Line 0 "128-Bit Login Only (RC-5)"; Break}
+					"Bits40"  	{Line 0 "40-Bit (RC-5)"; Break}
+					"Bits56"  	{Line 0 "56-Bit (RC-5)"; Break}
+					"Bits128" 	{Line 0 "128-Bit (RC-5)"; Break}
+					Default		{Line 0 "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
+				}
+
+				Line 1 "Minimum requirement`t`t`t`t: " -nonewline
 				If($Application.EncryptionRequired)
 				{
-					Line 1 "Minimum requirement`t`t`t`t: " -nonewline
-					If($Application.EncryptionRequired)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
+					Line 0 "Enabled"
+				}
+				Else
+				{
+					Line 0 "Disabled"
 				}
 			
 				Line 1 "Start app w/o waiting for printer creation`t: " -NoNewLine
@@ -6923,45 +6937,36 @@ Function OutputApplications
 				}
 				
 				#appearance properties
-				If($Application.WindowType)
+				Line 1 "Session window size`t`t`t`t: " $Application.WindowType
+
+				Line 1 "Maximum color quality`t`t`t`t: " -nonewline
+				Switch ($Application.ColorDepth)
 				{
-					Line 1 "Session window size`t`t`t`t: " $Application.WindowType
+					"Unknown"     	{Line 0 "Unknown color depth"; Break}
+					"Colors8Bit"  	{Line 0 "256-color (8-bit)"; Break}
+					"Colors16Bit" 	{Line 0 "Better Speed (16-bit)"; Break}
+					"Colors32Bit" 	{Line 0 "Better Appearance (32-bit)"; Break}
+					Default			{Line 0 "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
 				}
-				If($Application.ColorDepth)
-				{
-					Line 1 "Maximum color quality`t`t`t`t: " -nonewline
-					Switch ($Application.ColorDepth)
-					{
-						"Unknown"     	{Line 0 "Unknown color depth"; Break}
-						"Colors8Bit"  	{Line 0 "256-color (8-bit)"; Break}
-						"Colors16Bit" 	{Line 0 "Better Speed (16-bit)"; Break}
-						"Colors32Bit" 	{Line 0 "Better Appearance (32-bit)"; Break}
-						Default			{Line 0 "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
-					}
-				}
+
+				Line 1 "Hide application title bar`t`t`t: " -nonewline
 				If($Application.TitleBarHidden)
 				{
-					Line 1 "Hide application title bar`t`t`t: " -nonewline
-					If($Application.TitleBarHidden)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
+					Line 0 "Enabled"
 				}
+				Else
+				{
+					Line 0 "Disabled"
+				}
+
+				Line 1 "Maximize application at startup`t`t`t: " -nonewline
 				If($Application.MaximizedOnStartup)
 				{
-					Line 1 "Maximize application at startup`t`t`t: " -nonewline
-					If($Application.MaximizedOnStartup)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
+					Line 0 "Enabled"
+				}
+				Else
+				{
+					Line 0 "Disabled"
 				}
 				Line 0 ""
 				$AppServerInfo = $Null
@@ -7115,44 +7120,49 @@ Function OutputApplications
 				$rowdata += @(,("Client application folder",($htmlsilver -bor $htmlbold),$Application.ClientFolder,$htmlwhite))
 				If($Application.AddToClientStartMenu)
 				{
-					$rowdata += @(,("Add to client's start menu",($htmlsilver -bor $htmlbold),"",$htmlwhite))
+					$rowdata += @(,("Add to client's start menu",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 					If($Application.StartMenuFolder)
 					{
 						$rowdata += @(,("Start menu folder",($htmlsilver -bor $htmlbold),$Application.StartMenuFolder,$htmlwhite))
 					}
 				}
+				Else
+				{
+					$rowdata += @(,("Add to client's start menu",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
+				}
+
 				If($Application.AddToClientDesktop)
 				{
-					$rowdata += @(,("Add shortcut to the client's desktop",($htmlsilver -bor $htmlbold),"",$htmlwhite))
+					$rowdata += @(,("Add shortcut to the client's desktop",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
+				}
+				Else
+				{
+					$rowdata += @(,("Add shortcut to the client's desktop",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
 				}
 			
 				#access control properties
 				If($Application.ConnectionsThroughAccessGatewayAllowed)
 				{
-					If($Application.ConnectionsThroughAccessGatewayAllowed)
-					{
-						$tmp = "Yes"
-					} 
-					Else
-					{
-						$tmp = "No"
-					}
-					$rowdata += @(,("Allow connections made through AGAE",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
-					$tmp = $Null
+					$tmp = "Yes"
+				} 
+				Else
+				{
+					$tmp = "No"
 				}
+				$rowdata += @(,("Allow connections made through AGAE",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+				$tmp = $Null
+
 				If($Application.OtherConnectionsAllowed)
 				{
-					If($Application.OtherConnectionsAllowed)
-					{
-						$tmp = "Yes"
-					} 
-					Else
-					{
-						$tmp = "No"
-					}
-					$rowdata += @(,("Any connection",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
-					$tmp = $Null
+					$tmp = "Yes"
+				} 
+				Else
+				{
+					$tmp = "No"
 				}
+				$rowdata += @(,("Any connection",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+				$tmp = $Null
+
 				If($Application.AccessSessionConditionsEnabled)
 				{
 					$rowdata += @(,("Any connection that meets any of the following filters",($htmlsilver -bor $htmlbold),$Application.AccessSessionConditionsEnabled,$htmlwhite))
@@ -7239,20 +7249,17 @@ Function OutputApplications
 				$tmp = $Null
 			
 			
-				If($Application.CpuPriorityLevel)
+				Switch ($Application.CpuPriorityLevel)
 				{
-					Switch ($Application.CpuPriorityLevel)
-					{
-						"Unknown"     	{$Tmp = "Unknown"; Break}
-						"BelowNormal" 	{$Tmp = "Below Normal"; Break}
-						"Low"         	{$Tmp = "Low"; Break}
-						"Normal"      	{$Tmp = "Normal"; Break}
-						"AboveNormal" 	{$Tmp = "Above Normal"; Break}
-						"High"        	{$Tmp = "High"; Break}
-						Default			{$Tmp = "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
-					}
-					$rowdata += @(,("Application importance",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+					"Unknown"     	{$Tmp = "Unknown"; Break}
+					"BelowNormal" 	{$Tmp = "Below Normal"; Break}
+					"Low"         	{$Tmp = "Low"; Break}
+					"Normal"      	{$Tmp = "Normal"; Break}
+					"AboveNormal" 	{$Tmp = "Above Normal"; Break}
+					"High"        	{$Tmp = "High"; Break}
+					Default			{$Tmp = "Application importance could not be determined: $($Application.CpuPriorityLevel)"; Break}
 				}
+				$rowdata += @(,("Application importance",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				
 				#client options properties
 				Switch ($Application.AudioType)
@@ -7278,44 +7285,35 @@ Function OutputApplications
 
 				If($Application.SslConnectionEnabled)
 				{
-					If($Application.SslConnectionEnabled)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
+					$Tmp = "Enabled"
+				}
+				Else
+				{
+					$Tmp = "Disabled"
 				}
 				$rowdata += @(,("Enable SSL and TLS protocols",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				$tmp = $Null
 
-				If($Application.EncryptionLevel)
+				Switch ($Application.EncryptionLevel)
 				{
-					Switch ($Application.EncryptionLevel)
-					{
-						"Unknown" 	{$Tmp = "Unknown"; Break}
-						"Basic"   	{$Tmp = "Basic"; Break}
-						"LogOn"   	{$Tmp = "128-Bit Login Only (RC-5)"; Break}
-						"Bits40"  	{$Tmp = "40-Bit (RC-5)"; Break}
-						"Bits56"  	{$Tmp = "56-Bit (RC-5)"; Break}
-						"Bits128" 	{$Tmp = "128-Bit (RC-5)"; Break}
-						Default		{$Tmp = "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
-					}
+					"Unknown" 	{$Tmp = "Unknown"; Break}
+					"Basic"   	{$Tmp = "Basic"; Break}
+					"LogOn"   	{$Tmp = "128-Bit Login Only (RC-5)"; Break}
+					"Bits40"  	{$Tmp = "40-Bit (RC-5)"; Break}
+					"Bits56"  	{$Tmp = "56-Bit (RC-5)"; Break}
+					"Bits128" 	{$Tmp = "128-Bit (RC-5)"; Break}
+					Default		{$Tmp = "Encryption could not be determined: $($Application.EncryptionLevel)"; Break}
 				}
 				$rowdata += @(,("Encryption",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				$tmp = $Null
 				
 				If($Application.EncryptionRequired)
 				{
-					If($Application.EncryptionRequired)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
+					$Tmp = "Enabled"
+				}
+				Else
+				{
+					$Tmp = "Disabled"
 				}
 				$rowdata += @(,("Minimum requirement",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				$tmp = $Null
@@ -7333,49 +7331,40 @@ Function OutputApplications
 				$tmp = $Null
 				
 				#appearance properties
-				If($Application.WindowType)
+				$rowdata += @(,("Session window size",($htmlsilver -bor $htmlbold),$Application.WindowType,$htmlwhite))
+
+				Switch ($Application.ColorDepth)
 				{
-					$rowdata += @(,("Session window size",($htmlsilver -bor $htmlbold),$Application.WindowType,$htmlwhite))
+					"Unknown"     	{$Tmp = "Unknown color depth"; Break}
+					"Colors8Bit"  	{$Tmp = "256-color (8-bit)"; Break}
+					"Colors16Bit" 	{$Tmp = "Better Speed (16-bit)"; Break}
+					"Colors32Bit" 	{$Tmp = "Better Appearance (32-bit)"; Break}
+					Default			{$Tmp = "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
 				}
-				If($Application.ColorDepth)
-				{
-					Switch ($Application.ColorDepth)
-					{
-						"Unknown"     	{$Tmp = "Unknown color depth"; Break}
-						"Colors8Bit"  	{$Tmp = "256-color (8-bit)"; Break}
-						"Colors16Bit" 	{$Tmp = "Better Speed (16-bit)"; Break}
-						"Colors32Bit" 	{$Tmp = "Better Appearance (32-bit)"; Break}
-						Default			{$Tmp = "Maximum color quality could not be determined: $($Application.ColorDepth)"; Break}
-					}
-					$rowdata += @(,("Maximum color quality",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
-					$tmp = $Null
-				}
+				$rowdata += @(,("Maximum color quality",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+				$tmp = $Null
+
 				If($Application.TitleBarHidden)
 				{
-					If($Application.TitleBarHidden)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
-					$rowdata += @(,("Hide application title bar",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
-					$tmp = $Null
+					$Tmp = "Enabled"
 				}
+				Else
+				{
+					$Tmp = "Disabled"
+				}
+				$rowdata += @(,("Hide application title bar",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+				$tmp = $Null
+
 				If($Application.MaximizedOnStartup)
 				{
-					If($Application.MaximizedOnStartup)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
-					$rowdata += @(,("Maximize application at startup",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
-					$tmp = $Null
+					$Tmp = "Enabled"
 				}
+				Else
+				{
+					$Tmp = "Disabled"
+				}
+				$rowdata += @(,("Maximize application at startup",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
+				$tmp = $Null
 				$AppServerInfo = $Null
 				
 				$msg = ""
@@ -7410,7 +7399,7 @@ Function ProcessConfigLogging
 	{
 		If($Script:ConfigLog)
 		{
-			Write-Host "$(Get-Date): Processing Configuration Logging/History Report" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): Processing Configuration Logging/History Report" -BackgroundColor Black -ForegroundColor Yellow
 			#history AKA Configuration Logging report
 			#only process if $Script:ConfigLog = $True and XA65ConfigLog.udl file exists
 			#build connection string
@@ -7419,13 +7408,13 @@ Function ProcessConfigLogging
 			#bug fixed by Esther Barthel
 			If(Test-Path "$($pwd.path)\XA65ConfigLog.udl")
 			{
-				Write-Host "$(Get-Date): `tRetrieving logging data for date range $($StartDate) through $($EndDate)" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `tRetrieving logging data for date range $($StartDate) through $($EndDate)" -BackgroundColor Black -ForegroundColor Yellow
 				$ConnectionString = Get-Content "$($pwd.path)\XA65ConfigLog.udl"| Select-Object -last 1
 				
 				If("" -eq $ConnectionString -or $Null -eq $ConnectionString)
 				{
 					Write-Warning "Configuration Logging connection string for the XA65ConfigLog.udl file was not found"
-					Write-Warning "$(Get-Date): Unable to process Configuration Logging/History Report"
+					Write-Warning "$(Get-Date -Format G): Unable to process Configuration Logging/History Report"
 				}
 				Else
 				{
@@ -7446,7 +7435,7 @@ Function ProcessConfigLogging
 						$txt = "Unable to retrieve configuration logging data"
 						OutputWarning $txt
 					}
-					Write-Host "$(Get-Date): Finished Processing Configuration Logging/History Report" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): Finished Processing Configuration Logging/History Report" -BackgroundColor Black -ForegroundColor Yellow
 				}
 			}
 			Else 
@@ -7456,14 +7445,14 @@ Function ProcessConfigLogging
 			$ConnectionString = $Null
 			$ConfigLogReport = $Null
 		}
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
 Function OutputConfigLogging
 {
 	Param([object] $ConfigLogReport)
-	Write-Host "$(Get-Date): `tProcessing $($ConfigLogReport.Count) history items" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): `tProcessing $($ConfigLogReport.Count) history items" -BackgroundColor Black -ForegroundColor Yellow
 	
 	If($MSWord -or $PDF)
 	{
@@ -7551,9 +7540,9 @@ Function ProcessLoadBalancingPolicies
 	If($Section -eq "All" -or $Section -eq "LBPolicies")
 	{
 		#load balancing policies
-		Write-Host "$(Get-Date): Processing Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
 		$LoadBalancingPolicies = @(Get-XALoadBalancingPolicy -EA 0 | Sort-Object PolicyName)
 
 		If($? -and $Null -ne $LoadBalancingPolicies)
@@ -7562,15 +7551,15 @@ Function ProcessLoadBalancingPolicies
 		}
 		Elseif($Null -eq $LoadBalancingPolicies)
 		{
-			Write-Host "$(Get-Date): There are no Load balancing policies created" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): There are no Load balancing policies created" -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else 
 		{
 			Write-Warning "Load balancing policy information could not be retrieved"
 		}
 		$LoadBalancingPolicies = $Null
-		Write-Host "$(Get-Date): Finished Processing Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Load Balancing Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -7596,7 +7585,7 @@ Function OutputLoadBalancingPolicies
 	ForEach($LoadBalancingPolicy in $LoadBalancingPolicies)
 	{
 		$Script:TotalLBPolicies++
-		Write-Host "$(Get-Date): `t`tProcessing Load Balancing Policy $($LoadBalancingPolicy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Load Balancing Policy $($LoadBalancingPolicy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
 		$LoadBalancingPolicyConfiguration = Get-XALoadBalancingPolicyConfiguration -PolicyName $LoadBalancingPolicy.PolicyName -EA 0
 		$LoadBalancingPolicyFilter = Get-XALoadBalancingPolicyFilter -PolicyName $LoadBalancingPolicy.PolicyName -EA 0
 	
@@ -8219,9 +8208,9 @@ Function ProcessLoadEvaluators
 	If($Section -eq "All" -or $Section -eq "LoadEvals")
 	{
 		#load evaluators
-		Write-Host "$(Get-Date): Processing Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
 		$LoadEvaluators = Get-XALoadEvaluator -EA 0| Sort-Object LoadEvaluatorName
 
 		If($? -and $Null -ne $LoadEvaluators)
@@ -8236,8 +8225,8 @@ Function ProcessLoadEvaluators
 		{
 			Write-Warning "Load Evaluator information could not be retrieved"
 		}
-		Write-Host "$(Get-Date): Finished Processing Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Load Evaluators" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -8262,7 +8251,7 @@ Function OutputLoadEvaluators
 	ForEach($LoadEvaluator in $LoadEvaluators)
 	{
 		$Script:TotalLoadEvaluators++
-		Write-Host "$(Get-Date): `t`tProcessing Load Evaluator $($LoadEvaluator.LoadEvaluatorName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Load Evaluator $($LoadEvaluator.LoadEvaluatorName)" -BackgroundColor Black -ForegroundColor Yellow
 		If(!$Summary)
 		{
 			If($MSWord -or $PDF)
@@ -8703,9 +8692,9 @@ Function ProcessServers
 	If($Section -eq "All" -or $Section -eq "Servers")
 	{
 		#servers
-		Write-Host "$(Get-Date): Processing Servers" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Servers" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Servers" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Servers" -BackgroundColor Black -ForegroundColor Yellow
 		If($Summary)
 		{
 			$Servers = @(Get-XAServer -EA 0 | Sort-Object ServerName)
@@ -8728,8 +8717,8 @@ Function ProcessServers
 			Write-Warning "No results returned for Server information"
 		}
 		$servers = $Null
-		Write-Host "$(Get-Date): Finished Processing Servers" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Servers" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -8754,39 +8743,39 @@ Function OutputServer
 
 	ForEach($server in $servers)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 
 		If(!$Summary)
 		{
 			[bool]$SvrOnline = $False
-			Write-Host "$(Get-Date): `t`t`tTesting to see if $($server.ServerName) is online and reachable" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `t`t`tTesting to see if $($server.ServerName) is online and reachable" -BackgroundColor Black -ForegroundColor Yellow
 			If(Test-Connection -ComputerName $server.servername -quiet -EA 0)
 			{
 				$SvrOnline = $True
 				If($Hardware -and $Software)
 				{
-					Write-Host "$(Get-Date): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`t`t`tHardware and Software Inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`tHardware and Software Inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
 				}
 				ElseIf($Hardware -and !($Software))
 				{
-					Write-Host "$(Get-Date): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`t`t`tHardware inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`tHardware inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
 				}
 				ElseIf(!($Hardware) -and $Software)
 				{
-					Write-Host "$(Get-Date): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`t`t`tSoftware Inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`tSoftware Inventory, Citrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
 				}
 				Else
 				{
-					Write-Host "$(Get-Date): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`t`t`tCitrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`t$($server.ServerName) is online." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`t`tCitrix Services and Hotfix areas will be processed." -BackgroundColor Black -ForegroundColor Yellow
 				}
 			}
 			
 			#create array for appendix B
-			Write-Host "$(Get-Date): `t`t`tGather server info for Appendix B" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `t`t`tGather server info for Appendix B" -BackgroundColor Black -ForegroundColor Yellow
 			$obj = New-Object -TypeName PSObject
 			$obj | Add-Member -MemberType NoteProperty -Name ServerName -Value $server.ServerName
 			$obj | Add-Member -MemberType NoteProperty -Name ZoneName -Value $server.ZoneName
@@ -8849,7 +8838,14 @@ Function OutputServer
 				$ScriptInformation += @{ Data = "Edition"; Value = $server.CitrixEdition; }
 				$ScriptInformation += @{ Data = "Version"; Value = $server.CitrixVersion; }
 				$ScriptInformation += @{ Data = "Service Pack"; Value = $server.CitrixServicePack; }
-				$ScriptInformation += @{ Data = "IP Address"; Value = $server.IPAddresses; }
+				If($Null -eq $server.IPAddresses[0])
+				{
+					$ScriptInformation += @{ Data = "IP Address"; Value = "No data"; }
+				}
+				Else
+				{
+					$ScriptInformation += @{ Data = "IP Address"; Value = $server.IPAddresses[0].ToString(); }
+				}
 				$ScriptInformation += @{ Data = "Logons"; Value = $tmp; }
 				$ScriptInformation += @{ Data = "Logon Control Mode"; Value = $tmp2; }
 				$tmp = $Null
@@ -8910,7 +8906,7 @@ Function OutputServer
 				If($? -and $Null -ne $Applications)
 				{
 					WriteWordLine 0 1 "Published applications:"
-					Write-Host "$(Get-Date): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					$TableRange = $doc.Application.Selection.Range
 					[int]$Columns = 2
 					
@@ -8929,7 +8925,7 @@ Function OutputServer
 					$Table.Cell($xRow,2).Range.Text = "Folder path"
 					ForEach($app in $Applications)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						$xRow++
 						$Table.Cell($xRow,1).Range.Text = $app.DisplayName
 						$Table.Cell($xRow,2).Range.Text = $app.FolderPath
@@ -9017,7 +9013,7 @@ Function OutputServer
 					$JustApps = $TempApps | Select-Object DisplayName, DisplayVersion | Sort-Object DisplayName -unique
 
 					WriteWordLine 0 1 "Installed applications:"
-					Write-Host "$(Get-Date): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					$TableRange = $doc.Application.Selection.Range
 					[int]$Columns = 2
 					[int]$Rows = $JustApps.count + 1
@@ -9035,7 +9031,7 @@ Function OutputServer
 					$Table.Cell($xRow,2).Range.Text = "Application version"
 					ForEach($app in $JustApps)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						$xRow++
 						$Table.Cell($xRow,1).Range.Text = $app.DisplayName
 						$Table.Cell($xRow,2).Range.Text = $app.DisplayVersion
@@ -9050,7 +9046,7 @@ Function OutputServer
 				#list citrix services
 				If($SvrOnline)
 				{
-					Write-Host "$(Get-Date): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
 
 					Try
 					{
@@ -9070,7 +9066,7 @@ Function OutputServer
 					If($? -and $Null -ne $Services)
 					{
 						[int]$NumServices = $Services.count
-						Write-Host "$(Get-Date): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
 						
 						WriteWordLine 0 0 " ($NumServices Services found)"
 						## IB - replacement Services table generation utilising AddWordTable function
@@ -9084,7 +9080,7 @@ Function OutputServer
 						
 						ForEach($Service in $Services) 
 						{
-							#Write-Host "$(Get-Date): `t`t`t Processing service $($Service.DisplayName)";
+							#Write-Host "$(Get-Date -Format G): `t`t`t Processing service $($Service.DisplayName)";
 
 							## Add the required key/values to the hashtable
 							$WordTableRowHash = @{ DisplayName = $Service.DisplayName; Status = $Service.State; StartMode = $Service.StartMode; }
@@ -9132,8 +9128,8 @@ Function OutputServer
 					}
 
 					#Citrix hotfixes installed
-					Write-Host "$(Get-Date): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
 					Try
 					{
 						$hotfixes = @((Get-XAServerHotfix -ServerName $server.ServerName -EA 0 | Where-Object {$_.Valid -eq $True}) | Sort-Object HotfixName)
@@ -9148,7 +9144,7 @@ Function OutputServer
 					{
 						$Rows = $Hotfixes.length
 						
-						Write-Host "$(Get-Date): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
 						$HotfixArray = @()
 						[bool]$HRP2Installed = $False
 						[bool]$HRP3Installed = $False
@@ -9206,8 +9202,8 @@ Function OutputServer
 
 						#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
 						#hotfix lists are from CTX129229 dated 27-DEC-2016
-						Write-Host "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
-						Write-Host "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						If($HRP7Installed)
 						{
 							$RecommendedList = @()
@@ -9293,7 +9289,7 @@ Function OutputServer
 							WriteWordLine 0 0 ""
 						}
 						#build list of installed Microsoft hotfixes
-						Write-Host "$(Get-Date): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						[bool]$GotMSHotfixes = $True
 						
 						Try
@@ -9386,7 +9382,7 @@ Function OutputServer
 						}
 						Else
 						{
-							Write-Host "$(Get-Date): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+							Write-Host "$(Get-Date -Format G): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 							Write-Warning "Get-HotFix failed for $($server.ServerName)"
 							WriteWordLine 0 0 "Get-HotFix failed for $($server.ServerName)" "" $Null 0 $False $True
 							WriteWordLine 0 0 "On $($server.ServerName) you may need to run winmgmt /verifyrepository and winmgmt /salvagerepository"
@@ -9405,7 +9401,7 @@ Function OutputServer
 				}
 				Else
 				{
-					Write-Host "$(Get-Date): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
 					WriteWordLine 0 0 "Server $($server.ServerName) was offline or unreachable at "(Get-date).ToString()
 					WriteWordLine 0 0 "The Citrix Services and Hotfix areas were skipped."
 				}
@@ -9435,7 +9431,14 @@ Function OutputServer
 				Line 1 "Edition`t`t`t`t: " $server.CitrixEdition
 				Line 1 "Version`t`t`t`t: " $server.CitrixVersion
 				Line 1 "Service Pack`t`t`t: " $server.CitrixServicePack
-				Line 1 "IP Address`t`t`t: " $server.IPAddresses
+				If($Null -eq $server.IPAddresses[0])
+				{
+					Line 1 "IP Address`t`t`t: No Data" 
+				}
+				Else
+				{
+					Line 1 "IP Address`t`t`t: " $server.IPAddresses[0].ToString()
+				}
 				Line 1 "Logons`t`t`t`t: " $tmp
 				Line 1 "Logon Control Mode`t`t: " $tmp2
 				$tmp = $Null
@@ -9479,10 +9482,10 @@ Function OutputServer
 				If($? -and $Null -ne $Applications)
 				{
 					Line 1 "Published applications:"
-					Write-Host "$(Get-Date): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					ForEach($app in $Applications)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						Line 2 "Display name`t: " $app.DisplayName
 						Line 2 "Folder path`t: " $app.FolderPath
 						Line 0 ""
@@ -9565,10 +9568,10 @@ Function OutputServer
 					$JustApps = $TempApps | Select-Object DisplayName, DisplayVersion | Sort-Object DisplayName -unique
 
 					Line 1 "Installed applications:"
-					Write-Host "$(Get-Date): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					ForEach($app in $JustApps)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						Line 2 "Application name`t: " $app.DisplayName
 						Line 2 "Application version`t: " $app.DisplayVersion
 						Line 0 ""
@@ -9578,7 +9581,7 @@ Function OutputServer
 				#list citrix services
 				If($SvrOnline)
 				{
-					Write-Host "$(Get-Date): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
 
 					Try
 					{
@@ -9598,7 +9601,7 @@ Function OutputServer
 					If($? -and $Null -ne $Services)
 					{
 						[int]$NumServices = $Services.count
-						Write-Host "$(Get-Date): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
 						
 						Line 0 " ($NumServices Services found)"
 						
@@ -9624,7 +9627,7 @@ Function OutputServer
 					}
 
 					#Citrix hotfixes installed
-					Write-Host "$(Get-Date): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
 					Try
 					{
 						$hotfixes = @((Get-XAServerHotfix -ServerName $server.ServerName -EA 0 | Where-Object {$_.Valid -eq $True}) | Sort-Object HotfixName)
@@ -9639,7 +9642,7 @@ Function OutputServer
 					{
 						$Rows = $Hotfixes.length
 						
-						Write-Host "$(Get-Date): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
 						$HotfixArray = @()
 						[bool]$HRP2Installed = $False
 						[bool]$HRP3Installed = $False
@@ -9674,8 +9677,8 @@ Function OutputServer
 						
 						#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
 						#hotfix lists are from CTX129229 dated 27-DEC-2016
-						Write-Host "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
-						Write-Host "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						If($HRP7Installed)
 						{
 							$RecommendedList = @()
@@ -9729,7 +9732,7 @@ Function OutputServer
 							
 						}
 						#build list of installed Microsoft hotfixes
-						Write-Host "$(Get-Date): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						[bool]$GotMSHotfixes = $True
 						
 						Try
@@ -9788,7 +9791,7 @@ Function OutputServer
 						}
 						Else
 						{
-							Write-Host "$(Get-Date): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+							Write-Host "$(Get-Date -Format G): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 							Write-Warning "Get-HotFix failed for $($server.ServerName)"
 							Line 0 "Get-HotFix failed for $($server.ServerName)"
 							Line 0 "On $($server.ServerName) you may need to run winmgmt /verifyrepository and winmgmt /salvagerepository"
@@ -9807,7 +9810,7 @@ Function OutputServer
 				}
 				Else
 				{
-					Write-Host "$(Get-Date): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
 					Line 0 "Server $($server.ServerName) was offline or unreachable at "(Get-date).ToString()
 					Line 0 "The Citrix Services and Hotfix areas were skipped."
 				}
@@ -9839,7 +9842,14 @@ Function OutputServer
 				$rowdata += @(,("Edition",($htmlsilver -bor $htmlbold),$server.CitrixEdition,$htmlwhite))
 				$rowdata += @(,("Version",($htmlsilver -bor $htmlbold),$server.CitrixVersion,$htmlwhite))
 				$rowdata += @(,("Service Pack",($htmlsilver -bor $htmlbold),$server.CitrixServicePack,$htmlwhite))
-				$rowdata += @(,("IP Address",($htmlsilver -bor $htmlbold),$server.IPAddresses[0].ToString(),$htmlwhite))
+				If($Null -eq $server.IPAddresses[0])
+				{
+					$rowdata += @(,("IP Address",($htmlsilver -bor $htmlbold),"No data",$htmlwhite))
+				}
+				Else
+				{
+					$rowdata += @(,("IP Address",($htmlsilver -bor $htmlbold),$server.IPAddresses[0].ToString(),$htmlwhite))
+				}
 				$rowdata += @(,("Logons",($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				$rowdata += @(,("Logon Control Mode",($htmlsilver -bor $htmlbold),$tmp2,$htmlwhite))
 				$tmp = $Null
@@ -9887,14 +9897,14 @@ Function OutputServer
 				If($? -and $Null -ne $Applications)
 				{
 					#WriteHTMLLine 0 1 ":"
-					Write-Host "$(Get-Date): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					$rowdata = @()
 					$columnHeaders = @(
 					'Display name',($htmlsilver -bor $htmlbold),
 					'Folder path',($htmlsilver -bor $htmlbold))
 					ForEach($app in $Applications)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						$rowdata += @(,(
 						$app.DisplayName,$htmlwhite,
 						$app.FolderPath,$htmlwhite))
@@ -9980,14 +9990,14 @@ Function OutputServer
 					$JustApps = $TempApps | Select-Object DisplayName, DisplayVersion | Sort-Object -ObjectDisplayName -unique
 
 					#WriteHTMLLine 0 1 ":"
-					Write-Host "$(Get-Date): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing installed applications for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 					$rowdata = @()
 					$columnHeaders = @(
 					'Application name',($htmlsilver -bor $htmlbold),
 					'Application version',($htmlsilver -bor $htmlbold))
 					ForEach($app in $JustApps)
 					{
-						Write-Host "$(Get-Date): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t`tProcessing installed application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 						$rowdata += @(,(
 						$app.DisplayName,$htmlwhite,
 						$app.DisplayVersion,$htmlwhite))
@@ -10000,7 +10010,7 @@ Function OutputServer
 				#list citrix services
 				If($SvrOnline)
 				{
-					Write-Host "$(Get-Date): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix services for server $($server.ServerName) by calling Get-Service" -BackgroundColor Black -ForegroundColor Yellow
 
 					Try
 					{
@@ -10019,7 +10029,7 @@ Function OutputServer
 					If($? -and $Null -ne $Services)
 					{
 						[int]$NumServices = $Services.count
-						Write-Host "$(Get-Date): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`t $NumServices Services found" -BackgroundColor Black -ForegroundColor Yellow
 						
 						#WriteHTMLLine 0 1 ""
 						
@@ -10056,7 +10066,7 @@ Function OutputServer
 					}
 
 					#Citrix hotfixes installed
-					Write-Host "$(Get-Date): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tGet list of Citrix hotfixes installed using Get-XAServerHotfix" -BackgroundColor Black -ForegroundColor Yellow
 					Try
 					{
 						$hotfixes = @((Get-XAServerHotfix -ServerName $server.ServerName -EA 0 | Where-Object {$_.Valid -eq $True}) | Sort-Object HotfixName)
@@ -10071,7 +10081,7 @@ Function OutputServer
 					{
 						$Rows = $Hotfixes.length
 						
-						Write-Host "$(Get-Date): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tNumber of Citrix hotfixes is $($Rows)" -BackgroundColor Black -ForegroundColor Yellow
 						$HotfixArray = @()
 						[bool]$HRP2Installed = $False
 						[bool]$HRP3Installed = $False
@@ -10116,8 +10126,8 @@ Function OutputServer
 
 						#compare Citrix hotfixes to recommended Citrix hotfixes from CTX129229
 						#hotfix lists are from CTX129229 dated 27-DEC-2016
-						Write-Host "$(Get-Date): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
-						Write-Host "$(Get-Date): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tCompare Citrix hotfixes to recommended Citrix hotfixes from CTX129229" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Citrix hotfix list for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						If($HRP7Installed)
 						{
 							$RecommendedList = @()
@@ -10178,7 +10188,7 @@ Function OutputServer
 							WriteHTMLLine 0 0 ""
 						}
 						#build list of installed Microsoft hotfixes
-						Write-Host "$(Get-Date): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing Microsoft hotfixes for server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 						[bool]$GotMSHotfixes = $True
 						
 						Try
@@ -10243,7 +10253,7 @@ Function OutputServer
 						}
 						Else
 						{
-							Write-Host "$(Get-Date): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+							Write-Host "$(Get-Date -Format G): Get-HotFix failed for $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
 							Write-Warning "Get-HotFix failed for $($server.ServerName)"
 							WriteHTMLLine 0 0 "Get-HotFix failed for $($server.ServerName)" "" $Null 0 $False $True
 							WriteHTMLLine 0 0 "On $($server.ServerName) you may need to run winmgmt /verifyrepository and winmgmt /salvagerepository"
@@ -10262,15 +10272,15 @@ Function OutputServer
 				}
 				Else
 				{
-					Write-Host "$(Get-Date): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t$($server.ServerName) is offline or unreachable.  Citrix Services and Hotfix areas skipped." -BackgroundColor Black -ForegroundColor Yellow
 					WriteHTMLLine 0 0 "Server $($server.ServerName) was offline or unreachable at "(Get-date).ToString()
 					WriteHTMLLine 0 0 "The Citrix Services and Hotfix areas were skipped."
 				}
 				WriteHTMLLine 0 0 "" 
 			}
 
-			Write-Host "$(Get-Date): `tFinished Processing server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
-			Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `tFinished Processing server $($server.ServerName)" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 		}
 		Else
 		{
@@ -10287,9 +10297,9 @@ Function ProcessWorkerGroups
 	If($Section -eq "All" -or $Section -eq "WGs")
 	{
 		#worker groups
-		Write-Host "$(Get-Date): Processing Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
 		$WorkerGroups = Get-XAWorkerGroup -EA 0| Sort-Object WorkerGroupName
 
 		If($? -and $Null -ne $WorkerGroups)
@@ -10314,8 +10324,8 @@ Function ProcessWorkerGroups
 			OutputWarning $txt
 		}
 		$WorkerGroups = $Null
-		Write-Host "$(Get-Date): Finished Processing Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Worker Groups" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -10343,7 +10353,7 @@ Function OutputSummaryWorkerGroups
 	
 	ForEach($WorkerGroup in $WorkerGroups)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
 		$Script:TotalWGs++
 		If($MSWord -or $PDF)
 		{
@@ -10422,7 +10432,7 @@ Function OutputWorkerGroups
 	
 	ForEach($WorkerGroup in $WorkerGroups)
 	{
-		Write-Host "$(Get-Date): `t`tProcessing Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 2 0 $WorkerGroup.WorkerGroupName
@@ -10432,7 +10442,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerNames)
 			{
 				$Script:TotalWGByServerName++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerNames | Sort-Object)
 				$ScriptInformation += @{ Data = "Farm Servers"; Value = $TempArray[0]; }
 				$cnt = -1
@@ -10450,7 +10460,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerGroups)
 			{
 				$Script:TotalWGByServerGroup++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerGroups | Sort-Object)
 				$ScriptInformation += @{ Data = "Server Group Accounts"; Value = $TempArray[0]; }
 				$cnt = -1
@@ -10468,7 +10478,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.OUs)
 			{
 				$Script:TotalWGByOU++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.OUs | Sort-Object {$_.Length})
 				$ScriptInformation += @{ Data = "Container"; Value = $TempArray[0]; }
 				$cnt = -1
@@ -10506,7 +10516,7 @@ Function OutputWorkerGroups
 			{
 				WriteWordLine 0 0 ""
 				WriteWordLine 0 0 "Published applications for Worker Group $($WorkerGroup.WorkerGroupName)"
-				Write-Host "$(Get-Date): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
 				$TableRange = $doc.Application.Selection.Range
 				[int]$Columns = 2
 				
@@ -10525,7 +10535,7 @@ Function OutputWorkerGroups
 				$Table.Cell($xRow,2).Range.Text = "Folder path"
 				ForEach($app in $Applications)
 				{
-					Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 					$xRow++
 					$Table.Cell($xRow,1).Range.Text = $app.DisplayName
 					$Table.Cell($xRow,2).Range.Text = $app.FolderPath
@@ -10544,7 +10554,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerNames)
 			{
 				$Script:TotalWGByServerName++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerNames | Sort-Object)
 				Line 1 "Farm Servers`t: " $TempArray[0]
 				$cnt = -1
@@ -10562,7 +10572,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerGroups)
 			{
 				$Script:TotalWGByServerGroup++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerGroups | Sort-Object)
 				Line 1 "Server Group`t: " $TempArray[0]
 				$cnt = -1
@@ -10580,7 +10590,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.OUs)
 			{
 				$Script:TotalWGByOU++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.OUs | Sort-Object {$_.Length})
 				Line 1 "Container`t: " $TempArray[0]
 				$cnt = -1
@@ -10602,10 +10612,10 @@ Function OutputWorkerGroups
 			If($? -and $Applications.Count -gt 0)
 			{
 				Line 1 "Published applications for Worker Group $($WorkerGroup.WorkerGroupName)"
-				Write-Host "$(Get-Date): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
 				ForEach($app in $Applications)
 				{
-					Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 					Line 1 "Display name`t: " $app.DisplayName
 					Line 1 "Folder path`t: " $app.FolderPath
 					Line 0 ""
@@ -10622,7 +10632,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerNames)
 			{
 				$Script:TotalWGByServerName++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Farm Servers" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerNames | Sort-Object)
 				$rowdata += @(,("Farm Servers",($htmlsilver -bor $htmlbold),$TempArray[0],$htmlwhite))
 				$cnt = -1
@@ -10640,7 +10650,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.ServerGroups)
 			{
 				$Script:TotalWGByServerGroup++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by Server Groups" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.ServerGroups | Sort-Object)
 				$rowdata += @(,("Server Group Accounts",($htmlsilver -bor $htmlbold),$TempArray[0],$htmlwhite))
 				$cnt = -1
@@ -10658,7 +10668,7 @@ Function OutputWorkerGroups
 			If($WorkerGroup.OUs)
 			{
 				$Script:TotalWGByOU++
-				Write-Host "$(Get-Date): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing Worker Group by OUs" -BackgroundColor Black -ForegroundColor Yellow
 				$TempArray = @($WorkerGroup.OUs | Sort-Object {$_.Length})
 				$rowdata += @(,("Container",($htmlsilver -bor $htmlbold),$TempArray[0],$htmlwhite))
 				$cnt = -1
@@ -10682,14 +10692,14 @@ Function OutputWorkerGroups
 			If($? -and $Applications.Count -gt 0)
 			{
 				WriteHTMLLine 0 0 ""
-				Write-Host "$(Get-Date): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `t`tProcessing published applications for Worker Group $($WorkerGroup.WorkerGroupName)" -BackgroundColor Black -ForegroundColor Yellow
 				$rowdata = @()
 				$columnHeaders = @(
 				'Display name',($htmlsilver -bor $htmlbold),
 				'Folder path',($htmlsilver -bor $htmlbold))
 				ForEach($app in $Applications)
 				{
-					Write-Host "$(Get-Date): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tProcessing published application $($app.DisplayName)" -BackgroundColor Black -ForegroundColor Yellow
 					$rowdata += @(,(
 					$app.DisplayName,$htmlwhite,
 					$app.FolderPath,$htmlwhite))
@@ -10708,9 +10718,9 @@ Function ProcessZones
 	If($Section -eq "All" -or $Section -eq "Zones")
 	{
 		#zones
-		Write-Host "$(Get-Date): Processing Zones" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Processing Zones" -BackgroundColor Black -ForegroundColor Yellow
 
-		Write-Host "$(Get-Date): `tRetrieving Zones" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRetrieving Zones" -BackgroundColor Black -ForegroundColor Yellow
 		$Zones = Get-XAZone -EA 0| Sort-Object ZoneName
 		If($? -and $Null -ne $Zones)
 		{
@@ -10733,8 +10743,8 @@ Function ProcessZones
 			$txt = "Unable to retrieve Zones"
 			OutputWarning $txt
 		}
-		Write-Host "$(Get-Date): Finished Processing Zones" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Zones" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -10762,7 +10772,7 @@ Function OutputSummaryZones
 	ForEach($Zone in $Zones)
 	{
 		$Script:TotalZones++
-		Write-Host "$(Get-Date): `t`tProcessing Zone $($Zone.ZoneName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Zone $($Zone.ZoneName)" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			$WordTableRowHash = @{ 
@@ -10843,7 +10853,7 @@ Function OutputZones
 	ForEach($Zone in $Zones)
 	{
 		$Script:TotalZones++
-		Write-Host "$(Get-Date): `t`tProcessing Zone $($Zone.ZoneName)" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `t`tProcessing Zone $($Zone.ZoneName)" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 2 0 $Zone.ZoneName
@@ -11051,20 +11061,212 @@ Function ConvertIntegerToDate
 
 	Return "$Month/$Day/$Year"
 }
+
+Function CreateDictionary
+{
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    Return New-Object "System.Collections.Generic.Dictionary``2[System.String,System.Object]"
+}
+
+Function CreateObject
+{
+    Param([System.Collections.IDictionary]$props, [string]$name)
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    $obj = New-Object PSObject
+    ForEach ($prop in $props.Keys)
+    {
+        $obj | Add-Member NoteProperty -Name $prop -Value $props.$prop
+    }
+    if ($name)
+    {
+        $obj | Add-Member ScriptMethod -Name "ToString" -Value $executioncontext.invokecommand.NewScriptBlock('"{0}"' -f $name) -Force
+    }
+    Return $obj
+}
+
+Function FilterString
+{
+    Param([string] $value, [string[]] $wildcards)
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    $wildcards | Where-Object { $value -like $_ }
+}
+
+Function Get-CitrixGroupPolicy
+{
+	[CmdletBinding()]
+	param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$true)]
+		[string[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$true)]
+		[string] [ValidateSet("Computer", "User", $null)] $Type,
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGpo"
+	)
+
+	process
+	{
+		$types = if (!$Type) { @("Computer", "User") } else { @($Type) }
+		foreach($polType in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$polType" | Where-Object { FilterString $_.Name $PolicyName })
+			foreach ($pol in $pols)
+			{
+				$props = CreateDictionary
+				$props.PolicyName = $pol.Name
+				$props.Type = $poltype
+				$props.Description = $pol.Description
+				$props.Enabled = $pol.Enabled
+				$props.Priority = $pol.Priority
+				CreateObject $props $pol.Name
+			}
+		}
+	}
+}
+
+Function Get-CitrixGroupPolicyConfiguration
+{
+	[CmdletBinding()]
+	Param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$True)]
+		[ValidateSet("Computer", "User", $Null)] [String] $Type,
+		[Parameter()]
+		[Switch] $ConfiguredOnly,
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGPO"
+	)
+	#taken from citrix.grouppolicy.commands.psm1, renamed, and cleaned up
+
+	Process
+	{
+		$types = If(!$Type) { @("Computer", "User") } Else { @($Type) }
+
+		ForEach($poltype in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$poltype" | Where-Object { FilterString $_.Name $PolicyName })
+			ForEach($pol in $pols)
+			{
+				$props = CreateDictionary
+				$props.PolicyName = $pol.Name
+				$props.Type = $poltype
+
+				ForEach($setting in @(Get-ChildItem "$($DriveName):\$poltype\$($pol.Name)\Settings" -Recurse | `
+					Where-Object { $_.PSObject.Properties[ 'State' ] -and  $Null -ne $_.State }))
+				{
+					If(!$ConfiguredOnly -or $setting.State -ne "NotConfigured")
+					{
+						$setname = $setting.PSChildName
+						$config = CreateDictionary
+						$config.State = $setting.State.ToString()
+						If( $setting.PSObject.Properties[ 'Values' ] )
+						{
+							If($Null -ne $setting.Values) { $config.Values = ([array]($setting.Values)) }
+						}
+						If( $setting.PSObject.Properties[ 'Value' ] )
+						{
+							If($Null -ne $setting.Value) { $config.Value = ([string]($setting.Value)) }
+						}
+						$config.Path = $setting.PSPath.Substring($setting.PSPath.IndexOf("\Settings\")+10)
+						$props.$setname = CreateObject $config
+					}
+				}
+				CreateObject $props $pol.Name
+			}
+		}
+	}
+}
+
+Function Get-CitrixGroupPolicyFilter
+{
+	[CmdletBinding()]
+	Param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$True)]
+		[ValidateSet("Computer", "User", $Null)] [String] $Type,
+		[Parameter(Position=2, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $FilterName = "*",
+		[Parameter(Position=3, ValueFromPipelineByPropertyName=$True)]
+		[string] $FilterType = "*",
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGPO"
+	)
+	#taken from citrix.grouppolicy.commands.psm1, renamed, and cleaned up
+
+	Process
+	{
+		$types = If(!$Type) { @("Computer", "User") } Else { @($Type) }
+
+		ForEach($poltype in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$poltype" | Where-Object { ($_.Name -ne "Unfiltered") -and (FilterString $_.Name $PolicyName) })
+			ForEach($pol in $pols)
+			{
+				ForEach($filter in @(Get-ChildItem "$($DriveName):\$poltype\$($pol.Name)\Filters" -Recurse |
+					Where-Object { ($_.PSObject.Properties[ 'FilterType' ] -and  $Null -ne $_.FilterType) -and (FilterString $_.Name $FilterName) -and (FilterString $_.FilterType $FilterType)}))
+				{
+					$props             = CreateDictionary
+					$props.PolicyName  = $pol.Name
+					$props.Type        = $poltype
+					$props.FilterName  = $filter.Name
+					$props.FilterType  = $filter.FilterType
+					$props.Enabled     = $filter.Enabled
+					$props.Mode        = [string]($filter.Mode)
+					If( $filter.PSObject.Properties[ 'FilterValue' ] )
+					{
+						$props.FilterValue = $filter.FilterValue
+					}
+					Else
+					{
+						$props.FilterValue = "N/A"
+					}
+					If($filter.FilterType -eq "AccessControl")
+					{
+						$props.ConnectionType    = $filter.ConnectionType
+						$props.AccessGatewayFarm = $filter.AccessGatewayFarm
+						$props.AccessCondition   = $filter.AccessCondition
+					}
+					CreateObject $props $filter.Name
+				}
+			}
+		}
+	}
+}
 	
 Function ProcessPolicies
 {
-	Write-Host "$(Get-Date): Processing Policies" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Processing Policies" -BackgroundColor Black -ForegroundColor Yellow
 	
 	If($Policies)
 	{
+		$Script:OnlyOnceIMA = $False #do section title only once
+		$Script:OnlyOnceAD  = $False #do section title only once
+
+		If($MSWord -or $PDF)
+		{
+			WriteWordLine 1 0 "Policies"
+		}
+		ElseIf($Text)
+		{
+			Line 0 ""
+			Line 0 "Policies"
+		}
+		ElseIf($HTML)
+		{
+			WriteHTMLLine 1 0 "Policies"
+		}
+
 		ProcessCitrixPolicies "localfarmgpo" "Computer"
-		Write-Host "$(Get-Date): Finished Processing Citrix Site Computer Policies" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Citrix Site Computer Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 
 		ProcessCitrixPolicies "localfarmgpo" "User"
-		Write-Host "$(Get-Date): Finished Processing Citrix Site User Policies" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Processing Citrix Site User Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 		
 		If($NoADPolicies)
 		{
@@ -11073,31 +11275,38 @@ Function ProcessPolicies
 		Else
 		{
 			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD based Policies
-			Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-			Write-Host "$(Get-Date): `tSee if there are any Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `tSee if there are any Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
 			$CtxGPOArray = @()
 			$CtxGPOArray = GetCtxGPOsInAD
 			If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 			{
-				Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
-				Write-Host "$(Get-Date): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
-				Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 
 				[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
 				
 				ForEach($CtxGPO in $CtxGPOArray)
 				{
-					Write-Host "$(Get-Date): `tCreating ADGpoDrv PSDrive for Computer Policies" -BackgroundColor Black -ForegroundColor Yellow
-					New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global *>$Null
+					Write-Host "$(Get-Date -Format G): `tCreating ADGpoDrv PSDrive for Computer Policies" -BackgroundColor Black -ForegroundColor Yellow
+					If($Psversiontable.psversion.major -eq 2)
+					{
+						New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global | Out-Null
+					}
+					Else
+					{
+						New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global *>$Null
+					}
 		
 					If(Get-PSDrive ADGpoDrv -EA 0)
 					{
-						Write-Host "$(Get-Date): `tProcessing Citrix AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
 					
-						Write-Host "$(Get-Date): `tRetrieving AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `tRetrieving AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
 						ProcessCitrixPolicies "ADGpoDrv" "Computer"
-						Write-Host "$(Get-Date): Finished Processing Citrix AD Computer Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
-						Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): Finished Processing Citrix AD Computer Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 					}
 					Else
 					{
@@ -11106,17 +11315,24 @@ Function ProcessPolicies
 						Write-Warning "$($CtxGPO) was probably created by an updated Citrix Group Policy Provider" -BackgroundColor Black -ForegroundColor Yellow
 					}
 
-					Write-Host "$(Get-Date): `tCreating ADGpoDrv PSDrive for UserPolicies" -BackgroundColor Black -ForegroundColor Yellow
-					New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global *>$Null
+					Write-Host "$(Get-Date -Format G): `tCreating ADGpoDrv PSDrive for UserPolicies" -BackgroundColor Black -ForegroundColor Yellow
+					If($Psversiontable.psversion.major -eq 2)
+					{
+						New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global | Out-Null
+					}
+					Else
+					{
+						New-PSDrive -Name ADGpoDrv -PSProvider CitrixGroupPolicy -Root \ -DomainGpo $($CtxGPO) -Scope Global *>$Null
+					}
 		
 					If(Get-PSDrive ADGpoDrv -EA 0)
 					{
-						Write-Host "$(Get-Date): `tProcessing Citrix AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
 					
-						Write-Host "$(Get-Date): `tRetrieving AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `tRetrieving AD Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
 						ProcessCitrixPolicies "ADGpoDrv" "User"
-						Write-Host "$(Get-Date): Finished Processing Citrix AD User Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
-						Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): Finished Processing Citrix AD User Policy $($CtxGPO)" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 					}
 					Else
 					{
@@ -11125,18 +11341,18 @@ Function ProcessPolicies
 						Write-Warning "$($CtxGPO) was probably created by an updated Citrix Group Policy Provider"
 					}
 				}
-				Write-Host "$(Get-Date): Finished Processing Citrix AD Policies" -BackgroundColor Black -ForegroundColor Yellow
-				Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): Finished Processing Citrix AD Policies" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 			}
 			Else
 			{
-				Write-Host "$(Get-Date): There are no Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
-				Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): There are no Citrix AD based policies to process" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 			}
 		}
 	}
-	Write-Host "$(Get-Date): Finished Processing Citrix Policies" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Finished Processing Citrix Policies" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 }
 
 Function ProcessCitrixPolicies
@@ -11147,54 +11363,94 @@ Function ProcessCitrixPolicies
 	{
 		If($Summary)
 		{
-			WriteWordLine 0 0 ""
-			WriteWordLine 0 0 "IMA Policies"
-			If($MSWord -or $PDF)
+			If($Script:OnlyOnceIMA -eq $False)
 			{
-				WriteWordLine 0 0 ""
-				WriteWordLine 0 0 "IMA Policies"
-			}
-			ElseIf($Text)
-			{
-				Line 0 ""
-				Line 0 "IMA Policies"
-			}
-			ElseIf($HTML)
-			{
-				WriteHTMLLine 0 0 ""
-				WriteHTMLLine 0 0 "IMA Policies"
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 0 0 ""
+					WriteWordLine 0 0 "IMA Policies"
+				}
+				ElseIf($Text)
+				{
+					Line 0 ""
+					Line 0 "IMA Policies"
+				}
+				ElseIf($HTML)
+				{
+					WriteHTMLLine 0 0 ""
+					WriteHTMLLine 0 0 "IMA Policies"
+				}
+				$Script:OnlyOnceIMA = $True
 			}
 		}
 		Else
 		{
+			If($Script:OnlyOnceIMA -eq $False)
+			{
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 2 0 "IMA Policies"
+				}
+				ElseIf($Text)
+				{
+					Line 0 ""
+					Line 0 "IMA Policies"
+				}
+				ElseIf($HTML)
+				{
+					WriteHTMLLine 2 0 "IMA Policies"
+				}
+				$Script:OnlyOnceIMA = $True
+			}
 		}
 	}
 	Else
 	{
 		If($Summary)
 		{
-			If($MSWord -or $PDF)
+			If($Script:OnlyOnceAD -eq $False)
 			{
-				WriteWordLine 0 0 ""
-				WriteWordLine 0 0 "Active Directory Policies"
-			}
-			ElseIf($Text)
-			{
-				Line 0 ""
-				Line 0 "Active Directory Policies"
-			}
-			ElseIf($HTML)
-			{
-				WriteHTMLLine 0 0 ""
-				WriteHTMLLine 0 0 "Active Directory Policies"
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 0 0 ""
+					WriteWordLine 0 0 "Active Directory Policies"
+				}
+				ElseIf($Text)
+				{
+					Line 0 ""
+					Line 0 "Active Directory Policies"
+				}
+				ElseIf($HTML)
+				{
+					WriteHTMLLine 0 0 ""
+					WriteHTMLLine 0 0 "Active Directory Policies"
+				}
+				$Script:OnlyOnceAD = $True
 			}
 		}
 		Else
 		{
+			If($Script:OnlyOnceAD -eq $False)
+			{
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 2 0 "Active Directory Policies"
+				}
+				ElseIf($Text)
+				{
+					Line 0 ""
+					Line 0 "Active Directory Policies"
+				}
+				ElseIf($HTML)
+				{
+					WriteHTMLLine 2 0 "Active Directory Policies"
+				}
+				$Script:OnlyOnceAD = $True
+			}
 		}
 	}
 	
-	$Policies = Get-CtxGroupPolicy -Type $xPolicyType `
+	$Policies = Get-CitrixGroupPolicy -Type $xPolicyType `
 	-DriveName $xDriveName -EA 0 `
 	| Select-Object PolicyName, Type, Description, Enabled, Priority `
 	| Sort-Object Priority
@@ -11203,7 +11459,7 @@ Function ProcessCitrixPolicies
 	{
 		ForEach($Policy in $Policies)
 		{
-			Write-Host "$(Get-Date): `tStarted $($Policy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `tStarted $($Policy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
 			If(!$Summary)
 			{
 				If($xDriveName -eq "localfarmgpo")
@@ -11229,12 +11485,12 @@ Function ProcessCitrixPolicies
 					$selection.InsertNewPage()
 					If($xDriveName -eq "localfarmgpo")
 					{
-						WriteWordLine 2 0 $Policy.PolicyName
+						WriteWordLine 3 0 $Policy.PolicyName
 						WriteWordLine 0 0 "IMA Farm based policy"
 					}
 					Else
 					{
-						WriteWordLine 2 0 "$($Policy.PolicyName) in $($CtxGPO)"
+						WriteWordLine 3 0 "$($Policy.PolicyName) in $($CtxGPO)"
 						WriteWordLine 0 0 "Active Directory based policy"
 					}
 					[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -11276,17 +11532,18 @@ Function ProcessCitrixPolicies
 					Line 1 "Enabled`t`t: " $Policy.Enabled
 					Line 1 "Type`t`t: " $Policy.Type
 					Line 1 "Priority`t: " $Policy.Priority
+					Line 0 ""
 				}
 				ElseIf($HTML)
 				{
 					If($xDriveName -eq "localfarmgpo")
 					{
-						WriteHTMLLine 2 0 $Policy.PolicyName
-						WriteHTMLLine 0 0"IMA Farm based policy"
+						WriteHTMLLine 3 0 $Policy.PolicyName
+						WriteHTMLLine 0 0 "IMA Farm based policy"
 					}
 					Else
 					{
-						WriteHTMLLine 2 0 "$($Policy.PolicyName) in $($CtxGPO)"
+						WriteHTMLLine 3 0 "$($Policy.PolicyName) in $($CtxGPO)"
 						WriteHTMLLine 0 0 "Active Directory based policy"
 					}
 					$rowdata = @()
@@ -11301,13 +11558,13 @@ Function ProcessCitrixPolicies
 					WriteHTMLLine 0 0 " "
 				}
 
-				$filters = Get-CtxGroupPolicyFilter -PolicyName $Policy.PolicyName -DriveName $xDriveName -EA 0 | Sort-Object FilterType, FilterName
+				$filters = Get-CitrixGroupPolicyFilter -PolicyName $Policy.PolicyName -DriveName $xDriveName -EA 0 | Sort-Object FilterType, FilterName
 
 				If($? -and $Null -ne $Filters)
 				{
 					If(![String]::IsNullOrEmpty($filters))
 					{
-						Write-Host "$(Get-Date): `t`tProcessing all filters" -BackgroundColor Black -ForegroundColor Yellow
+						Write-Host "$(Get-Date -Format G): `t`tProcessing all filters" -BackgroundColor Black -ForegroundColor Yellow
 						$txt = "Assigned to"
 						If($MSWord -or $PDF)
 						{
@@ -11390,11 +11647,11 @@ Function ProcessCitrixPolicies
 
 							SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-							$Table.Columns.Item(1).Width = 115;
-							$Table.Columns.Item(2).Width = 125;
+							$Table.Columns.Item(1).Width = 150;
+							$Table.Columns.Item(2).Width = 150;
 							$Table.Columns.Item(3).Width = 50;
-							$Table.Columns.Item(4).Width = 40;
-							$Table.Columns.Item(5).Width = 170;
+							$Table.Columns.Item(4).Width = 50;
+							$Table.Columns.Item(5).Width = 200;
 
 							$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -11411,8 +11668,8 @@ Function ProcessCitrixPolicies
 							'Value',($htmlsilver -bor $htmlbold))
 
 							$msg = ""
-							$columnWidths = @("115","125","50","40","170")
-							FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+							$columnWidths = @("150","150","50","50","200")
+							FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "600"
 							WriteHTMLLine 0 0 " "
 						}
 					}
@@ -11485,7 +11742,7 @@ Function ProcessCitrixPolicies
 					}
 				}
 
-				$Settings = @(Get-CtxGroupPolicyConfiguration -PolicyName $Policy.PolicyName -DriveName $xDriveName -EA 0)
+				$Settings = @(Get-CitrixGroupPolicyConfiguration -PolicyName $Policy.PolicyName -DriveName $xDriveName -EA 0)
 					
 				If($? -and $Null -ne $Settings)
 				{
@@ -11520,8 +11777,8 @@ Function ProcessCitrixPolicies
 					}
 					$First = $False
 					
-					Write-Host "$(Get-Date): `t`tPolicy settings" -BackgroundColor Black -ForegroundColor Yellow
-					Write-Host "$(Get-Date): `t`t`tConnector for Configuration Manager 2012" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`tPolicy settings" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tConnector for Configuration Manager 2012" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AdvanceWarningFrequency State ) -and ($Setting.AdvanceWarningFrequency.State -ne "NotConfigured"))
 					{
 						$txt = "Connector for Configuration Manager 2012\Advance warning frequency interval"
@@ -11910,7 +12167,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ClipboardRedirection State ) -and ($Setting.ClipboardRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Client clipboard redirection"
@@ -12017,7 +12274,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA\Adobe Flash Delivery\Flash Redirection" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Adobe Flash Delivery\Flash Redirection" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting FlashAcceleration State ) -and ($Setting.FlashAcceleration.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Adobe Flash Delivery\Flash Redirection\Flash acceleration"
@@ -12451,7 +12708,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Audio" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Audio" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AllowRtpAudio State ) -and ($Setting.AllowRtpAudio.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Audio\Audio over UDP real-time transport"
@@ -12568,7 +12825,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Auto Client Reconnect" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Auto Client Reconnect" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AutoClientReconnect State ) -and ($Setting.AutoClientReconnect.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Auto Client Reconnect\Auto client reconnect"
@@ -12649,7 +12906,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA\Bandwidth" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Bandwidth" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AudioBandwidthLimit State ) -and ($Setting.AudioBandwidthLimit.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Bandwidth\Audio redirection bandwidth limit (Kbps)"
@@ -13050,7 +13307,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Client Sensors\Location" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Client Sensors\Location" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AllowLocationServices State ) -and ($Setting.AllowLocationServices.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Client Sensors\Location\Allow applications to use the physical location of the client device"
@@ -13073,7 +13330,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA\Desktop UI" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Desktop UI" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AeroRedirection State ) -and ($Setting.AeroRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Desktop UI\Aero Redirection"
@@ -13201,7 +13458,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 			
-					Write-Host "$(Get-Date): `t`t`tICA\End User Monitoring" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\End User Monitoring" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting IcaRoundTripCalculation State ) -and ($Setting.IcaRoundTripCalculation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\End User Monitoring\ICA round trip calculation"
@@ -13266,7 +13523,7 @@ Function ProcessCitrixPolicies
 						}	
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\File Redirection" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\File Redirection" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AutoConnectDrives State ) -and ($Setting.AutoConnectDrives.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\File Redirection\Auto connect client drives"
@@ -13520,7 +13777,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Graphics" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Graphics" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting DisplayMemoryLimit State ) -and ($Setting.DisplayMemoryLimit.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Display memory limit (KB)"
@@ -13688,7 +13945,7 @@ Function ProcessCitrixPolicies
 						}	
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Graphics\Caching" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Graphics\Caching" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting PersistentCache State ) -and ($Setting.PersistentCache.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Caching\Persistent cache threshold (Kbps)"
@@ -13711,7 +13968,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Keep Alive" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Keep Alive" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting IcaKeepAliveTimeout State ) -and ($Setting.IcaKeepAliveTimeout.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Keep Alive\ICA keep alive timeout (seconds)"
@@ -13763,7 +14020,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Mobile Experience" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Mobile Experience" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AutoKeyboardPopUp State ) -and ($Setting.AutoKeyboardPopUp.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Mobile Experience\Automatic keyboard display"
@@ -13828,7 +14085,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA\Multimedia" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Multimedia" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting MultimediaConferencing State ) -and ($Setting.MultimediaConferencing.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Multimedia\Multimedia conferencing"
@@ -13914,7 +14171,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Multi-Stream Connections" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Multi-Stream Connections" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting UDPAudioOnServer State ) -and ($Setting.UDPAudioOnServer.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\MultiStream Connections\Audio over UDP"
@@ -14139,7 +14396,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Port Redirection" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Port Redirection" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ClientComPortsAutoConnection State ) -and ($Setting.ClientComPortsAutoConnection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Port Redirection\Auto connect client COM ports"
@@ -14225,7 +14482,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Printing" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Printing" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ClientPrinterRedirection State ) -and ($Setting.ClientPrinterRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Client printer redirection"
@@ -14563,7 +14820,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Printing\Client Printers" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Printing\Client Printers" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ClientPrinterAutoCreation State ) -and ($Setting.ClientPrinterAutoCreation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Client Printers\Auto-create client printers"
@@ -14929,7 +15186,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Printing\Drivers" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Printing\Drivers" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting InboxDriverAutoInstallation State ) -and ($Setting.InboxDriverAutoInstallation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Drivers\Automatic installation of in-box printer drivers"
@@ -15042,7 +15299,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Printing\Universal Print Server" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Printing\Universal Print Server" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting UpsEnable State ) -and ($Setting.UpsEnable.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Universal Print Server\Universal Print Server enable"
@@ -15144,7 +15401,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Printing\Universal Printing" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Printing\Universal Printing" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting EMFProcessingMode State ) -and ($Setting.EMFProcessingMode.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Universal Printing\Universal printing EMF processing mode"
@@ -15391,7 +15648,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Security" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Security" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting MinimumEncryptionLevel State ) -and ($Setting.MinimumEncryptionLevel.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Security\SecureICA minimum encryption level" 
@@ -15425,7 +15682,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Server Limits" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Server Limits" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting IdleTimerInterval State ) -and ($Setting.IdleTimerInterval.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Server Limits\Server idle timer interval (milliseconds)"
@@ -15448,7 +15705,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tICA\Session Limits" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Session Limits" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting SessionDisconnectTimer State ) -and ($Setting.SessionDisconnectTimer.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Session Limits\Disconnected session timer"
@@ -15576,7 +15833,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Session Reliability" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Session Reliability" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting SessionReliabilityConnections State ) -and ($Setting.SessionReliabilityConnections.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Session Reliability\Session reliability connections"
@@ -15641,7 +15898,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Time Zone Control" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Time Zone Control" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting LocalTimeEstimation State ) -and ($Setting.LocalTimeEstimation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Time Zone Control\Estimate local time for legacy clients"
@@ -15694,7 +15951,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\TWAIN Devices" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\TWAIN Devices" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting TwainRedirection State ) -and ($Setting.TwainRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\TWAIN devices\Client TWAIN device redirection"
@@ -15748,7 +16005,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\USB Devices" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\USB Devices" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting UsbDeviceRedirection State ) -and ($Setting.UsbDeviceRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\USB devices\Client USB device redirection"
@@ -15870,7 +16127,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Visual Display" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Visual Display" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting PreferredColorDepthForSimpleGraphics State ) -and ($Setting.PreferredColorDepthForSimpleGraphics.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Visual Display\Preferred color depth for simple graphics"
@@ -15922,7 +16179,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Visual Display\Moving Images" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Visual Display\Moving Images" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting MinimumAdaptiveDisplayJpegQuality State ) -and ($Setting.MinimumAdaptiveDisplayJpegQuality.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Visual Display\Moving Images\Minimum image quality"
@@ -16054,7 +16311,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\Visual Display\Still Images" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\Visual Display\Still Images" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ExtraColorCompression State ) -and ($Setting.ExtraColorCompression.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Visual Display\Still Images\Extra Color Compression"
@@ -16172,7 +16429,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tICA\WebSockets" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tICA\WebSockets" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting AcceptWebSocketsConnections State ) -and ($Setting.AcceptWebSocketsConnections.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\WebSockets\WebSocket connections"
@@ -16270,8 +16527,8 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tServer Settings" -BackgroundColor Black -ForegroundColor Yellow
-					If($Setting.ConnectionAccessControl.State -ne "NotConfigured")
+					Write-Host "$(Get-Date -Format G): `t`t`tServer Settings" -BackgroundColor Black -ForegroundColor Yellow
+					If((validStateProp $Setting ConnectionAccessControl State ) -and ($Setting.ConnectionAccessControl.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.ConnectionAccessControl.Value)
 						{
@@ -16296,11 +16553,11 @@ Function ProcessCitrixPolicies
 						}
 						ElseIf($Text)
 						{
-							OutputPolicySetting $txt $tp 
+							OutputPolicySetting $txt $tmp 
 						}
 						$tmp = $Null
 					}
-					If($Setting.DnsAddressResolution.State -ne "NotConfigured")
+					If((validStateProp $Setting DnsAddressResolution State ) -and ($Setting.DnsAddressResolution.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\DNS address resolution"
 						If($MSWord -or $PDF)
@@ -16321,7 +16578,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DnsAddressResolution.State 
 						}
 					}
-					If($Setting.FullIconCaching.State -ne "NotConfigured")
+					If((validStateProp $Setting FullIconCaching State ) -and ($Setting.FullIconCaching.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Full icon caching"
 						If($MSWord -or $PDF)
@@ -16343,7 +16600,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					#the next setting is only available for AD based policies
-					If($Setting.InitialZone.State -ne "NotConfigured")
+					If((validStateProp $Setting InitialZone State ) -and ($Setting.InitialZone.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Initial Zone Name"
 						If($MSWord -or $PDF)
@@ -16364,7 +16621,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.InitialZone.State 
 						}
 					}
-					If($Setting.LoadEvaluator.State -ne "NotConfigured")
+					If((validStateProp $Setting LoadEvaluator State ) -and ($Setting.LoadEvaluator.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Load Evaluator Name - Load evaluator"
 						If($MSWord -or $PDF)
@@ -16385,7 +16642,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.LoadEvaluator.Value 
 						}
 					}
-					If($Setting.ProductEdition.State -ne "NotConfigured")
+					If((validStateProp $Setting ProductEdition State ) -and ($Setting.ProductEdition.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\XenApp product edition"
 						If($MSWord -or $PDF)
@@ -16406,7 +16663,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ProductEdition.Value 
 						}
 					}
-					If($Setting.ProductModel.State -ne "NotConfigured")
+					If((validStateProp $Setting ProductModel State ) -and ($Setting.ProductModel.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.ProductModel.Value)
 						{
@@ -16431,11 +16688,11 @@ Function ProcessCitrixPolicies
 						}
 						ElseIf($Text)
 						{
-							OutputPolicySetting $txt $tp 
+							OutputPolicySetting $txt $tmp 
 						}
 						$tmp = $Null
 					}
-					If($Setting.UserSessionLimit.State -ne "NotConfigured")
+					If((validStateProp $Setting UserSessionLimit State ) -and ($Setting.UserSessionLimit.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Connection Limits\Limit user sessions"
 						If($MSWord -or $PDF)
@@ -16456,7 +16713,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.UserSessionLimit.Value 
 						}
 					}
-					If($Setting.UserSessionLimitAffectsAdministrators.State -ne "NotConfigured")
+					If((validStateProp $Setting UserSessionLimitAffectsAdministrators State ) -and ($Setting.UserSessionLimitAffectsAdministrators.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Connection Limits\Limits on administrator sessions"
 						If($MSWord -or $PDF)
@@ -16477,7 +16734,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.UserSessionLimitAffectsAdministrators.State 
 						}
 					}
-					If($Setting.UserSessionLimitLogging.State -ne "NotConfigured")
+					If((validStateProp $Setting UserSessionLimitLogging State ) -and ($Setting.UserSessionLimitLogging.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Connection Limits\Logging of logon limit events"
 						If($MSWord -or $PDF)
@@ -16499,7 +16756,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					#the next 3 settings are available only for AD based policies
-					If($Setting.InitialDatabaseName.State -ne "NotConfigured")
+					If((validStateProp $Setting InitialDatabaseName State ) -and ($Setting.InitialDatabaseName.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Database Settings\Initial Database Name"
 						If($MSWord -or $PDF)
@@ -16520,7 +16777,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.InitialDatabaseName.Value 
 						}
 					}
-					If($Setting.InitialDatabaseServerName.State -ne "NotConfigured")
+					If((validStateProp $Setting InitialDatabaseServerName State ) -and ($Setting.InitialDatabaseServerName.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Database Settings\Initial Database Server Name"
 						If($MSWord -or $PDF)
@@ -16541,7 +16798,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.InitialDatabaseServerName.Value 
 						}
 					}
-					If($Setting.InitialFailoverPartner.State -ne "NotConfigured")
+					If((validStateProp $Setting InitialFailoverPartner State ) -and ($Setting.InitialFailoverPartner.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Database Settings\Initial Failover Partner"
 						If($MSWord -or $PDF)
@@ -16563,7 +16820,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					#the previous 3 settings are available only for AD based policies
-					If($Setting.HealthMonitoring.State -ne "NotConfigured")
+					If((validStateProp $Setting HealthMonitoring State ) -and ($Setting.HealthMonitoring.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Health Monitoring and Recovery\Health monitoring"
 						If($MSWord -or $PDF)
@@ -16584,7 +16841,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.HealthMonitoring.State
 						}
 					}
-					If($Setting.HealthMonitoringTests.State -ne "NotConfigured")
+					If((validStateProp $Setting HealthMonitoringTests State ) -and ($Setting.HealthMonitoringTests.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Health Monitoring and Recovery\Health monitoring tests"
 						If($MSWord -or $PDF)
@@ -16667,7 +16924,7 @@ Function ProcessCitrixPolicies
 						$XML = $Null
 					}
 
-					If($Setting.MaximumServersOfflinePercent.State -ne "NotConfigured")
+					If((validStateProp $Setting MaximumServersOfflinePercent State ) -and ($Setting.MaximumServersOfflinePercent.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Health Monitoring and Recovery\Max % of servers with logon control"
 						If($MSWord -or $PDF)
@@ -16688,7 +16945,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MaximumServersOfflinePercent.Value 
 						}
 					}
-					If($Setting.CpuManagementServerLevel.State -ne "NotConfigured")
+					If((validStateProp $Setting CpuManagementServerLevel State ) -and ($Setting.CpuManagementServerLevel.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.CpuManagementServerLevel.Value)
 						{
@@ -16717,7 +16974,7 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
-					If($Setting.MemoryOptimization.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimization State ) -and ($Setting.MemoryOptimization.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Memory/CPU\Memory optimization"
 						If($MSWord -or $PDF)
@@ -16738,7 +16995,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MemoryOptimization.State 
 						}
 					}
-					If($Setting.MemoryOptimizationExcludedPrograms.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimizationExcludedPrograms State ) -and ($Setting.MemoryOptimizationExcludedPrograms.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Memory/CPU\Memory optimization application exclusion lis"
 						$tmpArray = $Setting.MemoryOptimizationExcludedPrograms.Values
@@ -16792,7 +17049,7 @@ Function ProcessCitrixPolicies
 						$tmpArray = $Null
 						$tmp = $Null
 					}
-					If($Setting.MemoryOptimizationIntervalType.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimizationIntervalType State ) -and ($Setting.MemoryOptimizationIntervalType.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.MemoryOptimizationIntervalType.Value)
 						{
@@ -16822,7 +17079,7 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
-					If($Setting.MemoryOptimizationDayOfMonth.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimizationDayOfMonth State ) -and ($Setting.MemoryOptimizationDayOfMonth.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Memory/CPU\Memory optimization schedule\day of month"
 						If($MSWord -or $PDF)
@@ -16843,7 +17100,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MemoryOptimizationDayOfMonth.Value 
 						}
 					}
-					If($Setting.MemoryOptimizationDayOfWeek.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimizationDayOfWeek State ) -and ($Setting.MemoryOptimizationDayOfWeek.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Memory/CPU\Memory optimization schedule\day of week"
 						If($MSWord -or $PDF)
@@ -16864,7 +17121,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MemoryOptimizationDayOfWeek.Value 
 						}
 					}
-					If($Setting.MemoryOptimizationTime.State -ne "NotConfigured")
+					If((validStateProp $Setting MemoryOptimizationTime State ) -and ($Setting.MemoryOptimizationTime.State -ne "NotConfigured"))
 					{
 						$tmp = ConvertNumberToTime $Setting.MemoryOptimizationTime.Value
 						$txt = "Server Settings\Memory/CPU\Memory optimization schedule time"
@@ -16887,7 +17144,7 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
-					If($Setting.OfflineClientTrust.State -ne "NotConfigured")
+					If((validStateProp $Setting OfflineClientTrust State ) -and ($Setting.OfflineClientTrust.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Offline Applications\Offline app client trust"
 						If($MSWord -or $PDF)
@@ -16908,7 +17165,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OfflineClientTrust.State 
 						}
 					}
-					If($Setting.OfflineEventLogging.State -ne "NotConfigured")
+					If((validStateProp $Setting OfflineEventLogging State ) -and ($Setting.OfflineEventLogging.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Offline Applications\Offline app event logging"
 						If($MSWord -or $PDF)
@@ -16929,7 +17186,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OfflineEventLogging.State 
 						}
 					}
-					If($Setting.OfflineLicensePeriod.State -ne "NotConfigured")
+					If((validStateProp $Setting OfflineLicensePeriod State ) -and ($Setting.OfflineLicensePeriod.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Offline Applications\Offline app license period - Days"
 						If($MSWord -or $PDF)
@@ -16950,7 +17207,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OfflineLicensePeriod.Value 
 						}
 					}
-					If($Setting.OfflineUsers.State -ne "NotConfigured")
+					If((validStateProp $Setting OfflineUsers State ) -and ($Setting.OfflineUsers.State -ne "NotConfigured"))
 					{
 						$array = $Null
 						$txt = "Server Settings\Offline Applications\Offline app users"
@@ -17005,7 +17262,7 @@ Function ProcessCitrixPolicies
 						$tmpArray = $Null
 						$tmp = $Null
 					}
-					If($Setting.RebootCustomMessage.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootCustomMessage State ) -and ($Setting.RebootCustomMessage.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Reboot custom warning"
 						If($MSWord -or $PDF)
@@ -17026,7 +17283,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RebootCustomMessage.State 
 						}
 					}
-					If($Setting.RebootCustomMessageText.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootCustomMessageText State ) -and ($Setting.RebootCustomMessageText.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Reboot custom warning text"
 						If($MSWord -or $PDF)
@@ -17047,7 +17304,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RebootCustomMessageText.Value 
 						}
 					}
-					If($Setting.RebootDisableLogOnTime.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootDisableLogOnTime State ) -and ($Setting.RebootDisableLogOnTime.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.RebootDisableLogOnTime.Value)
 						{
@@ -17079,7 +17336,7 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
-					If($Setting.RebootScheduleFrequency.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootScheduleFrequency State ) -and ($Setting.RebootScheduleFrequency.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Reboot schedule frequency - Days"
 						If($MSWord -or $PDF)
@@ -17100,7 +17357,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RebootScheduleFrequency.Value 
 						}
 					}
-					If($Setting.RebootScheduleRandomizationInterval.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootScheduleRandomizationInterval State ) -and ($Setting.RebootScheduleRandomizationInterval.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Reboot schedule randomization interval\Minutes"
 						If($MSWord -or $PDF)
@@ -17121,7 +17378,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RebootScheduleRandomizationInterval.Value 
 						}
 					}
-					If($Setting.RebootScheduleStartDate.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootScheduleStartDate State ) -and ($Setting.RebootScheduleStartDate.State -ne "NotConfigured"))
 					{
 						$Tmp = ConvertIntegerToDate $Setting.RebootScheduleStartDate.Value
 						$txt = "Server Settings\Reboot Behavior\Reboot schedule start date"
@@ -17144,7 +17401,7 @@ Function ProcessCitrixPolicies
 						}
 						$Tmp = $Null
 					}
-					If($Setting.RebootScheduleTime.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootScheduleTime State ) -and ($Setting.RebootScheduleTime.State -ne "NotConfigured"))
 					{
 						$tmp = ConvertNumberToTime $Setting.RebootScheduleTime.Value 						
 						$txt = "Server Settings\Reboot Behavior\Reboot schedule time"
@@ -17167,7 +17424,7 @@ Function ProcessCitrixPolicies
 						}
 						$Tmp = $Null
 					}
-					If($Setting.RebootWarningInterval.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootWarningInterval State ) -and ($Setting.RebootWarningInterval.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.RebootWarningInterval.Value)
 						{
@@ -17198,7 +17455,7 @@ Function ProcessCitrixPolicies
 						}
 						$Tmp = $Null
 					}
-					If($Setting.RebootWarningStartTime.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootWarningStartTime State ) -and ($Setting.RebootWarningStartTime.State -ne "NotConfigured"))
 					{
 						Switch ($Setting.RebootWarningStartTime.Value)
 						{
@@ -17229,7 +17486,7 @@ Function ProcessCitrixPolicies
 						}
 						$Tmp = $Null
 					}
-					If($Setting.RebootWarningMessage.State -ne "NotConfigured")
+					If((validStateProp $Setting RebootWarningMessage State ) -and ($Setting.RebootWarningMessage.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Reboot warning to users"
 						If($MSWord -or $PDF)
@@ -17250,7 +17507,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RebootWarningMessage.State 
 						}
 					}
-					If($Setting.ScheduledReboots.State -ne "NotConfigured")
+					If((validStateProp $Setting ScheduledReboots State ) -and ($Setting.ScheduledReboots.State -ne "NotConfigured"))
 					{
 						$txt = "Server Settings\Reboot Behavior\Scheduled reboots"
 						If($MSWord -or $PDF)
@@ -17272,7 +17529,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ControllerRegistrationPort State ) -and ($Setting.ControllerRegistrationPort.State -ne "NotConfigured"))
 					{
 						#AD specific setting
@@ -17343,7 +17600,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings\CPU Usage Monitoring" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings\CPU Usage Monitoring" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting CPUUsageMonitoring_Enable State ) -and ($Setting.CPUUsageMonitoring_Enable.State -ne "NotConfigured"))
 					{
 						$txt = "Virtual Delivery Agent Settings\CPU Usage Monitoring\Enable Monitoring"
@@ -17411,7 +17668,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings\HDX3DPro" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings\HDX3DPro" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting EnableLossless State ) -and ($Setting.EnableLossless.State -ne "NotConfigured"))
 					{
 						$txt = "Virtual Delivery Agent Settings\HDX3DPro\Enable lossless"
@@ -17463,7 +17720,7 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings\ICA Latency Monitoring" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings\ICA Latency Monitoring" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ICALatencyMonitoring_Enable State ) -and ($Setting.ICALatencyMonitoring_Enable.State -ne "NotConfigured"))
 					{
 						$txt = "Virtual Delivery Agent Settings\ICA Latency Monitoring\Enable Monitoring"
@@ -17531,7 +17788,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings\Monitoring" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings\Monitoring" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting SiteGUID State ) -and ($Setting.SiteGUID.State -ne "NotConfigured"))
 					{
 						#AD specific setting
@@ -17556,7 +17813,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
-					Write-Host "$(Get-Date): `t`t`tVirtual Delivery Agent Settings\Profile Load Time Monitoring" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings\Profile Load Time Monitoring" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting ProfileLoadTimeMonitoring_Enable State ) -and ($Setting.ProfileLoadTimeMonitoring_Enable.State -ne "NotConfigured"))
 					{
 						$txt = "Virtual Delivery Agent Settings\Profile Load Time Monitoring\Enable Monitoring"
@@ -17602,7 +17859,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Host "$(Get-Date): `t`t`tVirtual IP" -BackgroundColor Black -ForegroundColor Yellow
+					Write-Host "$(Get-Date -Format G): `t`t`tVirtual IP" -BackgroundColor Black -ForegroundColor Yellow
 					If((validStateProp $Setting VirtualLoopbackSupport State ) -and ($Setting.VirtualLoopbackSupport.State -ne "NotConfigured"))
 					{
 						$txt = "Virtual IP\Virtual IP loopback support"
@@ -17776,8 +18033,8 @@ Function ProcessCitrixPolicies
 			}
 			$Filter = $Null
 			$Settings = $Null
-			Write-Host "$(Get-Date): `t`tFinished $($Policy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
-			Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `t`tFinished $($Policy.PolicyName)" -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 		}
 	}
 	ElseIf(!$?)
@@ -17789,12 +18046,11 @@ Function ProcessCitrixPolicies
 		Write-Warning "No results Returned for Citrix Policy information"
 	}
 	
-	$HDXPolicies = $Null
 	If($xDriveName -ne "localfarmgpo")
 	{
-		Write-Host "$(Get-Date): `tRemoving $($xDriveName) PSDrive" -BackgroundColor Black -ForegroundColor Yellow
-		Remove-PSDrive $xDriveName -EA 0 4>Null
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tRemoving $($xDriveName) PSDrive" -BackgroundColor Black -ForegroundColor Yellow
+		Remove-PSDrive $xDriveName -EA 0
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -18123,28 +18379,28 @@ Function GetCtxGPOsInAD
 	#thanks to the Citrix Engineering Team for pointers and for Michael B. Smith for creating the function
 	#updated 07-Nov-13 to work in a Windows Workgroup environment
 	#update 12-Dec-2018 to work in PoSH V2
-	Write-Host "$(Get-Date): Testing for an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Testing for an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
 	$root = [ADSI]"LDAP://RootDSE"
 	If([String]::IsNullOrEmpty($root.PSBase.Name))
 	{
-		Write-Host "$(Get-Date): `tNot in an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tNot in an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
 		$root = $Null
 		$xArray = @()
 	}
 	Else
 	{
-		Write-Host "$(Get-Date): `tIn an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tIn an Active Directory environment" -BackgroundColor Black -ForegroundColor Yellow
 		$domainNC = $root.Properties[ 'defaultNamingContext' ].Value
 		$root = $Null
 		$xArray = @()
 
 		$domain = $domainNC.Replace( 'DC=', '' ).Replace( ',', '.' )
-		Write-Host "$(Get-Date): `tSearching \\$($domain)\sysvol\$($domain)\Policies" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): `tSearching \\$($domain)\sysvol\$($domain)\Policies" -BackgroundColor Black -ForegroundColor Yellow
 		$sysvolFiles = @()
 		$sysvolFiles = Get-ChildItem -Recurse ( '\\' + $domain  + '\sysvol\' + $domain + '\Policies' ) -EA 0
 		If($sysvolFiles.Count -eq 0)
 		{
-			Write-Host "$(Get-Date): `tSearch timed out.  Retrying.  Searching \\ + $($domain)\sysvol\$($domain)\Policies a second time." -BackgroundColor Black -ForegroundColor Yellow
+			Write-Host "$(Get-Date -Format G): `tSearch timed out.  Retrying.  Searching \\ + $($domain)\sysvol\$($domain)\Policies a second time." -BackgroundColor Black -ForegroundColor Yellow
 			$sysvolFiles = Get-ChildItem -Recurse ( '\\' + $domain  + '\sysvol\' + $domain + '\Policies' ) -EA 0
 		}
 		ForEach( $file in $sysvolFiles )
@@ -18217,7 +18473,7 @@ Function OutputAppendixA
 		#	Type: REG_DWORD
 		#	Value: SeamlessFlags = 1
 
-		Write-Host "$(Get-Date): Create Appendix A Session Sharing Items" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Create Appendix A Session Sharing Items" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			$selection.InsertNewPage()
@@ -18379,8 +18635,8 @@ Function OutputAppendixA
 
 		}
 		
-		Write-Host "$(Get-Date): Finished Create Appendix A - Session Sharing Items" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Create Appendix A - Session Sharing Items" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 #endregion
@@ -18390,7 +18646,7 @@ Function OutputAppendixB
 {
 	If(!$Summary -and ($Section -eq "All"))
 	{
-		Write-Host "$(Get-Date): Create Appendix B Server Major Items" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Create Appendix B Server Major Items" -BackgroundColor Black -ForegroundColor Yellow
 		If($MSWord -or $PDF)
 		{
 			$selection.InsertNewPage()
@@ -18506,8 +18762,8 @@ Function OutputAppendixB
 			WriteHTMLLine 0 0 ""
 		}
 		
-		Write-Host "$(Get-Date): Finished Create Appendix B - Server Major Items" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Create Appendix B - Server Major Items" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 #endregion
@@ -18518,7 +18774,7 @@ Function ProcessSummaryPage
 	If($Section -eq "All")
 	{
 		#summary page
-		Write-Host "$(Get-Date): Create Summary Page" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Create Summary Page" -BackgroundColor Black -ForegroundColor Yellow
 		If(!$Summary)
 		{
 			OutputSummaryPage
@@ -18528,8 +18784,8 @@ Function ProcessSummaryPage
 			OutputSummarySummaryPage
 		}
 
-		Write-Host "$(Get-Date): Finished Create Summary Page" -BackgroundColor Black -ForegroundColor Yellow
-		Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Finished Create Summary Page" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 	}
 }
 
@@ -19209,19 +19465,19 @@ Function OutputSummaryPage
 #region script end
 Function ProcessScriptEnd
 {
-	Write-Host "$(Get-Date): Script has completed" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): " -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Script has completed" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): " -BackgroundColor Black -ForegroundColor Yellow
 
 	#clear remote connection if the script set it up
 	If(![String]::IsNullOrEmpty($Script:RemoteXAServer))
 	{
-		Write-Host "$(Get-Date): Clearing remote connection to $Script:RemoteXAServer" -BackgroundColor Black -ForegroundColor Yellow
+		Write-Host "$(Get-Date -Format G): Clearing remote connection to $Script:RemoteXAServer" -BackgroundColor Black -ForegroundColor Yellow
 		Clear-XADefaultComputerName -Scope LocalMachine -EA 0
 	}
 
 	#http://poshtips.com/measuring-elapsed-time-in-powershell/
-	Write-Host "$(Get-Date): Script started: $($Script:StartTime)" -BackgroundColor Black -ForegroundColor Yellow
-	Write-Host "$(Get-Date): Script ended: $(Get-Date)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Script started: $($Script:StartTime)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Script ended: $(Get-Date)" -BackgroundColor Black -ForegroundColor Yellow
 	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
 		$runtime.Days,
@@ -19229,7 +19485,7 @@ Function ProcessScriptEnd
 		$runtime.Minutes,
 		$runtime.Seconds,
 		$runtime.Milliseconds)
-	Write-Host "$(Get-Date): Elapsed time: $($Str)" -BackgroundColor Black -ForegroundColor Yellow
+	Write-Host "$(Get-Date -Format G): Elapsed time: $($Str)" -BackgroundColor Black -ForegroundColor Yellow
 
 	If($Dev)
 	{
@@ -19276,6 +19532,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "NoADPolicies       : $($NoADPolicies)"
 		Out-File -FilePath $SIFile -Append -InputObject "NoPolicies         : $($NoPolicies)"
 		Out-File -FilePath $SIFile -Append -InputObject "Policies           : $($Policies)"
+		Out-File -FilePath $SIFile -Append -InputObject "Report Footer      : $ReportFooter"
 		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML       : $($HTML)"
 		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF        : $($PDF)"
 		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT       : $($TEXT)"
@@ -19310,11 +19567,11 @@ Function ProcessScriptEnd
 			try 
 			{
 				Stop-Transcript | Out-Null
-				Write-Host "$(Get-Date): $Script:LogPath is ready for use" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): $Script:LogPath is ready for use" -BackgroundColor Black -ForegroundColor Yellow
 			} 
 			catch 
 			{
-				Write-Host "$(Get-Date): Transcript/log stop failed" -BackgroundColor Black -ForegroundColor Yellow
+				Write-Host "$(Get-Date -Format G): Transcript/log stop failed" -BackgroundColor Black -ForegroundColor Yellow
 			}
 		}
 	}
@@ -19367,12 +19624,17 @@ ProcessSummaryPage
 #endregion
 
 #region finish script
-Write-Host "$(Get-Date): Finishing up document" -BackgroundColor Black -ForegroundColor Yellow
+Write-Host "$(Get-Date -Format G): Finishing up document" -BackgroundColor Black -ForegroundColor Yellow
 #end of document processing
 
 $AbstractTitle = "Citrix XenApp 6.5 Inventory"
 $SubjectTitle = "XenApp 6.5 Farm Inventory"
 UpdateDocumentProperties $AbstractTitle $SubjectTitle
+
+If($ReportFooter)
+{
+	OutputReportFooter
+}
 
 ProcessDocumentOutput
 

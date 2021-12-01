@@ -4,7 +4,47 @@
 #http://www.CarlWebster.com
 #modified from the original script for XenApp 6.5
 
-#Version 5.00 created on June 1, 2015
+#Version 5.00 created on December 1, 2018
+
+#V5.05 1-Dec-2021
+#	Added a test to see if $AdminAddress equals $Env:ComputerName
+#		If they are the same, do not try and set up remoting since remoting is not needed
+#	Added Function OutputReportFooter
+#	Added Parameter ReportFooter
+#		Outputs a footer section at the end of the report
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Added the missing section title for Policies and sub-section titles for IMA Policies and Active Directory Policies
+#	Changed all Write-Host $(Get-Date) to add -Format G to put the dates in the user's locale
+#	Fixed several issues causing script errors with PowerShell V2
+#	Fixed several property tests in Function ProcessPolicies
+#	Fixed text output in Functions OutputNicItem, OutputServer, and ProcessPolicies
+#	Fixed HTML, Text, and Word/PDF output in Function OutputApplication
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#	In Function OutputServer, if the server's IP address is not present report "No data" 
+#		Usually is not present in PowerShell V2
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Removed Function Check-LoadedModule
+#	Removed Receive Side Scaling from hardware inventory since it is not available in Windows Server 2008 R2
+#	Removed the requirement for the Citrix.GroupPolicy.Commands.psm1 module file (Thanks to Guy Leech for the help)
+#		Added the following functions from the module to the script and cleaned up the Citrix code
+#			CreateDictionary
+#			CreateObject
+#			FilterString
+#			Get-CitrixGroupPolicy
+#			Get-CitrixGroupPolicyConfiguration
+#			Get-CitrixGroupPolicyFilter
+#	Removed the block for Elevation if Policies are processed
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the ReadMe file
 
 #V5.04 30-Jul-2020
 #	Fixed a lot more code, especially parameter variable initialization, that just didn't work in PoSH V2
