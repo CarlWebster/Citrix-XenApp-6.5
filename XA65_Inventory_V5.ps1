@@ -151,7 +151,7 @@
 	Creates an HTML file with an .html extension.
 	This parameter is disabled by default.
 .PARAMETER Hardware
-	Use WMI to gather hardware information on: Computer System, Disks, Processor and 
+	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
 	Network Interface Cards
 
 	This parameter may require the script be run from an elevated PowerShell session 
@@ -211,14 +211,14 @@
 		All
 	This parameter defaults to All sections.
 .PARAMETER NoPolicies
-	Excludes all Farm and Citrix AD based policy information from the output document.
+	Excludes all Farm and Citrix AD-based policy information from the output document.
 	
 	Using the NoPolicies parameter will cause the Policies section to be set to False.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of NP.
 .PARAMETER NoADPolicies
-	Excludes all Citrix AD based policy information from the output document.
+	Excludes all Citrix AD-based policy information from the output document.
 	Includes only Farm policies created in AppCenter.
 	
 	This switch is useful in large AD environments, where there may be thousands
@@ -227,7 +227,7 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NoAD.
 .PARAMETER Policies
-	Give detailed information for both Site and Citrix AD based Policies.
+	Give detailed information for both Site and Citrix AD-based Policies.
 	
 	Using the Policies parameter can cause the report to take a very long time 
 	to complete and can generate an extremely long report.
@@ -338,8 +338,6 @@
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -TEXT
 
-	This parameter is reserved for a future update and no output is created at this time.
-	
 	Will use all default values and save the document as a formatted text file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
@@ -352,8 +350,6 @@
 .EXAMPLE
 	PS C:\PSScript > .\XA65_Inventory_V5.ps1 -HTML
 
-	This parameter is reserved for a future update and no output is created at this time.
-	
 	Will use all default values and save the document as an HTML file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
@@ -494,7 +490,7 @@
 	PS C:\PSScript > .\XA65_Inventory_v5.ps1 -NoADPolicies
 	
 	Creates a report with full details on Farm policies created in AppCenter but 
-	no Citrix AD based Policy information.
+	no Citrix AD-based Policy information.
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -509,7 +505,7 @@
 	PS C:\PSScript > .\XA65_Inventory_v5.ps1 -Section Policies -NoADPolicies
 	
 	Creates a report with full details on Farm policies created in AppCenter but 
-	no Citrix AD based Policy information.
+	no Citrix AD-based Policy information.
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -582,14 +578,14 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	Creates a text file named XA65V5InventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	Creates a text file named XA65V5InventoryScriptErrors_yyyyMMddTHHmmssffff.txt that 
 	contains up to the last 250 errors reported by the script.
 	
 	Creates a text file named XA65V5InventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
 	contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	XA65V5DocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	XA65V5DocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 .INPUTS
 	None. You cannot pipe objects to this script.
 .OUTPUTS
@@ -597,9 +593,9 @@
 	plain text, or HTML document.
 .NOTES
 	NAME: XA65_Inventory_V5.ps1
-	VERSION: 5.05
+	VERSION: 5.06
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: December 1, 2021
+	LASTEDIT: February 23, 2022
 #>
 
 #endregion
@@ -811,6 +807,23 @@ Param(
 #http://www.CarlWebster.com
 #Version 5.00 created on December 1, 2018
 
+#Version 5.06 23-Feb-2022
+#	Changed the date format for the transcript and error log files from yyyy-MM-dd_HHmm format to the FileDateTime format
+#		The format is yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, 
+#		the letter T as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). 
+#		For example: 20221225T0840107271.
+#	Fixed the German Table of Contents (Thanks to Rene Bigler)
+#		From 
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+#		To
+#			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#		Added stopping the transcript log if the log was enabled and started
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Replaced most script Exit calls with AbortScript to stop the transcript log if the log was enabled and started
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #V5.05 1-Dec-2021
 #	Added a test to see if $AdminAddress equals $Env:ComputerName
 #		If they are the same, do not try and set up remoting since remoting is not needed
@@ -897,6 +910,59 @@ Param(
 #		NoADPolicies
 #endregion
 
+
+Function AbortScript
+{
+	If($MSWord -or $PDF)
+	{
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
+		If(Test-Path variable:global:word)
+		{
+			$Script:Word.quit()
+			[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+			Remove-Variable -Name word -Scope Global 4>$Null
+		}
+	}
+	[gc]::collect() 
+	[gc]::WaitForPendingFinalizers()
+
+	If($MSWord -or $PDF)
+	{
+		#is the winword Process still running? kill it
+
+		#find out our session (usually "1" except on TS/RDC or Citrix)
+		$SessionID = (Get-Process -PID $PID).SessionId
+
+		#Find out if winword running in our session
+		$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+		If( $wordprocess -and $wordprocess.Id -gt 0)
+		{
+			Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+			Stop-Process $wordprocess.Id -EA 0
+		}
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
+	#stop transcript logging
+	If($Log -eq $True) 
+	{
+		If($Script:StartLog -eq $True) 
+		{
+			try 
+			{
+				Stop-Transcript | Out-Null
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
+			} 
+			catch 
+			{
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
+			}
+		}
+	}
+	$ErrorActionPreference = $SaveEAPreference
+	Exit
+}
+
 #region initial variable testing and setup
 Set-StrictMode -Version 2
 
@@ -905,9 +971,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 
 #stuff for report footer
-$script:MyVersion           = '5.05'
+$script:MyVersion           = '5.06'
 $Script:ScriptName          = "XA65_Inventory_V5.ps1"
-$tmpdate                    = [datetime] "12/1/2021"
+$tmpdate                    = [datetime] "02/23/2022"
 $Script:ReleaseDate         = $tmpdate.ToUniversalTime().ToShortDateString()
 
 #add this for PowerShell V2
@@ -1161,7 +1227,7 @@ If($NoPolicies -and $Section -eq "Policies")
 	Script cannot continue.
 	`n`n
 	"
-	Exit
+	AbortScript
 }
 
 $ValidSection = $False
@@ -1205,7 +1271,7 @@ If($ValidSection -eq $False)
 	Script cannot continue.
 	`n`n
 	"
-	Exit
+	AbortScript
 }
 
 If($Folder -ne "")
@@ -1232,7 +1298,7 @@ If($Folder -ne "")
 			Script cannot continue.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 	}
 	Else
@@ -1247,7 +1313,7 @@ If($Folder -ne "")
 		Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 }
 
@@ -1269,7 +1335,7 @@ If($Script:pwdpath.EndsWith("\"))
 If($Log) 
 {
 	#start transcript logging
-	$Script:LogPath = "$Script:pwdpath\XA65V5DocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:LogPath = "$Script:pwdpath\XA65V5DocScriptTranscript_$(Get-Date -f FileDateTime).txt"
 	
 	try 
 	{
@@ -1287,7 +1353,7 @@ If($Log)
 If($Dev)
 {
 	$Error.Clear()
-	$Script:DevErrorFile = "$Script:pwdpath\XA65V5InventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:DevErrorFile = "$Script:pwdpath\XA65V5InventoryScriptErrors_$(Get-Date -f FileDateTime).txt"
 }
 #endregion
 
@@ -2611,6 +2677,8 @@ Function SetWordHashTable
 		{
 			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
+			#'de-'	{ 'Automatische Tabelle 2'; Break }
+			'de-'	{ 'Automatisches Verzeichnis 2'; Break } #changed 23-feb-2022 rene bigler
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
 			'es-'	{ 'Tabla automática 2'; Break }
@@ -3005,7 +3073,7 @@ Function CheckWordPrereq
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`t`tThis script directly outputs to Microsoft Word, please install Microsoft Word`n`n" -BackgroundColor Black -ForegroundColor Yellow
-		Exit
+		AbortScript
 	}
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
@@ -3017,7 +3085,7 @@ Function CheckWordPrereq
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n" -BackgroundColor Black -ForegroundColor Yellow
-		Exit
+		AbortScript
 	}
 }
 
@@ -3114,7 +3182,7 @@ Function SetupWord
 		Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 
 	Write-Host "$(Get-Date -Format G): Determine Word language value" -BackgroundColor Black -ForegroundColor Yellow
@@ -3184,7 +3252,7 @@ Function SetupWord
 		Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 	Else
 	{
@@ -5251,7 +5319,7 @@ Function AbortScript
 
 	Write-Host "$(Get-Date -Format G): Script has been aborted" -BackgroundColor Black -ForegroundColor Yellow
 	$ErrorActionPreference = $SaveEAPreference
-	Exit
+	AbortScript
 }
 
 Function OutputWarning
@@ -5371,7 +5439,7 @@ Function ProcessScriptSetup
 			Script cannot continue.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 		
 		#file does exist but can we access it?
@@ -5388,7 +5456,7 @@ Function ProcessScriptSetup
 			Script cannot continue.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 		$x = $Null
 	}
@@ -5457,7 +5525,7 @@ Function ProcessScriptSetup
 			See messages above.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 	}
 	Else
@@ -5481,7 +5549,7 @@ Function ProcessScriptSetup
 			See messages above.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 	}
 
